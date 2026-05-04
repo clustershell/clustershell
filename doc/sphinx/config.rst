@@ -712,6 +712,54 @@ Example of use with :ref:`cluset-tool`::
 
 .. highlight:: text
 
+.. _group-ansible-bindings:
+
+Ansible inventory group bindings
+"""""""""""""""""""""""""""""""""
+
+Enable Ansible inventory group bindings by renaming the example configuration
+file usually installed as
+``/etc/clustershell/groups.conf.d/ansible.conf.example`` to ``ansible.conf``.
+
+**Requirements**: ``ansible-core`` (provides the ``ansible-inventory`` command)
+and ``jq``.
+
+The section **ansible** defines a group source backed by Ansible inventory.
+Each upcall command uses ``ANSIBLE_INVENTORY`` as an inline environment variable
+prefix so that multiple inventory sources (comma-separated paths) are supported.
+The default path defined in the configuration file is used as a fallback when
+``$ANSIBLE_INVENTORY`` is not set in the environment::
+
+    ANSIBLE_INVENTORY="${ANSIBLE_INVENTORY:-/path/to/inventory}" ansible-inventory --list ...
+
+The example upcalls resolve hosts to their Ansible ``inventory_hostname`` rather
+than the ``ansible_host`` connection address, so names from non-resolvable
+aliases (e.g. with dynamic inventory) are not directly usable with
+:ref:`clush-tool`. These commands can be adapted to your inventory as needed,
+for instance to emit ``ansible_host`` instead.
+
+The ``mapall`` upcall resolves every group in a single ``ansible-inventory
+--list`` call. As ``--list`` always dumps the whole inventory regardless of the
+group being queried, this avoids running one ``ansible-inventory`` command per
+group when listing or resolving several groups at once (e.g. ``nodeset -ll``).
+Group names that contain ``:`` or whitespace cannot be expressed in the
+``mapall`` output format; they are skipped from ``mapall`` and resolved through
+the ``map`` upcall instead, so they still resolve but do not appear in
+``nodeset -l`` output.
+
+.. highlight:: console
+
+Example of use with :ref:`nodeset-tool` on a cluster managed with Ansible::
+
+    $ nodeset -s ansible -l
+    @ansible:db
+    @ansible:web
+    @ansible:web_prod
+    @ansible:web_test
+    $ clush -w @ansible:web uptime
+
+.. highlight:: text
+
 .. _defaults-config:
 
 Library Defaults

@@ -1,0 +1,25 @@
+# Additional ClusterShell group source config file
+#
+# Please see `man 5 groups.conf` for further details.
+#
+
+# Ansible inventory bindings
+#
+# Requirements: ansible-core (provides ansible-inventory), jq
+#
+# Replace /path/to/inventory with your inventory path or directory,
+# or set ANSIBLE_INVENTORY in your environment to override it.
+#
+[ansible]
+
+# Resolve group members, recursing into child groups
+map: ANSIBLE_INVENTORY="${ANSIBLE_INVENTORY:-/path/to/inventory}" ansible-inventory --list 2>/dev/null | jq -r --arg g "$GROUP" 'def r(d;g): (d[g].hosts//[])[], ((d[g].children//[])[] as $c | r(d;$c)); r(.;$g)'
+
+# Resolve all groups in a single call, recursing into child groups
+mapall: ANSIBLE_INVENTORY="${ANSIBLE_INVENTORY:-/path/to/inventory}" ansible-inventory --list 2>/dev/null | jq -r 'def r(d;g): (d[g].hosts//[])[], ((d[g].children//[])[] as $c | r(d;$c)); . as $d | keys[] | select(. != "_meta" and . != "all" and (test("[[:space:]:]") | not)) | "\(.): \([r($d;.)] | join(" "))"'
+
+# All inventory hosts
+all: ANSIBLE_INVENTORY="${ANSIBLE_INVENTORY:-/path/to/inventory}" ansible-inventory --list 2>/dev/null | jq -r '.[].hosts // empty | .[]'
+
+# All groups
+list: ANSIBLE_INVENTORY="${ANSIBLE_INVENTORY:-/path/to/inventory}" ansible-inventory --list 2>/dev/null | jq -r 'keys[] | select(. != "_meta" and . != "all")'
