@@ -1,13 +1,19 @@
 ClusterShell Python Library and Tools
 =====================================
 
-ClusterShell is an event-driven open source Python library, designed to run
+[![HPSF Established](https://raw.githubusercontent.com/hpsfoundation/tac/main/badges/HPSF_Project_Badge_Established.png)](https://hpsf.io)
+
+This project adheres to a [Technical Charter](https://clustershell.readthedocs.io/en/latest/CHARTER.html), which defines its governance model, decision-making process, and long-term vision.
+
+ClusterShell is an event-driven open source Python library designed to run
 local or distant commands in parallel on server farms or on large Linux
-clusters. It will take care of common issues encountered on HPC clusters, such
-as operating on groups of nodes, running distributed commands using optimized
-execution algorithms, as well as gathering results and merging identical
-outputs, or retrieving return codes. ClusterShell takes advantage of existing
-remote shell facilities already installed on your systems, like SSH.
+clusters. It is an [HPSF Established](https://hpsf.io) project under
+[LF Europe](https://linuxfoundation.eu/) stewardship.
+
+ClusterShell handles typical HPC cluster administration tasks: operating on
+groups of nodes, executing distributed commands with optimized algorithms,
+gathering and merging output, and collecting return codes. It leverages remote
+shell facilities already present on your systems, such as SSH.
 
 ClusterShell's primary goal is to improve the administration of high-
 performance clusters by providing a lightweight but scalable Python API for
@@ -84,31 +90,21 @@ linux[4-6] 2.6.32-71.el6.x86_64
 Links
 -----
 
-Web site:
-
-    http://cea-hpc.github.com/clustershell/
-
 Online documentation:
 
     https://clustershell.readthedocs.io/
 
 Github source repository:
 
-    https://github.com/cea-hpc/clustershell
-
-Github Wiki:
-
-    https://github.com/cea-hpc/clustershell/wiki
+    https://github.com/clustershell/clustershell
 
 Github Issue tracking system:
 
-    https://github.com/cea-hpc/clustershell/issues
+    https://github.com/clustershell/clustershell/issues
 
 Python Package Index (PyPI) links:
 
     https://pypi.org/project/ClusterShell/
-
-    http://pypi.python.org/pypi/ClusterShell
 
 ClusterShell was born along with Shine, a scalable Lustre FS admin tool:
 
@@ -119,7 +115,16 @@ Core developers/reviewers
 
 * Stephane Thiell
 * Aurelien Degremont
-* Henri Doreau
 * Dominique Martinet
 
-CEA/DAM 2010, 2011, 2012, 2013, 2014, 2015 - http://www-hpc.cea.fr
+Acknowledgments
+---------------
+
+We would like to express our gratitude to [CEA](https://www.cea.fr/english)
+for the resources and funding provided to the project over the years.
+
+We would also like to thank [Stanford University](https://srcc.stanford.edu)
+(SRC) for their long-term support and resources provided to the project.
+
+See the full [Acknowledgments](https://clustershell.readthedocs.io/en/latest/acknowledgments.html)
+page for more details.

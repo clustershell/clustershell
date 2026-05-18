@@ -14,6 +14,8 @@ Contents:
    guide/index
    api/index
    further
+   CHARTER
+   acknowledgments
 
 
 Indices and tables

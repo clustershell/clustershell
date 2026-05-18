@@ -2,6 +2,12 @@
 
 This document describes the governance model of the ClusterShell project.
 
+ClusterShell is a project of [Linux Foundation Europe](https://linuxfoundation.eu/)
+and an [HPSF Established](https://hpsf.io) project. The formal technical
+governance is set out in the [Technical Charter](https://clustershell.readthedocs.io/en/latest/CHARTER.html).
+This document provides the operational details of how that charter is applied
+day-to-day.
+
 ClusterShell is maintained by a small group of maintainers. The project aims to remain lightweight and responsive while ensuring continuity if an individual maintainer becomes unavailable.
 
 ## Roles
