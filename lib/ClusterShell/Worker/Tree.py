@@ -55,6 +55,13 @@ class MetaWorkerEventHandler(EventHandler):
         self.logger.debug("MetaWorkerEventHandler: ev_start")
         self.metaworker._start_count += 1
 
+    def ev_pickup(self, worker, node):
+        """
+        Called for each node a child worker has just picked up.
+        Propagate the event to the meta worker.
+        """
+        self.metaworker._emit_pickup(node)
+
     def ev_read(self, worker, node, sname, msg):
         """
         Called to indicate that a worker has data to read.
@@ -163,6 +170,10 @@ class TreeWorker(DistantWorker):
         self._target_count = 0
         self._has_timeout = False
         self._started = False
+        self._initialized = False
+        self._aborted = False
+        # buffered pickup events queued during _launch() (before ev_start)
+        self._pending_pickups = []
 
         if self.command is None and self.source is None:
             raise ValueError("missing command or source parameter in "
@@ -365,6 +376,7 @@ class TreeWorker(DistantWorker):
         self.logger.debug('_copy_remote: tar cmd: %s', cmd)
 
         pchan = self.task._pchannel(gateway, self)
+        # ev_pickup is fired by PropagationChannel._send_ctl after the send
         pchan.shell(nodes=targets, command=cmd, worker=self, timeout=timeout,
                     stderr=self.stderr, gw_invoke_cmd=self.invoke_gateway,
                     remote=self.remote)
@@ -381,6 +393,7 @@ class TreeWorker(DistantWorker):
         self.gwtargets.setdefault(str(gateway), set()).update(targets)
 
         pchan = self.task._pchannel(gateway, self)
+        # ev_pickup is fired by PropagationChannel._send_ctl after the send
         pchan.shell(nodes=targets, command=cmd, worker=self, timeout=timeout,
                     stderr=self.stderr, gw_invoke_cmd=self.invoke_gateway,
                     remote=self.remote)
@@ -492,16 +505,45 @@ class TreeWorker(DistantWorker):
         self.logger.debug("_on_routing_event %s", arg)
         self.eh._ev_routing(self, arg)
 
+    def _emit_pickup(self, node):
+        """Fire ev_pickup for a node, or queue it until ev_start fires.
+
+        Direct child workers route pickups through MetaWorkerEventHandler.
+        Gateway-routed targets route pickups through PropagationChannel
+        ._send_ctl, after the CTL is actually written on the wire.
+        Skipped when the worker has been aborted.
+
+        The 1:1 invariant between ev_pickup and ev_hup per node is held
+        structurally by the callers: Worker._on_start fires ev_pickup
+        at most once per child node-key (direct path); _send_ctl runs
+        at most once per actual channel.send (gateway path), and reroute
+        only happens when the previous CTL was never sent -- so a
+        rerouted target has not yet been emitted. See
+        test_tree_run_gw2f1_reroute and
+        test_tree_run_gw2f1_no_double_pickup_under_reroute.
+        """
+        if self.eh is None or self._aborted:
+            return
+        if self._initialized:
+            _eh_sigspec_invoke_compat(self.eh.ev_pickup, 2, self, node)
+        else:
+            # ev_start has not fired yet; defer to preserve ordering
+            self._pending_pickups.append(node)
+
     def _check_ini(self):
         self.logger.debug("TreeWorker: _check_ini (%d, %d)", self._start_count,
                           self._child_count)
-        if self.eh is not None and self._start_count >= self._child_count:
+        if (self.eh is not None and not self._initialized
+                and self._start_count >= self._child_count):
             # this part is called once
+            self._initialized = True
             self.eh.ev_start(self)
-            # Blindly generate pickup events: this could maybe be improved, for
-            # example, generated only when commands are sent to the gateways
-            # or for direct targets, using MetaWorkerEventHandler.
-            for node in self.nodes:
+            # Flush pickup events buffered during _launch(). If ev_start
+            # aborted the worker, no pickups are emitted (#594).
+            pending, self._pending_pickups = self._pending_pickups, []
+            for node in pending:
+                if self._aborted:
+                    break
                 _eh_sigspec_invoke_compat(self.eh.ev_pickup, 2, self, node)
 
     def _check_fini(self, gateway=None):
@@ -588,6 +630,9 @@ class TreeWorker(DistantWorker):
     def abort(self):
         """Abort processing any action by this worker."""
         self.logger.debug("abort %s" % self)
+        # Stop pending and future pickup events (#594)
+        self._aborted = True
+        self._pending_pickups = []
         for worker in self.workers:
             worker.abort()
         for gateway in self.gwtargets.copy():

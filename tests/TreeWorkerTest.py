@@ -114,6 +114,11 @@ class TRoutingEventHandler(TEventHandler):
     def __init__(self):
         TEventHandler.__init__(self)
         self.routing_events = []
+        self.pickup_nodes = []
+
+    def ev_pickup(self, worker, node):
+        TEventHandler.ev_pickup(self, worker, node)
+        self.pickup_nodes.append(str(node))
 
     def _ev_routing(self, worker, arg):
         self.routing_events.append((worker, arg))
@@ -614,10 +619,38 @@ class TreeWorkerTest(TreeWorkerTestBase):
         teh = TEventAbortOnStartHandler(self)
         self.task.run('echo Lorem Ipsum', nodes=NODE_DISTANT, handler=teh)
         self.assertEqual(teh.ev_start_cnt, 1)
-        #self.assertEqual(teh.ev_pickup_cnt, 0) # XXX to be improved
+        self.assertEqual(teh.ev_pickup_cnt, 0) # #594: aborted on start
         self.assertEqual(teh.ev_read_cnt, 0)
         self.assertEqual(teh.ev_written_cnt, 0)
         self.assertEqual(teh.ev_hup_cnt, 1)
+        self.assertEqual(teh.ev_timedout_cnt, 0)
+        self.assertEqual(teh.ev_close_cnt, 1)
+        self.assertEqual(teh.last_read, None)
+
+    def test_tree_run_abort_on_start_multi(self):
+        """test tree run abort on ev_start, multiple nodes"""
+        # #594: exercises clearance of buffered pickups for >1 node
+        class TEventAbortOnStartHandler(TEventHandler):
+            def __init__(self, testcase):
+                TEventHandler.__init__(self)
+                self.testcase = testcase
+
+            def ev_start(self, worker):
+                TEventHandler.ev_start(self, worker)
+                worker.abort()
+
+            def ev_hup(self, worker, node, rc):
+                TEventHandler.ev_hup(self, worker, node, rc)
+                self.testcase.assertEqual(rc, os.EX_PROTOCOL)
+
+        teh = TEventAbortOnStartHandler(self)
+        self.task.run('echo Lorem Ipsum', nodes=NODE_DISTANT2, handler=teh)
+        target_cnt = len(NodeSet(NODE_DISTANT2))
+        self.assertEqual(teh.ev_start_cnt, 1)
+        self.assertEqual(teh.ev_pickup_cnt, 0)
+        self.assertEqual(teh.ev_read_cnt, 0)
+        self.assertEqual(teh.ev_written_cnt, 0)
+        self.assertEqual(teh.ev_hup_cnt, target_cnt)
         self.assertEqual(teh.ev_timedout_cnt, 0)
         self.assertEqual(teh.ev_close_cnt, 1)
         self.assertEqual(teh.last_read, None)
@@ -831,6 +864,37 @@ class TreeWorkerGW2Test(TreeWorkerTestBase):
         self.assertEqual(teh.ev_timedout_cnt, 2)  # command timed out
         self.assertEqual(teh.ev_close_cnt, 2)
 
+    def test_tree_run_gw2_abort_on_pickup_mid_flush(self):
+        """test tree run abort on ev_pickup during _check_ini flush (#594)"""
+        class TEventAbortOnPickupHandler(TEventHandler):
+            """Test Event Abort On Pickup Handler"""
+
+            def __init__(self, testcase):
+                TEventHandler.__init__(self)
+                self.testcase = testcase
+
+            def ev_pickup(self, worker, node):
+                TEventHandler.ev_pickup(self, worker, node)
+                worker.abort()
+
+            def ev_hup(self, worker, node, rc):
+                TEventHandler.ev_hup(self, worker, node, rc)
+                self.testcase.assertEqual(rc, os.EX_PROTOCOL)
+
+        teh = TEventAbortOnPickupHandler(self)
+        self.task.run('echo Lorem Ipsum', nodes=NODE_DISTANT2, handler=teh)
+        target_cnt = len(NodeSet(NODE_DISTANT2))
+        self.assertEqual(teh.ev_start_cnt, 1)
+        # First pickup fires and aborts; the inner break in _check_ini
+        # stops the second buffered pickup from firing.
+        self.assertEqual(teh.ev_pickup_cnt, 1)
+        self.assertEqual(teh.ev_read_cnt, 0)
+        self.assertEqual(teh.ev_written_cnt, 0)
+        self.assertEqual(teh.ev_hup_cnt, target_cnt)
+        self.assertEqual(teh.ev_timedout_cnt, 0)
+        self.assertEqual(teh.ev_close_cnt, 1)
+        self.assertEqual(teh.last_read, None)
+
     def test_tree_run_gw2_write_distant(self):
         """test tree run with write(), 2 gateways, distant target"""
         self._tree_run_write(NODE_DISTANT)
@@ -929,6 +993,14 @@ class TreeWorkerGW2F1FTest(TreeWorkerTestBase):
         # event handler checks
         self.assertEqual(teh.ev_start_cnt, 1)
         self.assertEqual(teh.ev_pickup_cnt, 2)
+        # #594: each node fires ev_pickup EXACTLY ONCE even after reroute.
+        # This holds structurally: PropagationChannel._send_ctl runs at
+        # most once per actual channel.send, and a CTL queued behind a
+        # never-acked CFG message is GC'd before any send -- so a
+        # rerouted target's first _emit_pickup is the only one. The list
+        # comparison (not a set) below catches accidental double-fires.
+        self.assertEqual(sorted(teh.pickup_nodes),
+                         sorted(str(n) for n in NodeSet(NODE_DISTANT2)))
         # read_cnt += 1 for gateway error on stderr (so currently not fully
         # transparent to the user)
         self.assertEqual(teh.ev_read_cnt, 3)
@@ -937,3 +1009,76 @@ class TreeWorkerGW2F1FTest(TreeWorkerTestBase):
         self.assertEqual(teh.ev_timedout_cnt, 0)
         self.assertEqual(teh.ev_close_cnt, 1)
         self.assertEqual(teh.last_read, b'Lorem Ipsum')
+
+    def test_tree_run_gw2f1_no_double_pickup_under_reroute(self):
+        """test #594 invariant: rerouted target fires ev_pickup at most once
+
+        Companion to test_tree_run_gw2f1_reroute focused solely on the
+        no-double-fire invariant. With pickup emission centralized in
+        PropagationChannel._send_ctl (runs once per actual channel.send)
+        and Worker._on_start (fires once per child node-key), the same
+        node cannot see ev_pickup twice -- even when its initial gateway
+        fails before CFG-ACK and the target is rerouted to a working
+        gateway. If a future refactor reintroduces eager pickup emission
+        from any pre-send site, this test fails immediately.
+        """
+        teh = TRoutingEventHandler()
+        self.task.run('echo Lorem Ipsum', nodes=NODE_DISTANT2, handler=teh)
+
+        # Exactly one reroute happened (the failed gateway).
+        self.assertEqual(len(teh.routing_events), 1)
+
+        # pickup_nodes is a list (one entry per ev_pickup CALL, not a
+        # deduped set). It must have no duplicates.
+        self.assertEqual(len(teh.pickup_nodes), len(set(teh.pickup_nodes)),
+                         "ev_pickup fired more than once for some node: %s"
+                         % teh.pickup_nodes)
+        self.assertEqual(set(teh.pickup_nodes),
+                         set(str(n) for n in NodeSet(NODE_DISTANT2)))
+
+    def test_tree_run_gw2f1_pickup_after_reroute(self):
+        """test ev_pickup for a rerouted target fires after _ev_routing (#594)"""
+        class TOrderedRoutingEventHandler(TRoutingEventHandler):
+            """Record the absolute order of pickup and routing events."""
+
+            def __init__(self):
+                TRoutingEventHandler.__init__(self)
+                self.event_order = []  # ('pickup', node) | ('routing', arg)
+
+            def ev_pickup(self, worker, node):
+                TRoutingEventHandler.ev_pickup(self, worker, node)
+                self.event_order.append(('pickup', str(node)))
+
+            def _ev_routing(self, worker, arg):
+                TRoutingEventHandler._ev_routing(self, worker, arg)
+                self.event_order.append(('routing', arg))
+
+        teh = TOrderedRoutingEventHandler()
+        self.task.run('echo Lorem Ipsum', nodes=NODE_DISTANT2, handler=teh)
+
+        # one reroute event for the down gateway
+        self.assertEqual(len(teh.routing_events), 1)
+        _, routing_arg = teh.routing_events[0]
+        rerouted = NodeSet(routing_arg['targets'])
+
+        # locate the routing event in the absolute event timeline
+        routing_idx = next(i for i, (name, _) in enumerate(teh.event_order)
+                           if name == 'routing')
+
+        # every rerouted target's ev_pickup must come AFTER the routing event:
+        # _emit_pickup now fires from PropagationChannel only when the CTL
+        # actually leaves the local process, so a target whose initial
+        # gateway is unreachable cannot be 'picked up' until the reroute
+        # places its send on a working channel.
+        for target in rerouted:
+            tgt = str(target)
+            pickup_idx = next((i for i, (name, payload)
+                              in enumerate(teh.event_order)
+                              if name == 'pickup' and payload == tgt), None)
+            self.assertIsNotNone(
+                pickup_idx,
+                "missing ev_pickup for rerouted target %s" % tgt)
+            self.assertGreater(
+                pickup_idx, routing_idx,
+                "ev_pickup for rerouted target %s fired before _ev_routing"
+                % tgt)

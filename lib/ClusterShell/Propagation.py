@@ -222,21 +222,34 @@ class PropagationChannel(Channel):
         self._rc = None
         self.logger = logging.getLogger(__name__)
 
-    def send_queued(self, ctl):
+    def _send_ctl(self, ctl, pickup_worker=None, pickup_nodes=None):
+        """Actually push a CTL message on the wire.
+
+        If pickup_worker is set, fires _emit_pickup() on the meta
+        worker for every target node, AFTER the send -- so ev_pickup
+        only fires when the command really left the local process
+        (#594). write()/set_write_eof() don't carry pickup args.
+        """
+        self.send(ctl)
+        if pickup_worker is not None and pickup_nodes is not None:
+            for node in pickup_nodes:
+                pickup_worker._emit_pickup(node)
+
+    def send_queued(self, ctl, pickup_worker=None, pickup_nodes=None):
         """helper used to send a message, using msg queue if needed"""
         if self.setup and not self._sendq:
             # send now if channel is setup and sendq empty
-            self.send(ctl)
+            self._send_ctl(ctl, pickup_worker, pickup_nodes)
         else:
             self.logger.debug("send_queued: %d", len(self._sendq))
-            self._sendq.appendleft(ctl)
+            self._sendq.appendleft((ctl, pickup_worker, pickup_nodes))
 
     def send_dequeue(self):
         """helper used to send one queued message (if any)"""
         if self._sendq:
-            ctl = self._sendq.pop()
+            ctl, pickup_worker, pickup_nodes = self._sendq.pop()
             self.logger.debug("dequeuing sendq: %s", ctl)
-            self.send(ctl)
+            self._send_ctl(ctl, pickup_worker, pickup_nodes)
 
     def start(self):
         """start propagation channel"""
@@ -300,7 +313,9 @@ class PropagationChannel(Channel):
             'remote': remote,
         }
         ctl.data_encode(ctl_data)
-        self.send_queued(ctl)
+        # Pass worker + nodes so _emit_pickup fires only when the CTL
+        # actually leaves the local process (#594).
+        self.send_queued(ctl, pickup_worker=worker, pickup_nodes=nodes)
 
     def write(self, nodes, buf, worker):
         """write buffer through channel to nodes on standard input"""
