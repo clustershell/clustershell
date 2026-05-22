@@ -589,6 +589,33 @@ class TreeWorkerTest(TreeWorkerTestBase):
         """test tree rcopy: file, direct target, not in topology"""
         self._tree_rcopy_file(NODE_FOREIGN)
 
+    def test_tree_rcopy_no_tarfile_warning(self):
+        """test tree rcopy: no tarfile warning leaks (PEP 706, <3.14 compat)"""
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            self._tree_rcopy_file(NODE_DISTANT)
+        self.assertEqual([x for x in w if 'tarfile' in x.filename], [])
+
+    def test_tree_rcopy_preserves_mode(self):
+        """test tree rcopy: preserves file mode bits (PEP 706 regression)"""
+        teh = TEventHandler()
+        srcdir = make_temp_dir()
+        destdir = make_temp_dir()
+        srcfile = make_temp_file(b'mode-check', suffix=".txt", dir=srcdir.name)
+        try:
+            os.chmod(srcfile.name, 0o664)
+            src_mode = os.stat(srcfile.name).st_mode & 0o777
+            self.task.rcopy(srcfile.name, destdir.name, nodes=NODE_DISTANT,
+                            handler=teh)
+            self.task.run()
+            for tgt in NodeSet(NODE_DISTANT):
+                dst = join(destdir.name, basename(srcfile.name) + '.' + tgt)
+                self.assertEqual(os.stat(dst).st_mode & 0o777, src_mode)
+        finally:
+            srcfile.close()
+            srcdir.cleanup()
+            destdir.cleanup()
+
     def test_tree_worker_missing_arguments(self):
         """test TreeWorker with missing arguments"""
         teh = TEventHandler()

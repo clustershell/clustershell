@@ -41,6 +41,11 @@ from ClusterShell.Worker.Exec import ExecWorker
 from ClusterShell.Propagation import PropagationTreeRouter
 
 
+# PEP 706: 'fully_trusted' preserves legacy extractall() (trusted gateway)
+_TAR_EXTRACT_KWARGS = {'filter': 'fully_trusted'} \
+    if hasattr(tarfile, 'data_filter') else {}
+
+
 class MetaWorkerEventHandler(EventHandler):
     """Handle events for the meta worker TreeWorker"""
 
@@ -467,7 +472,7 @@ class TreeWorker(DistantWorker):
                 try:
                     self.logger.debug("%s extracting %d members in dest %s",
                                       node, len(tmptar.getmembers()), self.dest)
-                    tmptar.extractall(path=self.dest)
+                    tmptar.extractall(path=self.dest, **_TAR_EXTRACT_KWARGS)
                 except IOError as ex:
                     self._on_remote_node_msgline(node, ex, 'stderr', gateway)
                 finally:
