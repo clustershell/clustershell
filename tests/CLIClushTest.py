@@ -762,6 +762,32 @@ class CLIClushTest_A(unittest.TestCase):
         finally:
             ClusterShell.CLI.Clush.ask_pass = ask_pass_save
 
+    def test_045_pipe_line_buffering(self):
+        """test clush stdout line buffering when piped (GH#597)"""
+        # Remote command emits 3 lines with a sleep between each. With the
+        # fix, lines arrive ~0.5s apart through the pipe. If clush stdout is
+        # block-buffered (the bug), all 3 arrive together at child exit.
+        python_exec = basename(sys.executable or 'python')
+        args = ['-w', HOSTNAME, '--worker=exec', '-q',
+                'for i in A B C; do echo $i; sleep 0.5; done']
+        with Popen([python_exec, '-m', 'ClusterShell.CLI.Clush'] + args,
+                   stdout=PIPE, stderr=PIPE,
+                   universal_newlines=True, bufsize=1) as process:
+            timestamps = []
+            t0 = time.monotonic()
+            for _line in process.stdout:
+                timestamps.append(time.monotonic() - t0)
+            process.wait(timeout=10)
+        self.assertEqual(len(timestamps), 3,
+                         "expected 3 lines, got %d" % len(timestamps))
+        spread = timestamps[-1] - timestamps[0]
+        # Bug signature: spread ~0 (lines released together at clush exit).
+        # Fix signature: spread ~1s. 0.5s threshold = midpoint, equally far
+        # from both signals — generous for CI jitter.
+        self.assertGreater(spread, 0.5,
+                           "lines arrived together (spread=%.3fs); "
+                           "clush stdout looks block-buffered" % spread)
+
 
 class CLIClushTest_B_StdinFailure(unittest.TestCase):
     """Unit test class for testing CLI/Clush.py and stdin failure"""

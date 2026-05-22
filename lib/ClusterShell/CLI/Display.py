@@ -25,6 +25,7 @@ CLI results display class
 from __future__ import print_function
 
 import difflib
+import io
 import sys
 import os
 
@@ -116,19 +117,19 @@ class Display(object):
                 color = True
 
         self._color = color
-        # GH#528 enable line buffering
+        # GH#528/GH#597 enable line buffering (rewrap buffer on Py 3.6)
         self.out = sys.stdout
-        try :
+        self.err = sys.stderr
+        if hasattr(self.out, 'reconfigure'):  # Py 3.7+
             if not self.out.line_buffering:
                 self.out.reconfigure(line_buffering=True)
-        except AttributeError:  # < py3.7
-            pass
-        self.err = sys.stderr
-        try :
             if not self.err.line_buffering:
                 self.err.reconfigure(line_buffering=True)
-        except AttributeError:  # < py3.7
-            pass
+        elif hasattr(self.out, 'buffer'):  # Py 3.6
+            self.out = io.TextIOWrapper(self.out.buffer, encoding=self.out.encoding,
+                                        errors=self.out.errors, line_buffering=True)
+            self.err = io.TextIOWrapper(self.err.buffer, encoding=self.err.encoding,
+                                        errors=self.err.errors, line_buffering=True)
 
         if self._color:
             self.color_stdout_fmt = self.COLOR_STDOUT_FMT
