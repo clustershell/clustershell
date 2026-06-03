@@ -20,7 +20,7 @@ acronym
     border: none;
     }
 
-#why h3 span, #scalability h3 span, #requirements h3 span, #ldocumentation h3.documentation span, #lcontribute h3.contribute span, #lcea h3.cea span, #lselect h3.select
+#why h3 span, #scalability h3 span, #requirements h3 span, #ldocumentation h3.documentation span, #lcontribute h3.contribute span, #lselect h3.select
     {
     display:none;
     }
@@ -192,11 +192,15 @@ h2
     height: 18px;
     margin: 30px 0 3px 40px;
     }
-#lcea h3.cea
+#lhpsf
     {
     width: 172px;
-    height: 140px;
     margin: 50px 0 0px 38px;
+    }
+#lhpsf img
+    {
+    max-width: 172px;
+    height: auto;
     }
 
 #footer
@@ -217,5 +221,18 @@ h2
 #footer a:hover
     {
     text-decoration: underline;
+    }
+
+#copyright
+    {
+    width: 724px;
+    margin: 10px auto 20px auto;
+    text-align: center;
+    font-size: 11px;
+    color: #555;
+    }
+#copyright p
+    {
+    margin: 4px 0;
     }
 

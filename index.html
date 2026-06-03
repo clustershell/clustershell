@@ -3,20 +3,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" >
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-	<meta name="keywords" content="linux, cea, hpc, cluster, clustershell, cecill, nodeset, clush, clubak, git, eda" />
+	<meta name="keywords" content="linux, hpc, cluster, clustershell, nodeset, clush, clubak, git, eda, hpsf" />
 	<meta name="description" content="Open Source ClusterShell Python Framework for scalable cluster administration" />
 	<meta name="google-site-verification" content="XtGLtG8yFiXutnJZsmzmnYWXhLiLVua00gqdpdCaONA" />
 	<meta name="robots" content="all" />
 	<title>ClusterShell - Scalable Python Framework for cluster administration</title>
-	<!-- GoStats JavaScript Based Code -->
-	<script type="text/javascript" src="http://gostats.com/js/counter.js"></script>
-	<script type="text/javascript">_gos='c4.gostats.com';_goa=372832;
-	_got=5;_goi=1;_gol='counters';_GoStatsRun();</script>
-	<noscript><a target="_blank" title="counters" 
-	href="http://gostats.com"><img alt="counters" 
-	src="http://c4.gostats.com/bin/count/a_372832/t_5/i_1/counter.png" 
-	style="border-width:0" /></a></noscript>
-	<!-- End GoStats JavaScript Based Code -->
 	<style type="text/css" media="all">
 		@import "index.css";
 	</style>
@@ -33,38 +24,37 @@
 
 		<div id="quickSummary">
 			<p class="p1"><span>Improve your cluster daily administration by using a scalable Python API and through provided command- line tools (clush, nodeset, ...)</span></p>
-			<p class="p2"><span>Stable version: <a href="https://github.com/cea-hpc/clustershell/releases/tag/v1.9.3" title="Latest version">1.9.3</a></span></p>
+			<p class="p2"><span>Stable version: <a href="https://github.com/clustershell/clustershell/releases/tag/v1.9.3" title="Latest version">1.9.3</a></span></p>
 		</div>
 
 		<div id="why">
 			<h3><span>Why you need ClusterShell</span></h3>
-			<p class="p1">ClusterShell is an <a href="http://en.wikipedia.org/wiki/Event-driven_programming" title="Event-driven programming">event-driven</a> open source Python library, designed to run local or distant commands in parallel on server farms or on large Linux clusters. No need to reinvent the wheel: you can use ClusterShell as a building block to create cluster aware administration scripts and system applications in Python. It will take care of common issues encountered on HPC clusters, such as operating on <a href="http://clustershell.readthedocs.io/en/latest/config.html#node-groups" title="ClusterShell node groups">groups</a> of nodes, running distributed commands using optimized execution algorithms, as well as gathering results and merging identical outputs, or retrieving return codes. ClusterShell takes advantage of existing remote shell facilities already installed on your systems, like SSH.</p>
-			<p class="p2"><span>ClusterShell's primary goal is to improve the administration of high-performance clusters by providing a lightweight but scalable Python API for developers. It also provides <a href="http://clustershell.readthedocs.io/en/latest/tools/clush.html" title="clush CLI tool">clush</a>, <a href="http://clustershell.readthedocs.io/en/latest/tools/clubak.html" title="clubak CLI tool">clubak</a> and <a href="http://clustershell.readthedocs.io/en/latest/tools/nodeset.html" title="nodeset CLI tool">nodeset</a>/<a href="http://clustershell.readthedocs.io/en/latest/tools/cluset.html" title="cluset CLI tool">cluset</a>, convenient command-line tools that allow traditional shell scripts to benefit from some of the library features.</span></p>
+			<p class="p1">ClusterShell is an <a href="https://en.wikipedia.org/wiki/Event-driven_programming" title="Event-driven programming">event-driven</a> open source Python library, designed to run local or distant commands in parallel on server farms or on large Linux clusters. No need to reinvent the wheel: you can use ClusterShell as a building block to create cluster aware administration scripts and system applications in Python. It will take care of common issues encountered on HPC clusters, such as operating on <a href="https://clustershell.readthedocs.io/en/latest/config.html#node-groups" title="ClusterShell node groups">groups</a> of nodes, running distributed commands using optimized execution algorithms, as well as gathering results and merging identical outputs, or retrieving return codes. ClusterShell takes advantage of existing remote shell facilities already installed on your systems, like SSH.</p>
+			<p class="p2"><span>ClusterShell's primary goal is to improve the administration of high-performance clusters by providing a lightweight but scalable Python API for developers. It also provides <a href="https://clustershell.readthedocs.io/en/latest/tools/clush.html" title="clush CLI tool">clush</a>, <a href="https://clustershell.readthedocs.io/en/latest/tools/clubak.html" title="clubak CLI tool">clubak</a> and <a href="https://clustershell.readthedocs.io/en/latest/tools/nodeset.html" title="nodeset CLI tool">nodeset</a>/<a href="https://clustershell.readthedocs.io/en/latest/tools/cluset.html" title="cluset CLI tool">cluset</a>, convenient command-line tools that allow traditional shell scripts to benefit from some of the library features.</span></p>
 		</div>
 	</div>
 
 	<div id="supportingText">
 		<div id="scalability">
 			<h3><span>Scalability perspective</span></h3>
-			<p class="p1"><span>The ClusterShell library implements a scalable parallel execution model in a small footprint using asynchronous, non-blocking I/O (<a href="http://en.wikipedia.org/wiki/Event-driven_architecture" title="Event-Driven Architecture">EDA</a>). No massive multithreading is needed, making it easier for the developer to avoid race conditions, deadlocks or resource starvation. When multitasking cannot be avoided, the library provides task mailbox mechanisms.</span></p>
-			<p class="p1"><span>ClusterShell is used daily at on several PetaFLOPS-class Linux supercomputers (with more than 5000 compute nodes) but also on server farms and storage clusters at <a href="http://www-hpc.cea.fr/index-en.htm" title="CEA: a major player in research and innovation">CEA</a>.</span></p>
+			<p class="p1"><span>The ClusterShell library implements a scalable parallel execution model in a small footprint using asynchronous, non-blocking I/O (<a href="https://en.wikipedia.org/wiki/Event-driven_architecture" title="Event-Driven Architecture">EDA</a>). No massive multithreading is needed, making it easier for the developer to avoid race conditions, deadlocks or resource starvation. When multitasking cannot be avoided, the library provides task mailbox mechanisms.</span></p>
+			<p class="p1"><span>ClusterShell is used daily at on several PetaFLOPS-class Linux supercomputers (with more than 5000 compute nodes) but also on server farms and storage clusters at CEA.</span></p>
 		</div>
 
 		<div id="requirements">
 			<h3><span>Requirements</span></h3>
-			<p class="p1"><span>The only requirement to use ClusterShell is Python (v2.7+ or v3.4+) on an Unix-like operating system (Linux, *BSD and Mac OS X are supported). Although not restricted to Secure Shell (<a href="http://en.wikipedia.org/wiki/Secure_Shell" title="Secure Shell on Wikipedia">SSH</a>), it is the default remote shell used by ClusterShell to access remote nodes.</span></p>
+			<p class="p1"><span>The only requirement to use ClusterShell is Python (v2.7+ or v3.4+) on an Unix-like operating system (Linux, *BSD and Mac OS X are supported). Although not restricted to Secure Shell (<a href="https://en.wikipedia.org/wiki/Secure_Shell" title="Secure Shell on Wikipedia">SSH</a>), it is the default remote shell used by ClusterShell to access remote nodes.</span></p>
 			<p class="p2"><span>ClusterShell is distributed under the <a href="https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html" title="GNU LGPLv2+">GNU Lesser General Public License, version 2.1</a> or later (LGPLv2+).</span></p>
 		</div>
 
 		<div id="footer">
 			<a href="https://aur.archlinux.org/packages/clustershell" title="ClusterShell on Arch Linux">Arch</a> &nbsp;
-			<a href="http://packages.debian.org/clustershell" title="ClusterShell on Debian Linux">Debian</a> &nbsp;
+			<a href="https://packages.debian.org/clustershell" title="ClusterShell on Debian Linux">Debian</a> &nbsp;
 			<a href="https://packages.fedoraproject.org/pkgs/clustershell/clustershell/" title="ClusterShell on Fedora and EPEL">Fedora/EPEL</a> &nbsp;
-			<a href="http://packages.ubuntu.com/clustershell" title="ClusterShell on Ubuntu Linux">Ubuntu</a> &nbsp;-&nbsp;
-			<a href="https://github.com/cea-hpc/clustershell/tree/master/lib/ClusterShell" title="Browse library source code">code/lib</a> &nbsp;
-			<a href="http://pypi.python.org/pypi/ClusterShell" title="ClusterShell on Python Package Index repository (old)">PyPI</a> &nbsp;
-			<a href="https://pypi.org/project/ClusterShell/" title="ClusterShell on Python Package Index repository">Warehouse (PyPI)</a> &nbsp;
-			<a href="http://koji.fedoraproject.org/koji/packageinfo?packageID=10907" title="ClusterShell on Koji Build System">Koji</a> &nbsp;
+			<a href="https://packages.ubuntu.com/clustershell" title="ClusterShell on Ubuntu Linux">Ubuntu</a> &nbsp;-&nbsp;
+			<a href="https://github.com/clustershell/clustershell/tree/master/lib/ClusterShell" title="Browse library source code">code/lib</a> &nbsp;
+			<a href="https://pypi.org/project/ClusterShell/" title="ClusterShell on Python Package Index">PyPI</a> &nbsp;
+			<a href="https://koji.fedoraproject.org/koji/packageinfo?packageID=10907" title="ClusterShell on Koji Build System">Koji</a> &nbsp;
 			<a href="https://src.fedoraproject.org/rpms/clustershell" title="ClusterShell on Fedora Pagure">Pagure</a> &nbsp;
 			<a href="https://build.opensuse.org/package/show/network:cluster/clustershell" title="ClusterShell on openSUSE Build Service">obs</a> &nbsp;
 			<a href="https://www.openhub.net/p/clustershell" title="Open Hub project statistics (formely ohloh)">Open Hub</a>
@@ -76,38 +66,41 @@
 			<div id="lselect">
 				<h3 class="select"><span>Download</span></h3>
 				<ul>
-					<li><a href="http://clustershell.readthedocs.io/en/latest/install.html#distribution" title="Get ClusterShell" accesskey="g"><img src="images/get.png" alt="Get ClusterShell" /></a>&nbsp;</li>
+					<li><a href="https://clustershell.readthedocs.io/en/latest/install.html#distribution" title="Get ClusterShell" accesskey="g"><img src="images/get.png" alt="Get ClusterShell" /></a>&nbsp;</li>
 				</ul>
 			</div>
 
 			<div id="ldocumentation">
 				<h3 class="documentation"><span>Documentation:</span></h3>
 				<ul>
-					<li><a href="http://clustershell.readthedocs.io/" title="Read the Docs" >Read the Docs</a>&nbsp;</li>
-					<li><a href="https://github.com/cea-hpc/clustershell/wiki" title="Github Wiki Knowledge Base" >Github Wiki</a>&nbsp;</li>
-					<li><a href="http://clustershell.readthedocs.io/en/latest/api/index.html" title="Public API doc" >Public API doc</a></li>
-					<li><a href="http://pythonhosted.org/ClusterShell/" title="Epydoc">Full API Epydoc</a></li>
-					<li><a href="https://fosdem.org/2016/schedule/event/hpc_bigdata_clustershell/" title="FOSDEM 2016 talk info and slides" >FOSDEM 2016</a></li>
-					<li><a href="https://github.com/downloads/cea-hpc/clustershell/ClusterShell_Paper_OLS2012.pdf" title="2012 Ottawa Linux Symposium Presented Paper" >OLS 2012 paper</a></li>
+					<li><a href="https://clustershell.readthedocs.io/" title="Read the Docs" >Read the Docs</a>&nbsp;</li>
+					<li><a href="https://github.com/clustershell/clustershell/wiki" title="Github Wiki Knowledge Base" >Github Wiki</a>&nbsp;</li>
+					<li><a href="https://clustershell.readthedocs.io/en/latest/api/index.html" title="Public API doc" >Public API doc</a></li>
+					<li><a href="https://archive.fosdem.org/2016/schedule/event/hpc_bigdata_clustershell/" title="FOSDEM 2016 talk info and slides" >FOSDEM 2016</a></li>
+					<li><a href="https://www.kernel.org/doc/ols/2012/ols2012-thiell.pdf" title="2012 Ottawa Linux Symposium Presented Paper" >OLS 2012 paper</a></li>
 				</ul>
 			</div>
 
 			<div id="lcontribute">
 				<h3 class="contribute"><span>Contribute:</span></h3>
 				<ul>
-					<li><a href="https://github.com/cea-hpc/clustershell/issues/new" title="Open New Issue on Github" >Open a ticket</a></li>
-					<li><a href="https://github.com/cea-hpc/clustershell/issues" title="Browse Issues on Github" >Browse issues</a></li>
-				    <li><a href="https://github.com/cea-hpc/clustershell/milestones" title="Project milestones" >Project milestones</a></li>
-				    <li><a href="https://github.com/cea-hpc/clustershell" title="Browse source on GitHub" >Browse source on GitHub</a> &nbsp;<a href="https://github.com/cea-hpc/clustershell/commits/master.atom" title="Subscribe to the master commits feed"><img src="images/feed.png" alt="master.atom" /></a></li>
-				    <li><a href="https://github.com/cea-hpc/clustershell/wiki/Thanks" title="Contributors" >Contributors</a></li>
-				    <li><a href="https://review.gerrithub.io/#/q/project:cea-hpc/clustershell" title="Gerrit" >Browse Gerrit changes</a></li>
+					<li><a href="https://github.com/clustershell/clustershell/issues/new" title="Open New Issue on Github" >Open a ticket</a></li>
+					<li><a href="https://github.com/clustershell/clustershell/issues" title="Browse Issues on Github" >Browse issues</a></li>
+				    <li><a href="https://github.com/clustershell/clustershell/milestones" title="Project milestones" >Project milestones</a></li>
+				    <li><a href="https://github.com/clustershell/clustershell" title="Browse source on GitHub" >Browse source on GitHub</a> &nbsp;<a href="https://github.com/clustershell/clustershell/commits/master.atom" title="Subscribe to the master commits feed"><img src="images/feed.png" alt="master.atom" /></a></li>
+				    <li><a href="https://github.com/clustershell/clustershell/wiki/Thanks" title="Contributors" >Contributors</a></li>
 				</ul>
 			</div>
 		</div>
-        <div id="lcea">
-            <h3 class="cea"><span>CEA</span><a href="http://www-hpc.cea.fr/index-en.htm" title="CEA"><img src="images/CEA_CS.png" alt="CEA" /></a></h3>
+        <div id="lhpsf">
+            <a href="https://hpsf.io/" title="High Performance Software Foundation"><img src="images/HPSF_Project_Badge_Established.png" alt="HPSF Established Project" /></a>
         </div>
 	</div>
+</div>
+
+<div id="copyright">
+	<p>Copyright Linux Foundation Europe</p>
+	<p>For web site terms of use, trademark policy and other project policies please see <a href="https://linuxfoundation.eu/en/policies">https://linuxfoundation.eu/en/policies</a>.</p>
 </div>
 </body>
 </html>
