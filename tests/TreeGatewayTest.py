@@ -269,6 +269,11 @@ class TreeGatewayTest(TreeGatewayBaseTest):
         self._check_channel_err('<message msgid="24"></message>',
                                 'Unknown message with no type')
 
+    def test_channel_err_empty_type_msg(self):
+        """test gateway channel message with empty type"""
+        self._check_channel_err('<message msgid="24" type=""></message>',
+                                'Unknown message with no type')
+
     def test_err_xml_malformed(self):
         """test gateway malformed xml message"""
         self._check_channel_err('<message type="ABC"</message>',
