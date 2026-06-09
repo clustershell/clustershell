@@ -64,7 +64,8 @@ _clush()
 		-w|-g|--group) target_set=1; skip=any;;
 		# no-arg options
 		--version|-h|--help|-n|--nostdin|-a|--all|-q|--quiet|\
-		-b|-B|-v|--verbose|-d|--debug) ;;
+		-b|-B|--dshbak|-G|--groupbase|-L|-N|-P|--progress|\
+		-r|--regroup|-S|--maxrc|--diff|-p|-v|--verbose|-d|--debug) ;;
 		# get source separately...
 		--groupsource=*) groupsource="${word#*=}";;
 		-s|--groupsource) skip=groupsource;;
@@ -128,7 +129,8 @@ _clush()
 		;;
 	# no-arg options
 	--version|-h|--help|-n|--nostdin|-a|--all|-q|--quiet|\
-	-v|--verbose|-d|--debug|-c|--copy|--rcopy) ;;
+	-b|-B|--dshbak|-G|--groupbase|-L|-N|-P|--progress|\
+	-r|--regroup|-S|--maxrc|--diff|-p|-v|--verbose|-d|--debug|-c|--copy|--rcopy) ;;
 	# any other option: ignore next word (likely argument)
 	-*)
 		return;;
