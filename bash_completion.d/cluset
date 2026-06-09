@@ -25,8 +25,9 @@ _cluset()
 		"") ;;
 		--) return;;
 		# no-arg options
-		--version|-h|--help|-n|--nostdin|-a|--all|-q|--quiet|\
-		-v|--verbose|-d|--debug) ;;
+		--version|-h|--help|-l|--list|-L|--list-all|-r|--regroup|\
+		--list-sources|--groupsources|-d|--debug|-q|--quiet|\
+		-R|--rangeset|-G|--groupbase|--contiguous|-a|--all|--completion) ;;
 		# get source separately...
 		--groupsource=*) groupsource="${word#*=}";;
 		-s|--groupsource) skip=groupsource;;
@@ -63,7 +64,7 @@ _cluset()
 	# no-arg options
 	--version|-h|--help|-l|--list|-L|--list-all|-r|--regroup|\
 	--list-sources|--groupsources|-d|--debug|-q|--quiet|\
-	-R|--rangeset|-G|--groupbase|--contiguous) ;;
+	-R|--rangeset|-G|--groupbase|--contiguous|-a|--all|--completion) ;;
 	# any other option: just ignore.
 	-*)
 		return;;
