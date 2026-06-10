@@ -175,6 +175,11 @@ class TreeWorkerTestBase(unittest.TestCase):
         teh = TEventHandler()
         srcf = make_temp_file(b'Lorem Ipsum', 'test_tree_copy_file_src')
         dest = make_temp_filename('test_tree_copy_file_dest')
+        # unlink pre-created dest: test targets are IP aliases of the same
+        # host, so concurrent untars of the same dest path occasionally
+        # failed with "tar: Cannot open: File exists"; only safe with up to
+        # 2 targets, as 3+ concurrent tars could still race after unlink
+        os.unlink(dest)
         try:
             worker = self.task.copy(srcf.name, dest, nodes=target, handler=teh)
             self.task.run()
@@ -189,7 +194,8 @@ class TreeWorkerTestBase(unittest.TestCase):
             with open(dest, 'r') as destf:
                 self.assertEqual(destf.read(), 'Lorem Ipsum')
         finally:
-            os.remove(dest)
+            if os.path.exists(dest):
+                os.remove(dest)
 
     def _tree_copy_dir(self, target):
         """helper to copy directory"""
