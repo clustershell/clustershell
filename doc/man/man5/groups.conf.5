@@ -135,6 +135,13 @@ external command is avoided automatically.
 .B cache_time
 Number of seconds each upcall result is kept in cache, in memory only.
 Default is 3600 seconds. This is useful only for daemons using nodegroups.
+.TP
+.B envvars
+Optional space-separated list of \fIKEY=VALUE\fP environment variable
+assignments made available to all upcall commands of this group source.
+Shell quoting is supported for values containing spaces (eg.
+\fIMY_VAR="some value"\fP). Variables already set in the process environment
+take precedence over values defined here.
 .UNINDENT
 .sp
 When the library executes a group source external shell command, the current

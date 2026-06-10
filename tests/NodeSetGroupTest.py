@@ -1905,3 +1905,121 @@ class GroupResolverYAMLTest(unittest.TestCase):
             yamlfile.close()
             tdir.cleanup()
 
+
+class GroupSourceEnvVarTest(unittest.TestCase):
+    """Tests for the envvars option in group source upcall configuration"""
+
+    def test_envvars_basic(self):
+        """test envvars sets environment variable for upcall commands"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: MY_TEST_VAR=node1
+            map: echo $MY_TEST_VAR
+            list: echo grp1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('grp1'), ['node1'])
+
+    def test_envvars_multiple(self):
+        """test envvars with multiple space-separated assignments"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: VAR_A=foo1 VAR_B=foo2
+            map: echo $VAR_A $VAR_B
+            list: echo grp1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(sorted(res.group_nodes('grp1')), ['foo1', 'foo2'])
+
+    def test_envvars_quoted_value(self):
+        """test envvars with a shell-quoted value"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: MY_VAR="node[1-3]"
+            map: echo "$MY_VAR"
+            list: echo grp1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('grp1'), ['node[1-3]'])
+
+    def test_envvars_not_present(self):
+        """test that omitting envvars does not affect upcall behaviour"""
+        f = make_temp_file(dedent("""
+            [local]
+            map: echo node1
+            list: echo grp1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('grp1'), ['node1'])
+
+    def test_envvars_no_leak(self):
+        """test envvars variables do not leak between group sources"""
+        f = make_temp_file(dedent("""
+            [Main]
+            default: src1
+
+            [src1]
+            envvars: TEST_LEAK_VAR=source1
+            map: echo $TEST_LEAK_VAR
+            list: echo grp1
+
+            [src2]
+            envvars: TEST_LEAK_VAR=source2
+            map: echo $TEST_LEAK_VAR
+            list: echo grp2
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('grp1', 'src1'), ['source1'])
+        self.assertEqual(res.group_nodes('grp2', 'src2'), ['source2'])
+
+    def test_envvars_with_group_subst(self):
+        """test envvars and $GROUP substitution work together in the same command"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: NODE_PREFIX=foo
+            map: echo ${NODE_PREFIX}$GROUP
+            list: echo 1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('1'), ['foo1'])
+
+    def test_envvars_inherits_path(self):
+        """test that upcall subprocess inherits PATH when envvars is set"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: MY_VAR=ok
+            map: sh -c 'test -n "$PATH" && echo $MY_VAR || echo fail'
+            list: echo grp1
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual(res.group_nodes('grp1'), ['ok'])
+
+    def test_envvars_env_overrides_conf(self):
+        """test that process environment takes precedence over envvars in config"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: CS_TEST_OVERRIDE=conf_value
+            map: echo $CS_TEST_OVERRIDE
+            list: echo grp1
+            """).encode('ascii'))
+        orig = os.environ.pop('CS_TEST_OVERRIDE', None)
+        try:
+            os.environ['CS_TEST_OVERRIDE'] = 'env_value'
+            res = GroupResolverConfig(f.name)
+            self.assertEqual(res.group_nodes('grp1'), ['env_value'])
+        finally:
+            del os.environ['CS_TEST_OVERRIDE']
+            if orig is not None:
+                os.environ['CS_TEST_OVERRIDE'] = orig
+
+    def test_envvars_malformed(self):
+        """test that an envvars token without = raises GroupResolverConfigError"""
+        f = make_temp_file(dedent("""
+            [local]
+            envvars: NOT_VALID
+            map: echo node1
+            list: echo grp1
+            """).encode('ascii'))
+        resolver = GroupResolverConfig(f.name)
+        self.assertRaises(GroupResolverConfigError, resolver.group_nodes, 'grp1')
+

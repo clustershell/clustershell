@@ -168,10 +168,11 @@ class UpcallGroupSource(GroupSource):
 
     def __init__(self, name, map_upcall, all_upcall=None,
                  list_upcall=None, reverse_upcall=None, cfgdir=None,
-                 cache_time=None):
+                 cache_time=None, extra_env=None):
         GroupSource.__init__(self, name)
         self.verbosity = 0 # deprecated
         self.cfgdir = cfgdir
+        self.extra_env = extra_env or {}
         self.logger = logging.getLogger(__name__)
 
         # Supported external upcalls
@@ -209,8 +210,14 @@ class UpcallGroupSource(GroupSource):
         """
         cmdline = Template(self.upcalls[cmdtpl]).safe_substitute(args)
         self.logger.debug("EXEC '%s'", cmdline)
+        env = None
+        if self.extra_env:
+            env = os.environ.copy()
+            for key, val in self.extra_env.items():
+                if key not in os.environ:
+                    env[key] = val
         proc = Popen(cmdline, stdin=DEVNULL, stdout=PIPE, shell=True,
-                     cwd=self.cfgdir, universal_newlines=True)
+                     cwd=self.cfgdir, universal_newlines=True, env=env)
         output = proc.communicate()[0].strip()
         self.logger.debug("READ '%s'", output)
         if proc.returncode != 0:
@@ -674,12 +681,27 @@ class GroupResolverConfig(GroupResolver):
                         if cfg.has_option(section, 'cache_time'):
                             ctime = float(cfg.get(section, 'cache_time',
                                                   raw=True))
+                        extra_env = {}
+                        if cfg.has_option(section, 'envvars'):
+                            envvar_str = cfg.get(section, 'envvars', raw=True)
+                            try:
+                                for token in shlex.split(envvar_str):
+                                    if '=' not in token:
+                                        raise GroupResolverConfigError(
+                                            "envvars: invalid assignment %r"
+                                            " (missing '=')" % token)
+                                    key, val = token.split('=', 1)
+                                    extra_env[key] = val
+                            except ValueError as exc:
+                                raise GroupResolverConfigError(
+                                    "envvars: %s" % exc)
                         # add new group source
                         self.add_source(UpcallGroupSource(srcname, map_upcall,
                                                           all_upcall,
                                                           list_upcall,
                                                           reverse_upcall,
-                                                          cfgdir, ctime))
+                                                          cfgdir, ctime,
+                                                          extra_env or None))
         except (NoSectionError, NoOptionError, ValueError) as exc:
             raise GroupResolverConfigError(str(exc))
 

@@ -437,6 +437,22 @@ one-shot commands like :ref:`clush <clush-tool>` or
 
 The default value of **cache_time** is 3600 seconds.
 
+Environment variables
+"""""""""""""""""""""
+
+The optional parameter **envvars** accepts a space-separated list of
+``KEY=VALUE`` assignments that are added to the environment of all upcall
+commands in that group source section. Shell quoting is supported for values
+that contain spaces::
+
+    [ansible]
+    envvars: ANSIBLE_INVENTORY=/etc/ansible/inventory
+    map: ansible-inventory -i $ANSIBLE_INVENTORY --list ...
+
+If a variable is already set in the calling process environment, that value
+takes precedence over the one defined in **envvars**, allowing per-run
+overrides without editing the configuration file.
+
 Multiple sources section
 """"""""""""""""""""""""
 
