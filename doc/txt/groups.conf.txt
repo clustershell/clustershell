@@ -40,7 +40,7 @@ Main
 *Group_source*
   The *Group_source* section(s) define the configuration for each node group
   source (or namespace). This configuration consists in external commands
-  definition (map, all, list and reverse).
+  definition (map, mapall, all, list and reverse).
 
 Only *Group_source* section(s) are allowed in additional configuration files.
 
@@ -86,7 +86,22 @@ map
   Specify the external shell command used to resolve a group name into a
   nodeset, list of nodes or list of nodeset (separated by space characters or
   by carriage returns). The variable *$GROUP* is replaced before executing the
-  command.
+  command. Either ``map`` or ``mapall`` must be defined.
+mapall
+  Optional external shell command that should return all group-to-nodes
+  mappings for this group source in a single call, one *group: nodes* line
+  per group. Useful when the source can dump all its groups at once (eg.
+  with *sinfo* or *ansible-inventory --list*), as a single call then serves
+  both ``map`` and ``list`` queries from the cache. ``mapall`` output takes
+  precedence over the ``list`` upcall. If ``map`` is also defined, it is
+  used as a fallback for groups missing from the ``mapall`` output (or all
+  groups if caching is disabled); otherwise, missing groups resolve to an
+  empty nodeset.
+  The first ``:`` on each line separates the group name from the nodes, so
+  group names must be single words without ``:``. Duplicate group lines are
+  merged. A malformed output line makes the whole ``mapall`` call fail
+  (nothing is cached and the next query retries), and a failing ``mapall``
+  command does not fall back to ``map``.
 all
   Optional external shell command that should return a nodeset, list of
   nodes or list of nodeset of all nodes for this group source. If not
@@ -95,7 +110,7 @@ all
 list
   Optional external shell command that should return the list of all groups
   for this group source (separated by space characters or by carriage
-  returns).
+  returns). Not used when ``mapall`` is defined, unless caching is disabled.
 reverse
   Optional external shell command used to find the group(s) of a single
   node. The variable $NODE is previously replaced. If this upcall is not

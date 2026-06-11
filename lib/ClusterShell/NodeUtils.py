@@ -164,11 +164,15 @@ class UpcallGroupSource(GroupSource):
 
     Upcall results are cached for a customizable amount of time. This is
     controlled by `cache_time` attribute. Default is 3600 seconds.
+
+    The optional 'mapall' upcall returns all group-to-nodes mappings in a
+    single call and is then used to serve both 'map' and 'list' queries
+    from the cache.
     """
 
-    def __init__(self, name, map_upcall, all_upcall=None,
+    def __init__(self, name, map_upcall=None, all_upcall=None,
                  list_upcall=None, reverse_upcall=None, cfgdir=None,
-                 cache_time=None):
+                 cache_time=None, mapall_upcall=None):
         GroupSource.__init__(self, name)
         self.verbosity = 0 # deprecated
         self.cfgdir = cfgdir
@@ -176,7 +180,8 @@ class UpcallGroupSource(GroupSource):
 
         # Supported external upcalls
         self.upcalls = {}
-        self.upcalls['map'] = map_upcall
+        if map_upcall:
+            self.upcalls['map'] = map_upcall
         if all_upcall:
             self.upcalls['all'] = all_upcall
         if list_upcall:
@@ -184,6 +189,8 @@ class UpcallGroupSource(GroupSource):
         if reverse_upcall:
             self.upcalls['reverse'] = reverse_upcall
             self.has_reverse = True
+        if mapall_upcall:
+            self.upcalls['mapall'] = mapall_upcall
 
         # Cache upcall data
         if cache_time is None:
@@ -227,9 +234,6 @@ class UpcallGroupSource(GroupSource):
         If `key' is missing, it is added to provided `cache'. Each entry in a
         cache is kept only for a limited time equal to self.cache_time .
         """
-        if not self.upcalls.get(upcall):
-            raise GroupSourceNoUpcall(upcall, self)
-
         # Purge expired data from cache
         if key in cache and cache[key][1] < time.time():
             self.logger.debug("PURGE EXPIRED (%d)'%s'", cache[key][1], key)
@@ -237,6 +241,9 @@ class UpcallGroupSource(GroupSource):
 
         # Fetch the data if unknown of just purged
         if key not in cache:
+            if not self.upcalls.get(upcall):
+                raise GroupSourceNoUpcall(upcall, self)
+
             cache_expiry = time.time() + self.cache_time
             # $CFGDIR and $SOURCE always replaced
             args['CFGDIR'] = self.cfgdir
@@ -245,11 +252,52 @@ class UpcallGroupSource(GroupSource):
 
         return cache[key][0]
 
+    def _populate_from_mapall(self):
+        """
+        Run the optional 'mapall' upcall and fill the map and list caches
+        from its output. No-op if 'mapall' is not defined or its last
+        result is still fresh.
+        """
+        if 'mapall' not in self.upcalls:
+            return
+        cached = self._cache.get('mapall')
+        if cached is not None and cached[1] >= time.time():
+            return
+
+        content = self._upcall_cache('mapall', self._cache, 'mapall')
+        cache_expiry = self._cache['mapall'][1]
+        new_map = {}
+        try:
+            for line in content.splitlines():
+                line = line.strip()
+                if not line:
+                    continue
+                group, sep, nodes = line.partition(':')
+                group = group.strip()
+                if not sep or not group or len(group.split()) > 1:
+                    raise GroupSourceQueryFailed(
+                        "mapall: invalid line %r (expected 'group: nodes')"
+                        % line, self)
+                nodes = nodes.strip()
+                if group in new_map:
+                    # union duplicate group lines, like multi-line map output
+                    nodes = ','.join(n for n in (new_map[group][0], nodes) if n)
+                new_map[group] = (nodes, cache_expiry)
+        except GroupSourceQueryFailed:
+            del self._cache['mapall'] # do not keep unusable output
+            raise
+        self._cache['map'] = new_map
+        self._cache['list'] = (' '.join(new_map), cache_expiry)
+
     def resolv_map(self, group):
         """
         Get nodes from group 'group', using the cached value if
         available.
         """
+        self._populate_from_mapall()
+        if 'map' not in self.upcalls and 'mapall' in self.upcalls:
+            # no map fallback: unknown group resolves to an empty node set
+            return self._cache['map'].get(group, ('',))[0]
         return self._upcall_cache('map', self._cache['map'], group, GROUP=group)
 
     def resolv_list(self):
@@ -257,6 +305,10 @@ class UpcallGroupSource(GroupSource):
         Return a list of all group names for this group source, using
         the cached value if available.
         """
+        self._populate_from_mapall()
+        if 'list' not in self.upcalls and 'mapall' in self.upcalls:
+            # no list fallback: read mapall result directly (cache_time 0)
+            return self._cache['list'][0]
         return self._upcall_cache('list', self._cache, 'list')
 
     def resolv_all(self):
@@ -661,9 +713,20 @@ class GroupResolverConfig(GroupResolver):
                 # Support grouped sections: section1,section2,section3
                 for srcname in section.split(','):
                     if srcname != self.SECTION_MAIN:
-                        # only map is a mandatory upcall
-                        map_upcall = cfg.get(section, 'map', raw=True)
+                        # map or mapall is a mandatory upcall
+                        if not cfg.has_option(section, 'map') and \
+                           not cfg.has_option(section, 'mapall'):
+                            raise GroupResolverConfigError(
+                                "No option 'map' or 'mapall' in section: %r"
+                                % section)
+
+                        map_upcall = mapall_upcall = None
                         all_upcall = list_upcall = reverse_upcall = ctime = None
+                        if cfg.has_option(section, 'map'):
+                            map_upcall = cfg.get(section, 'map', raw=True)
+                        if cfg.has_option(section, 'mapall'):
+                            mapall_upcall = cfg.get(section, 'mapall',
+                                                    raw=True)
                         if cfg.has_option(section, 'all'):
                             all_upcall = cfg.get(section, 'all', raw=True)
                         if cfg.has_option(section, 'list'):
@@ -675,11 +738,10 @@ class GroupResolverConfig(GroupResolver):
                             ctime = float(cfg.get(section, 'cache_time',
                                                   raw=True))
                         # add new group source
-                        self.add_source(UpcallGroupSource(srcname, map_upcall,
-                                                          all_upcall,
-                                                          list_upcall,
-                                                          reverse_upcall,
-                                                          cfgdir, ctime))
+                        self.add_source(UpcallGroupSource(
+                            srcname, map_upcall, all_upcall, list_upcall,
+                            reverse_upcall, cfgdir, ctime,
+                            mapall_upcall=mapall_upcall))
         except (NoSectionError, NoOptionError, ValueError) as exc:
             raise GroupResolverConfigError(str(exc))
 

@@ -1366,6 +1366,9 @@ class StaticGroupSource(UpcallGroupSource):
     """
 
     def __init__(self, name, data):
+        map_upcall = None
+        if 'map' in data:
+            map_upcall = 'fake_map'
         all_upcall = None
         if 'all' in data:
             all_upcall = 'fake_all'
@@ -1375,8 +1378,12 @@ class StaticGroupSource(UpcallGroupSource):
         reverse_upcall = None
         if 'reverse' in data:
             reverse_upcall = 'fake_reverse'
-        UpcallGroupSource.__init__(self, name, "fake_map", all_upcall,
-                                   list_upcall, reverse_upcall)
+        mapall_upcall = None
+        if 'mapall' in data:
+            mapall_upcall = 'fake_mapall'
+        UpcallGroupSource.__init__(self, name, map_upcall, all_upcall,
+                                   list_upcall, reverse_upcall,
+                                   mapall_upcall=mapall_upcall)
         self._data = data
 
     def _upcall_read(self, cmdtpl, args=dict()):
@@ -1460,6 +1467,242 @@ class GroupSourceCacheTest(unittest.TestCase):
         dummy = res.group_nodes('dummy')  # init res to access res._sources
         self.assertEqual(res._sources['local'].cache_time, 0.2)
         self.assertEqual("foo1", str(NodeSet("@local:foo", resolver=res)))
+
+
+class GroupSourceMapallTest(unittest.TestCase):
+    """Tests for the optional 'mapall' bulk upcall (issue #612)."""
+
+    def test_mapall_basic(self):
+        """test UpcallGroupSource with only a mapall upcall"""
+        source = StaticGroupSource('m', {
+            'mapall': "a: foo1\nb: foo2\nc: foo[3-4]\n",
+        })
+        res = GroupResolver(source)
+        self.assertEqual("foo1", str(NodeSet("@a", resolver=res)))
+        self.assertEqual("foo2", str(NodeSet("@b", resolver=res)))
+        self.assertEqual("foo[3-4]", str(NodeSet("@c", resolver=res)))
+        # list is also derived from mapall output
+        self.assertEqual(sorted(res.grouplist()), ['a', 'b', 'c'])
+        # unknown group resolves to empty (no map upcall available)
+        self.assertEqual("", str(NodeSet("@nope", resolver=res)))
+
+    def test_mapall_with_map_fallback(self):
+        """test mapall + map: missing group falls back to per-group map"""
+        source = StaticGroupSource('mm', {
+            'mapall': "a: foo1\n",
+            'map': {'b': 'foo2'},
+        })
+        res = GroupResolver(source)
+        self.assertEqual("foo1", str(NodeSet("@a", resolver=res)))
+        # 'b' not in mapall output: falls back to map upcall
+        self.assertEqual("foo2", str(NodeSet("@b", resolver=res)))
+        # 'b' is now cached via map
+        self.assertIn('a', source._cache['map'])
+        self.assertIn('b', source._cache['map'])
+
+    def test_mapall_overrides_list(self):
+        """test that mapall output takes precedence over the list upcall"""
+        source = StaticGroupSource('ml', {
+            'mapall': "a: n1\n",
+            'list': "explicit_only",  # disagrees with mapall on purpose
+        })
+        source.cache_time = 0.2
+        res = GroupResolver(source)
+        self.assertEqual(['a'], list(res.grouplist()))
+        time.sleep(0.25)
+        # precedence holds across a cache refresh cycle
+        self.assertEqual(['a'], list(res.grouplist()))
+
+    def test_mapall_expiry(self):
+        """test that mapall is re-run when cache_time expires"""
+        source = StaticGroupSource('me', {
+            'mapall': "a: v1\nold: x1\n",
+        })
+        source.cache_time = 0.2
+        res = GroupResolver(source)
+        self.assertEqual("v1", str(NodeSet("@a", resolver=res)))
+        self.assertEqual("x1", str(NodeSet("@old", resolver=res)))
+        # change underlying mapall output, sleep past expiry
+        source._data['mapall'] = "a: v2\nb: v3\n"
+        time.sleep(0.25)
+        self.assertEqual("v2", str(NodeSet("@a", resolver=res)))
+        self.assertEqual("v3", str(NodeSet("@b", resolver=res)))
+        # map cache was swapped, not merged: removed group is gone
+        self.assertEqual("", str(NodeSet("@old", resolver=res)))
+        # list cache is also refreshed from mapall output
+        self.assertEqual(sorted(res.grouplist()), ['a', 'b'])
+
+    def test_mapall_clear_cache(self):
+        """test that clear_cache() triggers a new mapall call"""
+        source = StaticGroupSource('mc', {
+            'mapall': "a: v1\n",
+        })
+        res = GroupResolver(source)
+        self.assertEqual("v1", str(NodeSet("@a", resolver=res)))
+        source._data['mapall'] = "a: v2\n"
+        self.assertEqual("v1", str(NodeSet("@a", resolver=res)))
+        source.clear_cache()
+        self.assertEqual("v2", str(NodeSet("@a", resolver=res)))
+
+    def test_mapall_cache_time_zero(self):
+        """test mapall-only source with cache_time set to 0 (no caching)"""
+        source = StaticGroupSource('m0', {
+            'mapall': "a: n1\n",
+        })
+        source.cache_time = 0
+        res = GroupResolver(source)
+        self.assertEqual(['a'], list(res.grouplist()))
+        self.assertEqual("n1", str(NodeSet("@a", resolver=res)))
+        # no caching: updated mapall output is seen right away
+        source._data['mapall'] = "a: n2\nb: n3\n"
+        self.assertEqual("n2", str(NodeSet("@a", resolver=res)))
+        self.assertEqual(sorted(res.grouplist()), ['a', 'b'])
+
+    def test_mapall_empty_group(self):
+        """test mapall line with no nodes resolves to empty"""
+        source = StaticGroupSource('mz', {
+            'mapall': "empty:\nfilled: n1\n",
+        })
+        res = GroupResolver(source)
+        self.assertEqual("", str(NodeSet("@empty", resolver=res)))
+        self.assertEqual("n1", str(NodeSet("@filled", resolver=res)))
+
+    def test_mapall_empty_output(self):
+        """test mapall upcall returning no groups at all"""
+        source = StaticGroupSource('mo', {
+            'mapall': "",
+        })
+        res = GroupResolver(source)
+        self.assertEqual([], list(res.grouplist()))
+        self.assertEqual("", str(NodeSet("@nope", resolver=res)))
+
+    def test_mapall_blank_lines_ignored(self):
+        """test mapall tolerates blank lines and surrounding whitespace"""
+        source = StaticGroupSource('mb', {
+            'mapall': "\n  a: n1 \n\n  b: n2\n\n",
+        })
+        res = GroupResolver(source)
+        self.assertEqual("n1", str(NodeSet("@a", resolver=res)))
+        self.assertEqual("n2", str(NodeSet("@b", resolver=res)))
+
+    def test_mapall_parse_error(self):
+        """test mapall line without ':' raises GroupSourceQueryFailed"""
+        source = StaticGroupSource('mp', {
+            'mapall': "a: n1\nbroken_no_colon\n",
+        })
+        res = GroupResolver(source)
+        self.assertRaises(GroupSourceQueryFailed, res.group_nodes, 'a')
+
+    def test_mapall_empty_group_name(self):
+        """test mapall line with empty group name raises GroupSourceQueryFailed"""
+        source = StaticGroupSource('mpe', {
+            'mapall': ": n1\n",
+        })
+        res = GroupResolver(source)
+        self.assertRaises(GroupSourceQueryFailed, res.group_nodes, 'a')
+
+    def test_mapall_whitespace_group_name(self):
+        """test mapall line with multi-word group name raises GroupSourceQueryFailed"""
+        source = StaticGroupSource('mpw', {
+            'mapall': "bad group: n1\n",
+        })
+        res = GroupResolver(source)
+        self.assertRaises(GroupSourceQueryFailed, res.group_nodes, 'a')
+
+    def test_mapall_duplicate_groups_union(self):
+        """test that duplicate mapall group lines are unioned"""
+        source = StaticGroupSource('mu', {
+            'mapall': "a: n1\nb: n3\na: n2\na:\n",
+        })
+        res = GroupResolver(source)
+        self.assertEqual("n[1-2]", str(NodeSet("@a", resolver=res)))
+        self.assertEqual("n3", str(NodeSet("@b", resolver=res)))
+        self.assertEqual(sorted(res.grouplist()), ['a', 'b'])
+
+    def test_mapall_all_nodes_single_call(self):
+        """test @* fallback (list+map) is served by a single mapall call"""
+        source = StaticGroupSource('msc', {
+            'mapall': "a: n[1-2]\nb: n[3-4]\n",
+        })
+        calls = []
+        orig_upcall_read = source._upcall_read
+        def counting_upcall_read(cmdtpl, args=dict()):
+            calls.append(cmdtpl)
+            return orig_upcall_read(cmdtpl, args)
+        source._upcall_read = counting_upcall_read
+        res = GroupResolver(source)
+        self.assertEqual("n[1-4]", str(NodeSet("@*", resolver=res)))
+        self.assertEqual(calls, ['mapall'])
+
+    def test_mapall_parse_error_retry(self):
+        """test that mapall output is not cached on parse error"""
+        source = StaticGroupSource('mr', {
+            'mapall': "broken_no_colon\n",
+        })
+        res = GroupResolver(source)
+        self.assertRaises(GroupSourceQueryFailed, res.group_nodes, 'a')
+        # fixed output must be picked up by the next call, not cached error
+        source._data['mapall'] = "a: n1\n"
+        self.assertEqual("n1", str(NodeSet("@a", resolver=res)))
+
+    def test_mapall_all_still_required(self):
+        """test that 'all' is not derived from mapall"""
+        source = StaticGroupSource('ma', {
+            'mapall': "a: n1\nb: n2\n",
+        })
+        res = GroupResolver(source)
+        self.assertRaises(GroupSourceNoUpcall, res.all_nodes)
+
+    def test_no_upcalls_lazy_error(self):
+        """test UpcallGroupSource without any upcall fails on resolution"""
+        source = UpcallGroupSource('bad')
+        self.assertRaises(GroupSourceNoUpcall, source.resolv_map, 'x')
+        self.assertRaises(GroupSourceNoUpcall, source.resolv_list)
+
+    def test_config_mapall_only(self):
+        """test config with mapall upcall and no map"""
+        f = make_temp_file(dedent("""
+            [Main]
+            default: bulk
+
+            [bulk]
+            mapall: printf 'g1: n[1-3]\\ng2: n[4-5]\\n'
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertEqual("n[1-3]", str(NodeSet("@g1", resolver=res)))
+        self.assertEqual("n[4-5]", str(NodeSet("@g2", resolver=res)))
+        self.assertEqual(sorted(res.grouplist()), ['g1', 'g2'])
+
+    def test_config_mapall_query_failed(self):
+        """test config with failing mapall upcall (not cached, retried)"""
+        data = make_temp_file(b"")
+        f = make_temp_file(dedent("""
+            [Main]
+            default: bulk
+
+            [bulk]
+            mapall: test -s %s && cat %s
+            """ % (data.name, data.name)).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        # empty data file: mapall upcall exits non-zero
+        self.assertRaises(GroupSourceQueryFailed, res.grouplist)
+        # upcall failure is not cached: fix data file and retry
+        data.write(b"a: n1\n")
+        data.flush()
+        self.assertEqual(['a'], list(res.grouplist()))
+        self.assertEqual("n1", str(NodeSet("@a", resolver=res)))
+
+    def test_config_map_or_mapall_required(self):
+        """test config without map or mapall raises GroupResolverConfigError"""
+        f = make_temp_file(dedent("""
+            [Main]
+            default: nope
+
+            [nope]
+            list: echo foo
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        self.assertRaises(GroupResolverConfigError, res.grouplist)
 
 
 class GroupSourceTest(unittest.TestCase):

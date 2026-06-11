@@ -286,7 +286,7 @@ The *groups.conf* files are parsed with Python's `ConfigParser`_:
     Duplicate directory paths are ignored.
 
 * Each following section (`genders`, `slurm`) defines a  group source. The
-  map, all, list and reverse upcalls are explained below in
+  map, mapall, all, list and reverse upcalls are explained below in
   :ref:`group-sources-upcalls`.
 
 .. _group-file-based:
@@ -388,11 +388,26 @@ Group source upcalls
 """"""""""""""""""""
 
 Each node group source is defined by a section name (*source* name) and up to
-four upcalls:
+five upcalls:
 
 * **map**: External shell command used to resolve a group name into a node
   set, list of nodes or list of node sets (separated by space characters or by
-  carriage returns). The variable *$GROUP* is replaced before executing the command.
+  carriage returns). The variable *$GROUP* is replaced before executing the
+  command. Either **map** or **mapall** must be defined.
+* **mapall**: Optional external shell command that should return all
+  group-to-nodes mappings for this group source in a single call, one
+  ``group: nodes`` line per group. Useful when the source can dump all its
+  groups at once (eg. with ``sinfo`` or ``ansible-inventory --list``), as a
+  single call then serves both **map** and **list** queries from the cache.
+  **mapall** output takes precedence over the **list** upcall. If **map** is
+  also defined, it is used as a fallback for groups missing from the
+  **mapall** output (or all groups if caching is disabled); otherwise,
+  missing groups resolve to an empty node set.
+  The first ``:`` on each line separates the group name from the nodes, so
+  group names must be single words without ``:``. Duplicate group lines are
+  merged. A malformed output line makes the whole **mapall** call fail
+  (nothing is cached and the next query retries), and a failing **mapall**
+  command does not fall back to **map**.
 * **all**: Optional external shell command that should return a node set, list
   of nodes or list of node sets of all nodes for this group source. If not
   specified, the library will try to resolve all nodes by using the **list**
@@ -401,9 +416,11 @@ four upcalls:
   by the special group name ``@*`` (or ``@source:*``).
 * **list**: Optional external shell command that should return the list of all
   groups for this group source (separated by space characters or by carriage
-  returns). If this upcall is not specified, ClusterShell won't be able to
-  list any available groups (eg. with ``nodeset -l``), so it is highly
-  recommended to set it.
+  returns). This upcall is not used when **mapall** is defined (unless
+  caching is disabled), as the group list is then derived from its output.
+  If neither **list** nor **mapall** is specified, ClusterShell won't be
+  able to list any available groups (eg. with ``nodeset -l``), so it is
+  highly recommended to set one of them.
 * **reverse**: Optional external shell command used to find the group(s) of a
   single node. The variable *$NODE* is previously replaced. If this external
   call is not specified, the reverse operation is computed in memory by the
@@ -411,6 +428,14 @@ four upcalls:
   the number of nodes to reverse is greater than the number of available
   groups, the reverse external command is avoided automatically to reduce
   resolution time.
+
+.. highlight:: ini
+
+Example of a Slurm partition group source defined with a single **mapall**
+upcall, instead of separate **map** and **list** upcalls::
+
+    [slurmpart,sp]
+    mapall: sinfo -h -o "%R: %N"
 
 In addition to context-dependent *$GROUP* and *$NODE* variables described
 above, the two following variables are always available and also replaced

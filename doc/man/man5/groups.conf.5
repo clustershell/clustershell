@@ -65,7 +65,7 @@ Global configuration options. There should be only one Main section.
 .B \fIGroup_source\fP
 The \fIGroup_source\fP section(s) define the configuration for each node group
 source (or namespace). This configuration consists in external commands
-definition (map, all, list and reverse).
+definition (map, mapall, all, list and reverse).
 .UNINDENT
 .sp
 Only \fIGroup_source\fP section(s) are allowed in additional configuration files.
@@ -111,7 +111,23 @@ Configuration parameters of each group source section are described below.
 Specify the external shell command used to resolve a group name into a
 nodeset, list of nodes or list of nodeset (separated by space characters or
 by carriage returns). The variable \fI$GROUP\fP is replaced before executing the
-command.
+command. Either \fBmap\fP or \fBmapall\fP must be defined.
+.TP
+.B mapall
+Optional external shell command that should return all group\-to\-nodes
+mappings for this group source in a single call, one \fIgroup: nodes\fP line
+per group. Useful when the source can dump all its groups at once (eg.
+with \fIsinfo\fP or \fIansible\-inventory \-\-list\fP), as a single call then serves
+both \fBmap\fP and \fBlist\fP queries from the cache. \fBmapall\fP output takes
+precedence over the \fBlist\fP upcall. If \fBmap\fP is also defined, it is
+used as a fallback for groups missing from the \fBmapall\fP output (or all
+groups if caching is disabled); otherwise, missing groups resolve to an
+empty nodeset.
+The first \fB:\fP on each line separates the group name from the nodes, so
+group names must be single words without \fB:\fP\&. Duplicate group lines are
+merged. A malformed output line makes the whole \fBmapall\fP call fail
+(nothing is cached and the next query retries), and a failing \fBmapall\fP
+command does not fall back to \fBmap\fP\&.
 .TP
 .B all
 Optional external shell command that should return a nodeset, list of
@@ -122,7 +138,7 @@ external command in the same group source followed by \fBmap\fP for each group.
 .B list
 Optional external shell command that should return the list of all groups
 for this group source (separated by space characters or by carriage
-returns).
+returns). Not used when \fBmapall\fP is defined, unless caching is disabled.
 .TP
 .B reverse
 Optional external shell command used to find the group(s) of a single
