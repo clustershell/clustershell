@@ -154,7 +154,7 @@ class TreeWorkerResponder(EventHandler):
         updated one of its route path.
         """
         self.logger.debug("TreeWorkerResponder: ev_routing arg=%s", arg)
-        self.gwchan.send(RoutingMessage(**arg, srcid=self.srcwkr))
+        self.gwchan.send(RoutingMessage(srcid=self.srcwkr, **arg))
 
 
 class GatewayChannel(Channel):
