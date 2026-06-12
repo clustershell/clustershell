@@ -685,7 +685,10 @@ The section **xcat** defines a group source based on xCAT static node groups::
 
     # list the nodes in the specified node group
     map: lsdef -s -t node $GROUP | cut -d' ' -f1
-    
+
+    # get all group-to-nodes mappings in one call
+    mapall: lsdef -t group -i members | awk '/^Object name: /{g=$3; next} sub(/^ *members=/,""){if (g != "" && g !~ /:/) print g": "$0}'
+
     # list all the nodes defined in the xCAT tables
     all: lsdef -s -t node | cut -d' ' -f1
     
