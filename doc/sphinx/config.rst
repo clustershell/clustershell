@@ -525,6 +525,7 @@ partition's nodes::
 
     [slurmpart,sp]
     map: sinfo -h -o "%N" -p $GROUP
+    mapall: sinfo -h -o "%R:%N"
     all: sinfo -h -o "%N"
     list: sinfo -h -o "%R"
     reverse: sinfo -h -N -o "%R" -n $NODE
@@ -546,6 +547,7 @@ the nodes currently in that reservation::
 
     [slurmresv,sr]
     map: scontrol -o show reservation $GROUP | grep -Po 'Nodes=\K[^ ]+'
+    mapall: scontrol -o show reservation | sed -n 's/^ReservationName=\([^ :]*\) .* Nodes=\([^ ]*\).*/\1:\2/p'
     all: scontrol -o show reservation | grep -Po 'Nodes=\K[^ ]+'
     list: scontrol -o show reservation | grep -Po 'ReservationName=\K[^ ]+'
     cache_time: 60
@@ -567,6 +569,7 @@ nodes currently in that state::
 
     [slurmstate,st]
     map: sinfo -h -o "%N" -t $GROUP
+    mapall: sinfo -h -o "%T:%N" | sed 's/[*~#!%$@+^-]*:/:/'
     all: sinfo -h -o "%N"
     list: sinfo -h -o "%T" | tr -d '*~#$@+'
     reverse: sinfo -h -N -o "%T" -n $NODE | tr -d '*~#$@+'
@@ -593,6 +596,7 @@ allocated for this job::
 
     [slurmjob,sj]
     map: squeue -h -j $GROUP -o "%N"
+    mapall: squeue -h -o "%i:%N" -t R
     list: squeue -h -o "%i" -t R
     reverse: squeue -h -w $NODE -o "%i"
     cache_time: 60
@@ -603,6 +607,7 @@ allocated for jobs belonging to the username::
 
     [slurmuser,su]
     map: squeue -h -u $GROUP -o "%N" -t R
+    mapall: squeue -h -o "%u:%N" -t R
     list: squeue -h -o "%u" -t R
     reverse: squeue -h -w $NODE -o "%i"
     cache_time: 60
@@ -628,6 +633,7 @@ are running jobs under this account::
 
     [slurmaccount,sa]
     map: squeue -h -A $GROUP -o "%N" -t R
+    mapall: squeue -h -o "%a:%N" -t R
     list: squeue -h -o "%a" -t R
     reverse: squeue -h -w $NODE -o "%a" 2>/dev/null || true
     cache_time: 60
@@ -647,6 +653,7 @@ jobs under this qos::
 
     [slurmqos,sq]
     map: squeue -h -q $GROUP -o "%N" -t R
+    mapall: squeue -h -o "%q:%N" -t R
     list: squeue -h -o "%q" -t R
     reverse: squeue -h -w $NODE -o "%q" 2>/dev/null || true
     cache_time: 60
