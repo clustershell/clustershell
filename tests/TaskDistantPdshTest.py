@@ -12,11 +12,13 @@ from ClusterShell.Engine.EPoll import EngineEPoll
 from ClusterShell.Task import *
 
 from .TaskDistantPdshMixin import TaskDistantPdshMixin
+from .TLib import which
 
 ENGINE_SELECT_ID = EngineSelect.identifier
 ENGINE_POLL_ID = EnginePoll.identifier
 ENGINE_EPOLL_ID = EngineEPoll.identifier
 
+@unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
 class TaskDistantPdshEngineSelectTest(TaskDistantPdshMixin, unittest.TestCase):
 
     def setUp(self):
@@ -31,6 +33,7 @@ class TaskDistantPdshEngineSelectTest(TaskDistantPdshMixin, unittest.TestCase):
         DEFAULTS.engine = self.engine_id_save
         task_terminate()
 
+@unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
 class TaskDistantPdshEnginePollTest(TaskDistantPdshMixin, unittest.TestCase):
 
     def setUp(self):
@@ -49,6 +52,7 @@ class TaskDistantPdshEnginePollTest(TaskDistantPdshMixin, unittest.TestCase):
 # removed once we only support Py2.6+)
 if sys.version_info >= (2, 6, 0):
 
+    @unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
     class TaskDistantPdshEngineEPollTest(TaskDistantPdshMixin, unittest.TestCase):
 
         def setUp(self):

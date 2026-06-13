@@ -18,11 +18,20 @@ except ImportError:
 from io import BytesIO, StringIO
 
 
-__all__ = ['HOSTNAME', 'load_cfg', 'make_temp_filename', 'make_temp_file',
-           'make_temp_dir', 'CLI_main']
+__all__ = ['HOSTNAME', 'which', 'load_cfg', 'make_temp_filename',
+           'make_temp_file', 'make_temp_dir', 'CLI_main']
 
 # Get machine short hostname
 HOSTNAME = socket.gethostname().split('.', 1)[0]
+
+# Replace with shutil.which() once we only support Py3.3+
+def which(program):
+    """Return path of first executable program found in PATH, or None."""
+    for path in os.environ.get('PATH', '').split(os.pathsep):
+        fpath = os.path.join(path, program)
+        if os.path.isfile(fpath) and os.access(fpath, os.X_OK):
+            return fpath
+    return None
 
 class TBytesIO(BytesIO):
     """Standard stream of in memory bytes for testing purpose."""

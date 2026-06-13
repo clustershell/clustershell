@@ -541,6 +541,7 @@ class CLIClushTest_A(unittest.TestCase):
                        "echo foo >&2; echo bar; sleep 2"], None,
                       s.encode(), 0, re.compile(err_rxs.encode()))
 
+    @unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
     def test_032_worker_pdsh(self):
         """test clush (worker pdsh)"""
         # Warning: same as: echo -n | clush --worker=pdsh when launched from
@@ -552,6 +553,7 @@ class CLIClushTest_A(unittest.TestCase):
         self.assertRaises(EngineClientNotSupportedError, self._clush_t,
                           ["-w", HOSTNAME, "-R", "pdsh", "cat"], b"bar", None, 1)
 
+    @unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
     def test_033_worker_pdsh_tty(self):
         """test clush (worker pdsh) [tty]"""
         setattr(ClusterShell.CLI.Clush, '_f_user_interaction', True)

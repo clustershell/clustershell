@@ -6,7 +6,7 @@
 import resource
 import unittest
 
-from .TLib import HOSTNAME
+from .TLib import HOSTNAME, which
 from ClusterShell.Task import *
 from ClusterShell.Worker.Pdsh import WorkerPdsh
 
@@ -67,10 +67,12 @@ class TaskRLimitsTest(unittest.TestCase):
         # run task
         task.resume()
 
+    @unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
     def testRemotePdsh(self):
         """test resource usage with WorkerPdsh(stderr=False)"""
         self._testRemotePdsh(False)
 
+    @unittest.skipIf(which('pdsh') is None, "pdsh is not installed")
     def testRemotePdshStderr(self):
         """test resource usage with WorkerPdsh(stderr=True)"""
         self._testRemotePdsh(True)
