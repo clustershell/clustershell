@@ -24,6 +24,7 @@ roles:
     io: '@racks:rack2,example2'
     compute: '@racks:rack[3-4]'
     gpu: '@racks:rack4'
+    # '*' is the all-nodes wildcard, e.g. @roles:* or clush -a, not 'all'
     # the 'all' special group is only needed if we don't want all nodes from
     # this group source included, here we don't want example0 for clush -a
     all: '@io,@compute'

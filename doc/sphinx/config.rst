@@ -359,6 +359,20 @@ Here is an example of **/etc/clustershell/groups.d/cluster.yaml**::
 If you wish to define an empty group (with no nodes), you can either use an
 empty string ``''`` or any valid YAML null value (``null`` or ``~``).
 
+.. note::
+
+   To select **every node** of a group source, use the ``*`` wildcard, for
+   example ``@lustre:*`` or, for the default source, ``@*``. This is the
+   *all nodes* notation also used by ``clush -a`` and ``nodeset -a``, as
+   described in :ref:`group-sources-upcalls`. The word ``all`` is not special:
+   it is an ordinary group name, so ``@lustre:*`` and ``@lustre:all`` are
+   **not** equivalent. ``@lustre:all`` resolves the group literally named
+   ``all``, which yields an empty node set here because ``lustre`` defines no
+   such group. By default *all nodes* is the union of every group in the
+   source. Defining an optional ``all`` group, like the ``all:`` key shown
+   above in the ``roles`` source, overrides that union for both ``-a`` and
+   ``@source:*``.
+
 .. highlight:: console
 
 Testing the syntax of your group file can be quickly performed through the
