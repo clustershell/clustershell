@@ -165,6 +165,10 @@ class OptionParser(optparse.OptionParser):
         optgrp.add_option("-r", "--regroup", action="store_true",
                           dest="regroup", default=False,
                           help="fold nodeset using node groups")
+        optgrp.add_option("--axis", action="store", dest="axis",
+                          metavar="RANGESET",
+                          help="fold along these axis only "
+                               "(axis 1..n for nD nodeset)")
 
         if separator_option:
             optgrp.add_option("-S", "--separator", action="store",

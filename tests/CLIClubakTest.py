@@ -9,6 +9,7 @@ import unittest
 
 from .TLib import *
 from ClusterShell.CLI.Clubak import main
+from ClusterShell.Defaults import DEFAULTS
 
 from ClusterShell.NodeSet import set_std_group_resolver, \
                                  set_std_group_resolver_config
@@ -179,6 +180,37 @@ class CLIClubakTest(unittest.TestCase):
         # GH #400
         self._clubak_t(["--diff"], b"host1: \xc3\xa5\nhost2: a\nhost2: b\nhost1: b\n",
                        b"--- host1\n+++ host2\n@@ -1,2 +1,2 @@\n- \xc3\xa5\n+ a\n  b\n")
+
+    def test_010_axis(self):
+        """test clubak --axis (fold gathered output along selected axis)"""
+        # 2D node keys with identical content gather into a single block
+        # whose header folds along the requested axis.
+        nd = b"foo1-1: bar\nfoo1-2: bar\nfoo2-1: bar\nfoo2-2: bar\n"
+        fold_axis_save = DEFAULTS.fold_axis
+        try:
+            DEFAULTS.fold_axis = ()
+            # no --axis: fold along all axis (default)
+            self._clubak_t(["-b"], nd,
+                           b"---------------\nfoo[1-2]-[1-2] (4)\n"
+                           b"---------------\n bar\n")
+            # --axis=1: fold first dimension only
+            self._clubak_t(["--axis=1", "-b"], nd,
+                           b"---------------\nfoo[1-2]-1,foo[1-2]-2 (4)\n"
+                           b"---------------\n bar\n")
+            # --axis=2: fold second dimension only
+            self._clubak_t(["--axis=2", "-b"], nd,
+                           b"---------------\nfoo1-[1-2],foo2-[1-2] (4)\n"
+                           b"---------------\n bar\n")
+            # --axis=-1: fold last dimension only
+            self._clubak_t(["--axis=-1", "-b"], nd,
+                           b"---------------\nfoo1-[1-2],foo2-[1-2] (4)\n"
+                           b"---------------\n bar\n")
+            # interpret-keys=never: raw key, --axis is a no-op
+            self._clubak_t(["--axis=1", "--interpret-keys=never", "-b"],
+                           b"foo1-1: bar\n",
+                           b"---------------\nfoo1-1\n---------------\n bar\n")
+        finally:
+            DEFAULTS.fold_axis = fold_axis_save
 
 
 class CLIClubakTestGroupsConf(CLIClubakTest):

@@ -22,6 +22,18 @@
 CLI utility functions
 """
 
+from ClusterShell.RangeSet import RangeSet
+
+
+def parse_fold_axis(axis):
+    """Translate a 1-indexed command-line --axis value to a 0-indexed
+    fold_axis suitable for NodeSet.fold_axis or Defaults.fold_axis."""
+    if not axis.startswith('-'):
+        # axis are 1-indexed on the command line (0 ignored)
+        return tuple(x - 1 for x in RangeSet(axis).intiter() if x > 0)
+    # negative axis index (only single number supported)
+    return [int(axis)]
+
 
 (KIBI, MEBI, GIBI, TEBI) = (1024.0, 1024.0 ** 2, 1024.0 ** 3, 1024.0 ** 4)
 

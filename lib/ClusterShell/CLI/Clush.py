@@ -57,7 +57,8 @@ from ClusterShell.CLI.Display import Display, sys_stdin
 from ClusterShell.CLI.Display import VERB_QUIET, VERB_STD, VERB_VERB, VERB_DEBUG
 from ClusterShell.CLI.OptionParser import OptionParser
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
-from ClusterShell.CLI.Utils import bufnodeset_cmpkey, human_bi_bytes_unit
+from ClusterShell.CLI.Utils import bufnodeset_cmpkey, human_bi_bytes_unit, \
+    parse_fold_axis
 
 from ClusterShell.Event import EventHandler
 from ClusterShell.MsgTree import MsgTree
@@ -943,6 +944,10 @@ def main():
 
     # Specified engine prevails over default engine
     DEFAULTS.engine = options.engine
+
+    # User-specified nD-nodeset fold axis for output display (#356)
+    if options.axis:
+        DEFAULTS.fold_axis = parse_fold_axis(options.axis)
 
     # Do we have nodes group?
     task = task_self()

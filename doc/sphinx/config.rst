@@ -771,6 +771,11 @@ folding is only computed on the last axis (seems to work best with Slurm)::
 That way, node sets computed by ClusterShell tools can be passed to Slurm
 without error.
 
+Since this only affects how node sets are folded for display, you may also fold
+along a single axis per invocation with the ``--axis`` option of
+:ref:`nodeset <nodeset-tool>`, :ref:`cluset <cluset-tool>` and
+:ref:`clush <clush-axis>`, instead of setting ``fold_axis`` here.
+
 .. _ConfigParser: http://docs.python.org/library/configparser.html
 .. _nodeset: https://xcat-docs.readthedocs.io/en/stable/guides/admin-guides/references/man8/nodeset.8.html
 .. _sys.prefix: https://docs.python.org/3/library/sys.html#sys.prefix

@@ -52,6 +52,9 @@ node groups in results, use ``-r, --regroup``::
 
     $ clubak -br < file
 
+Likewise, the ``--axis`` option folds the displayed node set along selected
+*nD* axis only, as described in :ref:`clush-axis`.
+
 Like *clush*, *clubak* uses the :mod:`ClusterShell.MsgTree` module of the ClusterShell
 library.
 

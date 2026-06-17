@@ -23,6 +23,7 @@ from subprocess import Popen, PIPE
 from .TLib import *
 import ClusterShell.CLI.Clush
 from ClusterShell.CLI.Clush import main
+from ClusterShell.Defaults import DEFAULTS
 from ClusterShell.NodeSet import NodeSet
 from ClusterShell.NodeSet import set_std_group_resolver, \
                                  set_std_group_resolver_config
@@ -789,6 +790,38 @@ class CLIClushTest_A(unittest.TestCase):
         self.assertGreater(spread, 0.5,
                            "lines arrived together (spread=%.3fs); "
                            "clush stdout looks block-buffered" % spread)
+
+    def test_046_axis(self):
+        """test clush --axis (fold gathered output along selected axis)"""
+        # 2D nodeset gathered locally via exec worker; all hosts emit the
+        # same output, so the folded header reflects the requested axis.
+        base = ["-R", "exec", "-w", "foo[1-2]-[1-2]", "-b", "echo test"]
+        fold_axis_save = DEFAULTS.fold_axis
+        try:
+            DEFAULTS.fold_axis = ()
+            # no --axis: fold along all axis (default)
+            self._clush_t(base, b"",
+                          b"---------------\nfoo[1-2]-[1-2] (4)\n"
+                          b"---------------\ntest\n")
+            # --axis=1: fold first dimension only
+            self._clush_t(["--axis=1"] + base, b"",
+                          b"---------------\nfoo[1-2]-1,foo[1-2]-2 (4)\n"
+                          b"---------------\ntest\n")
+            # --axis=2: fold second dimension only
+            self._clush_t(["--axis=2"] + base, b"",
+                          b"---------------\nfoo1-[1-2],foo2-[1-2] (4)\n"
+                          b"---------------\ntest\n")
+            # --axis=-1: fold last dimension only
+            self._clush_t(["--axis=-1"] + base, b"",
+                          b"---------------\nfoo1-[1-2],foo2-[1-2] (4)\n"
+                          b"---------------\ntest\n")
+            # 1D nodeset still folds normally with --axis=1
+            self._clush_t(["--axis=1", "-R", "exec", "-w", "node[1-4]", "-b",
+                           "echo test"], b"",
+                          b"---------------\nnode[1-4] (4)\n"
+                          b"---------------\ntest\n")
+        finally:
+            DEFAULTS.fold_axis = fold_axis_save
 
 
 class CLIClushTest_B_StdinFailure(unittest.TestCase):

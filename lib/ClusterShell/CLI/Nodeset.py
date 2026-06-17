@@ -35,6 +35,7 @@ import sys
 
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.OptionParser import OptionParser
+from ClusterShell.CLI.Utils import parse_fold_axis
 
 from ClusterShell.NodeSet import NodeSet, RangeSet, std_group_resolver
 from ClusterShell.NodeSet import grouplist, set_std_group_resolver_config
@@ -299,13 +300,7 @@ def nodeset():
 
     # user-specified nD-nodeset fold axis
     if options.axis:
-        if not options.axis.startswith('-'):
-            # axis are 1-indexed in nodeset CLI (0 ignored)
-            xset.fold_axis = tuple(x-1 for x in \
-                                   RangeSet(options.axis).intiter() if x > 0)
-        else:
-            # negative axis index (only single number supported)
-            xset.fold_axis = [int(options.axis)]
+        xset.fold_axis = parse_fold_axis(options.axis)
 
     if options.pick and options.pick < len(xset):
         # convert to string for sample as nsiter() is slower for big

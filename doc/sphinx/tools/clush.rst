@@ -393,6 +393,32 @@ even if all nodes have successfully run the command. When you hit CTRL-C with
     2.6.18-164.11.1.el5
     Keyboard interrupt (node1 did not complete).
 
+.. _clush-axis:
+
+Choosing fold axis (nD)
+"""""""""""""""""""""""
+
+When displaying gathered results for multidimensional node sets, *clush* folds
+the nodeset header along all *nD* axis by default. As other cluster tools
+barely support nD nodeset syntax, the ``--axis`` option lets you fold the
+displayed nodeset along one (or a few) axis only. ``--axis`` value is a set of
+integers from 1 to n representing selected nD axis, in the form of a number or
+a rangeset (eg. ``1``, ``1-2``, ``1,3``); a single negative number folds along
+the last axis whatever the number of dimensions used. Because a node set may
+have several different dimensions, axis indices are silently truncated to fall
+in the allowed range. For example, to gather output but fold the header along
+the first axis only::
+
+    $ clush -b --axis=1 -w dc[1-2]n[1-2] uname -r
+    ---------------
+    dc[1-2]n1,dc[1-2]n2 (4)
+    ---------------
+    5.14.0-503.el9.x86_64
+
+This is the per-invocation equivalent of the ``fold_axis`` library default;
+see also the :ref:`defaults-config-slurm` of Library Defaults for changing it
+permanently.
+
 .. _clush-diff:
 
 Performing *diff* of cluster-wide outputs

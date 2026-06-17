@@ -29,6 +29,7 @@ from __future__ import print_function
 
 import sys
 
+from ClusterShell.Defaults import DEFAULTS
 from ClusterShell.MsgTree import MsgTree, MODE_DEFER, MODE_TRACE
 from ClusterShell.NodeSet import NodeSet, NodeSetParseError, std_group_resolver
 from ClusterShell.NodeSet import set_std_group_resolver_config
@@ -37,7 +38,7 @@ from ClusterShell.CLI.Display import Display, THREE_CHOICES
 from ClusterShell.CLI.Display import sys_stdin
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.OptionParser import OptionParser
-from ClusterShell.CLI.Utils import nodeset_cmpkey
+from ClusterShell.CLI.Utils import nodeset_cmpkey, parse_fold_axis
 
 
 def display_tree(tree, disp, out):
@@ -101,6 +102,10 @@ def clubak():
     options = parser.parse_args()[0]
 
     set_std_group_resolver_config(options.groupsconf)
+
+    # User-specified nD-nodeset fold axis for output display (#356)
+    if options.axis:
+        DEFAULTS.fold_axis = parse_fold_axis(options.axis)
 
     if options.interpret_keys == THREE_CHOICES[-1]: # auto?
         enable_nodeset_key = None # AUTO
