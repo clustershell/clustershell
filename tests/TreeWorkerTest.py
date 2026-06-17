@@ -54,6 +54,7 @@ class TEventHandlerBase(EventHandler):
         self.ev_close_cnt = 0
         self.ev_timedout_cnt = 0
         self.last_read = None
+        self.read_snames = set()
 
 
 class TEventHandlerLegacy(TEventHandlerBase):
@@ -95,6 +96,7 @@ class TEventHandler(TEventHandlerBase):
     def ev_read(self, worker, node, sname, msg):
         self.ev_read_cnt += 1
         self.last_read = msg
+        self.read_snames.add(sname)
 
     def ev_written(self, worker, node, sname, size):
         self.ev_written_cnt += 1
@@ -194,6 +196,32 @@ class TreeWorkerTestBase(unittest.TestCase):
             with open(dest, 'r') as destf:
                 self.assertEqual(destf.read(), 'Lorem Ipsum')
         finally:
+            if os.path.exists(dest):
+                os.remove(dest)
+
+    def _tree_copy_file_error(self, target):
+        """helper to copy file to a bad dest (untar/scp error -> stderr)"""
+        teh = TEventHandler()
+        srcf = make_temp_file(b'Lorem Ipsum', 'test_tree_copy_file_src')
+        # parent dir is removed so the remote scp/untar fails on every target
+        destdir = make_temp_dir()
+        dest = join(destdir.name, 'destfile')
+        destdir.cleanup()
+        try:
+            worker = self.task.copy(srcf.name, dest, nodes=target, handler=teh)
+            self.task.run()
+            target_cnt = len(NodeSet(target))
+            self.assertEqual(teh.ev_start_cnt, 1)
+            self.assertEqual(teh.ev_pickup_cnt, target_cnt)
+            self.assertEqual(teh.ev_hup_cnt, target_cnt)
+            self.assertEqual(teh.ev_timedout_cnt, 0)
+            self.assertEqual(teh.ev_close_cnt, 1)
+            # the copy failed: error output must be attributed to stderr only,
+            # not merged into stdout (GH #622)
+            self.assertTrue(teh.ev_read_cnt > 0)
+            self.assertEqual(teh.read_snames, set([worker.SNAME_STDERR]))
+        finally:
+            srcf.close()
             if os.path.exists(dest):
                 os.remove(dest)
 
@@ -534,6 +562,18 @@ class TreeWorkerTest(TreeWorkerTestBase):
     def test_tree_copy_file_gateway(self):
         """test tree copy: file, gateway is target"""
         self._tree_copy_file(NODE_GATEWAY)
+
+    def test_tree_copy_file_error_direct(self):
+        """test tree copy: bad dest, direct target -> stderr (#622)"""
+        self._tree_copy_file_error(NODE_DIRECT)
+
+    def test_tree_copy_file_error_distant(self):
+        """test tree copy: bad dest, distant target via gateway -> stderr (#622)"""
+        self._tree_copy_file_error(NODE_DISTANT)
+
+    def test_tree_copy_file_error_distant2(self):
+        """test tree copy: bad dest, distant 2 targets via gateway -> stderr (#622)"""
+        self._tree_copy_file_error(NODE_DISTANT2)
 
     def test_tree_copy_dir_distant(self):
         """test tree copy: directory, distant target"""

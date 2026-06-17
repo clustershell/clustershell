@@ -184,9 +184,9 @@ class TreeWorker(DistantWorker):
             raise ValueError("missing command or source parameter in "
                              "TreeWorker constructor")
 
-        # rcopy is enforcing separated stderr to handle tar error messages
-        # because stdout is used for data transfer
-        if self.source and self.reverse:
+        # copy/rcopy: keep internal tar/scp errors on a separate stderr stream
+        # instead of merging them into stdout (which also carries rcopy data)
+        if self.source:
             self.stderr = True
 
         # build gateway invocation command

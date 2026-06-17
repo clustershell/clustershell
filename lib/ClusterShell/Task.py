@@ -643,6 +643,10 @@ class Task(object):
     def copy(self, source, dest, nodes, **kwargs):
         """
         Copy local file to distant nodes.
+
+        Note: in tree mode, copy and rcopy always separate stderr so that
+        the internal tar/scp error messages are not merged into stdout; an
+        explicit stderr=False is then ignored.
         """
         assert nodes != None, "local copy not supported"
 
