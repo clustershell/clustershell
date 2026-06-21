@@ -634,7 +634,8 @@ class Engine(object):
             (stream.new_events, stream.events, client, stream.name))
 
         if not client.registered:
-            LOGGER.debug("set_events: client %s not registered", self)
+            LOGGER.debug("set_events: client %s[%s] not registered",
+                         client, stream.name)
             return
 
         chgbits = stream.new_events ^ stream.events
