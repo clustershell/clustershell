@@ -479,6 +479,23 @@ class NodeSetBase(object):
         else:
             raise TypeError("NodeSet indices must be integers")
 
+    def index(self, other):
+        """
+        Return the zero-based index of a single node in the nodeset, the
+        inverse of __getitem__().
+
+        :raises ValueError: node is not contained in the nodeset
+        """
+        self._binary_sanity_check(other)
+        if len(other) != 1:
+            raise ValueError("index() argument must be a single node")
+
+        node = next(iter(other))
+        for idx, name in enumerate(self):
+            if name == node:
+                return idx
+        raise ValueError("%s not in nodeset" % node)
+
     def _add_new(self, pat, rangeset):
         """Add nodes from a (pat, rangeset) tuple.
         Predicate: pattern does not exist in current set. RangeSet object is
@@ -1466,6 +1483,15 @@ class NodeSet(NodeSetBase):
         """
         nodeset = self._parser.parse(other, self._autostep)
         return NodeSetBase.issuperset(self, nodeset)
+
+    def index(self, node):
+        """
+        Return the zero-based index of node in the nodeset.
+
+        :raises ValueError: node is not contained in the nodeset
+        """
+        nodeset = self._parser.parse(node, self._autostep)
+        return NodeSetBase.index(self, nodeset)
 
     def __getitem__(self, index):
         """

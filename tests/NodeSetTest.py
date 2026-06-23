@@ -1087,6 +1087,44 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(nodeset[34], "prune353")
         self.assertRaises(IndexError, nodeset.__getitem__, 35)
 
+    def test_index(self):
+        """test NodeSet.index()"""
+        nodeset = NodeSet("yeti[30,34-51,59-60]")
+        # index() is the inverse of __getitem__()
+        for i in range(len(nodeset)):
+            self.assertEqual(nodeset.index(nodeset[i]), i)
+        self.assertEqual(nodeset.index("yeti30"), 0)
+        self.assertEqual(nodeset.index("yeti34"), 1)
+        self.assertEqual(nodeset.index("yeti60"), 20)
+        # not found raises ValueError, like list.index()
+        self.assertRaises(ValueError, nodeset.index, "yeti31")
+        self.assertRaises(ValueError, nodeset.index, "foo1")
+        # nodes without range
+        nodeset = NodeSet("abc,cde[3-9,11],fgh")
+        self.assertEqual(nodeset.index("abc"), 0)
+        self.assertEqual(nodeset.index("cde3"), 1)
+        self.assertEqual(nodeset.index("cde11"), 8)
+        self.assertEqual(nodeset.index("fgh"), 9)
+        # padding is significant
+        nodeset = NodeSet("prune[003-034,349-353/2]")
+        self.assertEqual(nodeset.index("prune003"), 0)
+        self.assertEqual(nodeset.index("prune034"), 31)
+        self.assertRaises(ValueError, nodeset.index, "prune3")
+        self.assertRaises(ValueError, nodeset.index, "prune350")
+        # multiple patterns keep alphabetic then numeric order
+        nodeset = NodeSet("stone[1-9],water[10-12],wood[1-9]")
+        self.assertEqual(nodeset.index("stone1"), 0)
+        self.assertEqual(nodeset.index("stone9"), 8)
+        self.assertEqual(nodeset.index("water10"), 9)
+        self.assertEqual(nodeset.index("wood1"), 12)
+        # single node
+        self.assertEqual(NodeSet("cluster115").index("cluster115"), 0)
+        # empty nodeset
+        self.assertRaises(ValueError, NodeSet().index, "node1")
+        # the argument must be a single node
+        self.assertRaises(ValueError, nodeset.index, "stone[1-2]")
+        self.assertRaises(ValueError, nodeset.index, "")
+
     def test_getslice(self):
         """test NodeSet getitem() with slice"""
         nodeset = NodeSet("yeti[30,34-51,59-60]")
@@ -2053,6 +2091,28 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(str(nodeset), "da[30,34-51,59-60]p[1-2],da[70-77]p2")
         #self.assertEqual(nodeset[0], "da30p2") # OLD FOLD
         self.assertEqual(nodeset[0], "da30p1") # NEW FOLD
+
+    def test_nd_index(self):
+        """test NodeSet.index() with nD"""
+        nodeset = NodeSet("da[30,34-51,59-60]p[1-2]")
+        # index() is the inverse of __getitem__()
+        for i in range(len(nodeset)):
+            self.assertEqual(nodeset.index(nodeset[i]), i)
+        self.assertEqual(nodeset.index("da30p1"), 0)
+        self.assertEqual(nodeset.index("da30p2"), 1)
+        self.assertEqual(nodeset.index("da34p1"), 2)
+        self.assertEqual(nodeset.index("da60p2"), 41)
+        self.assertRaises(ValueError, nodeset.index, "da30p3")
+        self.assertRaises(ValueError, nodeset.index, "da31p1")
+        # folded nD set spanning several veclist blocks
+        nodeset = NodeSet("da[30,34-51,59-60]p[1-2],da[70-77]p2")
+        self.assertEqual(len(nodeset), 42+8)
+        for i in range(len(nodeset)):
+            self.assertEqual(nodeset.index(nodeset[i]), i)
+        # mixed 1D and nD patterns
+        nodeset = NodeSet("x[1-2]y[1-3],z[1-4]")
+        for i in range(len(nodeset)):
+            self.assertEqual(nodeset.index(nodeset[i]), i)
 
     def test_nd_split(self):
         nodeset = NodeSet("foo[1-3]bar[2-4]")
