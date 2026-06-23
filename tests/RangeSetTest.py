@@ -455,6 +455,43 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(r2[33], '106')
         self.assertRaises(TypeError, r2.__getitem__, "foo")
 
+    def testIndex(self):
+        """test RangeSet.index()"""
+        r1 = RangeSet("1-100,102,105-242,800")
+        # index() is the reverse of __getitem__()
+        for i in range(len(r1)):
+            self.assertEqual(r1.index(r1[i]), i)
+        # accept both string and integer arguments
+        self.assertEqual(r1.index('1'), 0)
+        self.assertEqual(r1.index(1), 0)
+        self.assertEqual(r1.index('102'), 100)
+        self.assertEqual(r1.index(105), 101)
+        self.assertEqual(r1.index('800'), 239)
+        self.assertEqual(r1.index(u'800'), 239)
+        # missing element raises ValueError (like list.index())
+        self.assertRaises(ValueError, r1.index, '101')
+        self.assertRaises(ValueError, r1.index, 101)
+        self.assertRaises(ValueError, r1.index, 900)
+
+        # zero-padding is significant
+        r2 = RangeSet("08-10")
+        self.assertEqual(r2.index('08'), 0)
+        self.assertEqual(r2.index('09'), 1)
+        self.assertEqual(r2.index('10'), 2)
+        self.assertEqual(r2.index(u'08'), 0)
+        self.assertRaises(ValueError, r2.index, '9')
+        self.assertRaises(ValueError, r2.index, 9)
+
+        # optional start/end search window (list.index() semantics)
+        r3 = RangeSet("0-9")
+        self.assertEqual(r3.index("5", 3), 5)
+        self.assertEqual(r3.index("5", 5), 5)
+        self.assertRaises(ValueError, r3.index, "5", 6)
+        self.assertEqual(r3.index("8", -3), 8)
+        self.assertEqual(r3.index("5", 0, 6), 5)
+        self.assertRaises(ValueError, r3.index, "5", 0, 5)
+        self.assertRaises(ValueError, r3.index, "9", 0, -1)
+
     def testGetSlice(self):
         """test RangeSet.__getitem__() with slice"""
         r0 = RangeSet("1-12")

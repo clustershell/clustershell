@@ -1087,6 +1087,66 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(nodeset[34], "prune353")
         self.assertRaises(IndexError, nodeset.__getitem__, 35)
 
+    def test_index(self):
+        """test NodeSet.index()"""
+        nodeset = NodeSet("yeti[30,34-51,59-60]")
+        # index() is the reverse of __getitem__() for every node
+        for i, node in enumerate(nodeset):
+            self.assertEqual(nodeset.index(node), i)
+        self.assertEqual(nodeset.index("yeti30"), 0)
+        self.assertEqual(nodeset.index(u"yeti30"), 0)
+        self.assertEqual(nodeset.index("yeti34"), 1)
+        self.assertEqual(nodeset.index("yeti51"), 18)
+        self.assertEqual(nodeset.index("yeti60"), 20)
+        # missing node raises ValueError (like list.index())
+        self.assertRaises(ValueError, nodeset.index, "yeti31")
+        self.assertRaises(ValueError, nodeset.index, "foo1")
+        # a single node is required
+        self.assertRaises(ValueError, nodeset.index, "yeti[30,34]")
+
+        # several patterns, including unindexed nodes
+        nodeset = NodeSet("abc,cde[3-9,11],fgh")
+        for i, node in enumerate(nodeset):
+            self.assertEqual(nodeset.index(node), i)
+        self.assertEqual(nodeset.index("abc"), 0)
+        self.assertEqual(nodeset.index("cde3"), 1)
+        self.assertEqual(nodeset.index("cde11"), 8)
+        self.assertEqual(nodeset.index("fgh"), 9)
+
+        # zero-padding must match exactly
+        nodeset = NodeSet("prune[003-034,349-353/2]")
+        self.assertEqual(nodeset.index("prune003"), 0)
+        self.assertEqual(nodeset.index(u"prune003"), 0)
+        self.assertEqual(nodeset.index("prune034"), 31)
+        self.assertEqual(nodeset.index("prune349"), 32)
+        self.assertEqual(nodeset.index("prune353"), 34)
+        self.assertRaises(ValueError, nodeset.index, "prune3")
+        self.assertRaises(ValueError, nodeset.index, "prune35")
+
+        # optional start/end search window (list.index() semantics)
+        nodeset = NodeSet("node[0-9]")
+        self.assertEqual(nodeset.index("node5", 3), 5)
+        self.assertEqual(nodeset.index("node5", 5), 5)
+        self.assertRaises(ValueError, nodeset.index, "node5", 6)
+        self.assertEqual(nodeset.index("node8", -3), 8)
+        self.assertEqual(nodeset.index("node5", 0, 6), 5)
+        self.assertRaises(ValueError, nodeset.index, "node5", 0, 5)
+        self.assertRaises(ValueError, nodeset.index, "node9", 0, -1)
+
+    def test_nd_index(self):
+        """test NodeSet.index() (nD)"""
+        nodeset = NodeSet("da[30,34-51,59-60]p[1-2]")
+        for i, node in enumerate(nodeset):
+            self.assertEqual(nodeset.index(node), i)
+        self.assertEqual(nodeset.index("da30p1"), 0)
+        self.assertEqual(nodeset.index("da30p2"), 1)
+        self.assertEqual(nodeset.index("da34p1"), 2)
+        self.assertRaises(ValueError, nodeset.index, "da30p3")
+
+        nodeset = NodeSet("da[30,34-51,59-60]p[1-2],da[70-77]p2")
+        for i, node in enumerate(nodeset):
+            self.assertEqual(nodeset.index(node), i)
+
     def test_getslice(self):
         """test NodeSet getitem() with slice"""
         nodeset = NodeSet("yeti[30,34-51,59-60]")

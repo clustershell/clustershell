@@ -417,6 +417,34 @@ class RangeSetNDTest(unittest.TestCase):
         self.assertRaises(IndexError, rn1.__getitem__, -13)
         self.assertRaises(TypeError, rn1.__getitem__, "foo")
 
+    def test_index(self):
+        rn1 = RangeSetND([["10", "10-13"], ["0-3", "1-2"]])
+        # index() is the reverse of __getitem__()
+        for i in range(len(rn1)):
+            self.assertEqual(rn1.index(rn1[i]), i)
+        self.assertEqual(rn1.index(('0', '1')), 0)
+        self.assertEqual(rn1.index(('3', '2')), 7)
+        self.assertEqual(rn1.index(('10', '13')), 11)
+        self.assertEqual(rn1.index((u'10', u'13')), 11)
+        # integer vectors are also accepted
+        self.assertEqual(rn1.index((0, 1)), 0)
+        self.assertEqual(rn1.index((10, 13)), 11)
+        # missing vector raises ValueError (like list.index())
+        self.assertRaises(ValueError, rn1.index, ('10', '14'))
+        self.assertRaises(ValueError, rn1.index, ('5', '1'))
+        # a bare string or scalar is not a valid index vector: it must not be
+        # silently split into per-character/per-digit indexes
+        self.assertRaises(TypeError, rn1.index, "01")
+        self.assertRaises(TypeError, rn1.index, "0")
+        self.assertRaises(TypeError, rn1.index, 0)
+
+        # optional start/end search window (list.index() semantics)
+        self.assertEqual(rn1.index(('3', '2'), 7), 7)
+        self.assertRaises(ValueError, rn1.index, ('3', '2'), 8)
+        self.assertEqual(rn1.index(('10', '13'), -1), 11)
+        self.assertEqual(rn1.index(('10', '13'), 0, 12), 11)
+        self.assertRaises(ValueError, rn1.index, ('10', '13'), 0, -1)
+
     def test_getitem_slices(self):
         rn1 = RangeSetND([["10", "10-13"], ["0-3", "1-2"]])
         # slices
