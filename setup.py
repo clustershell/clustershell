@@ -76,6 +76,7 @@ setup(name='ClusterShell',
       keywords=['clustershell', 'clush', 'clubak', 'nodeset'],
       description='ClusterShell library and tools',
       long_description=open('doc/txt/clustershell.rst').read(),
+      long_description_content_type='text/x-rst',
       classifiers=[
           "Development Status :: 5 - Production/Stable",
           "Environment :: Console",
