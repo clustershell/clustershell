@@ -42,6 +42,12 @@ class RangeSetNDTest(unittest.TestCase):
         self.assertEqual(str(rn), "11-60; 2\n0-10; 1-2\n")
         self.assertEqual(len(rn), 72)
 
+    def test_unicode(self):
+        # Python 2 compat: unicode string vectors parse like byte strings
+        self._testRS([[u"0-10"], [u"40-60"]], "0-10,40-60\n", 32)
+        self.assertEqual(RangeSetND([[u"0-3", u"4-10"]]),
+                         RangeSetND([["0-3", "4-10"]]))
+
     def test_nonzero(self):
         r0 = RangeSetND()
         if r0:

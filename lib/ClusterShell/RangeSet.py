@@ -129,7 +129,7 @@ class RangeSet(set):
         """
         set.__init__(self)
 
-        if pattern is not None and not isinstance(pattern, str):
+        if pattern is not None and not isinstance(pattern, basestring):
             pattern = ",".join("%s" % i for i in pattern)
 
         if isinstance(pattern, RangeSet):
@@ -138,7 +138,7 @@ class RangeSet(set):
             self._autostep = None
         self.autostep = autostep #: autostep threshold public instance attribute
 
-        if isinstance(pattern, str):
+        if isinstance(pattern, basestring):
             self._parse(pattern)
 
     def _parse(self, pattern):
@@ -809,7 +809,7 @@ class RangeSet(set):
 
     def update(self, iterable):
         """Add all indexes (as strings) from an iterable (such as a list)."""
-        assert not isinstance(iterable, str)
+        assert not isinstance(iterable, basestring)
         set.update(self, iterable)
 
     def updaten(self, rangesets):
@@ -839,7 +839,7 @@ class RangeSet(set):
         :param element: the element to add (integer or string)
         :param pad: zero padding length (integer); ignored if element is string
         """
-        if isinstance(element, str):
+        if isinstance(element, basestring):
             set.add(self, element)
         else:
             set.add(self, "%0*d" % (pad, int(element)))
@@ -856,7 +856,7 @@ class RangeSet(set):
         :raises KeyError: element is not contained in RangeSet
         :raises ValueError: element is not castable to integer
         """
-        if isinstance(element, str):
+        if isinstance(element, basestring):
             set.remove(self, element)
         else:
             set.remove(self, "%0*d" % (pad, int(element)))
@@ -874,7 +874,7 @@ class RangeSet(set):
         :param pad: zero padding length (integer); ignored if element is string
         """
         try:
-            if isinstance(element, str):
+            if isinstance(element, basestring):
                 set.discard(self, element)
             else:
                 set.discard(self, "%0*d" % (pad, int(element)))
@@ -934,7 +934,7 @@ class RangeSetND(object):
             return
         for rgvec in args:
             if rgvec:
-                if isinstance(rgvec[0], str):
+                if isinstance(rgvec[0], basestring):
                     self._veclist.append([RangeSet(rg, autostep=autostep) \
                                           for rg in rgvec])
                 elif isinstance(rgvec[0], RangeSet):

@@ -29,6 +29,12 @@ class RangeSetTest(unittest.TestCase):
         self._testRS("1-3,4-6", "1-6", 6)
         self._testRS("1-3,4-6,7-10", "1-10", 10)
 
+    def testParseUnicode(self):
+        """test RangeSet unicode pattern parsing"""
+        # Python 2 compat
+        self.assertEqual(RangeSet(u"01-10"), RangeSet("01-10"))
+        self.assertEqual(len(RangeSet(u"0001-0100")), 100)
+
     def testStepSimple(self):
         """test RangeSet simple step usages"""
         self._testRS("0-4/2", "0-4/2", 3)
@@ -644,6 +650,11 @@ class RangeSetTest(unittest.TestCase):
         r1.padding = 4  # 1.8-1.9 compat: adjust padding of the whole set
         self.assertEqual(len(r1), 241)
         self.assertEqual(str(r1), "0001-0100,0102,0105-0242,0800-0801")
+        # unicode element accepted like byte str (Python 2 compat)
+        ra, rb = RangeSet("1-10"), RangeSet("1-10")
+        ra.add(u"011")
+        rb.add("011")
+        self.assertEqual(ra, rb)
 
     def testUpdate(self):
         """test RangeSet.update()"""
@@ -695,6 +706,13 @@ class RangeSetTest(unittest.TestCase):
         self.assertRaises(KeyError, r1.remove, "101")
         r1.remove("106")
         self.assertRaises(KeyError, r1.remove, "foo")
+        # unicode element accepted like byte str (Python 2 compat)
+        ra, rb = RangeSet("1-10"), RangeSet("1-10")
+        ra.remove(u"5")
+        rb.remove("5")
+        self.assertEqual(ra, rb)
+        self.assertRaises(KeyError, ra.remove, u"5")
+        self.assertRaises(KeyError, ra.remove, u"foo")
 
     def testDiscard(self):
         """test RangeSet.discard()"""
@@ -708,6 +726,13 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(len(r1), 238)
         self.assertEqual(str(r1), "1-99,102,106-242,800")
         r1.discard("foo")
+        # unicode element accepted like byte str (Python 2 compat)
+        ra, rb = RangeSet("1-10"), RangeSet("1-10")
+        ra.discard(u"5")
+        rb.discard("5")
+        ra.discard(u"bar")  # non-numeric unicode: no exception
+        self.assertEqual(ra, rb)
+        self.assertEqual(str(ra), "1-4,6-10")
 
     def testClear(self):
         """test RangeSet.clear()"""
