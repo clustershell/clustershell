@@ -573,6 +573,106 @@ class CLINodesetTest(CLINodesetTestBase):
             self._nodeset_t(["--count", "--pick", str(num), "-R", "1-100"],
                             None, str(num).encode() + b'\n')
 
+    def test_026_index(self):
+        """test nodeset --index"""
+        self._nodeset_t(["--index", "node0", "node[0-9]"], None, b"0\n")
+        self._nodeset_t(["--index", "node5", "node[0-9]"], None, b"5\n")
+        self._nodeset_t(["--index", "node9", "node[0-9]"], None, b"9\n")
+        # --index is the reverse of -I/--slice
+        self._nodeset_t(["--index", "bar34", "bar[34-68,89-90]"], None, b"0\n")
+        self._nodeset_t(["--index", "bar42", "bar[34-68,89-90]"], None, b"8\n")
+        self._nodeset_t(["--index", "bar89", "bar[34-68,89-90]"], None, b"35\n")
+        self._nodeset_t(["--index", "bar90", "bar[34-68,89-90]"], None, b"36\n")
+        # several patterns: sorted alphabetically by name, not input order
+        self._nodeset_t(["--index", "bmc10", "node[1-4],bmc[10-20]"], None,
+                        b"0\n")
+        self._nodeset_t(["--index", "node1", "node[1-4],bmc[10-20]"], None,
+                        b"11\n")
+        # nD nodeset
+        self._nodeset_t(["--index", "da34p1", "da[30,34-51]p[1-2]"], None,
+                        b"2\n")
+        # zero-padding is significant
+        self._nodeset_t(["--index", "prune003", "prune[003-034]"], None, b"0\n")
+        self._nodeset_t(["--index", "prune034", "prune[003-034]"], None,
+                        b"31\n")
+        self._nodeset_t(["--index", "prune3", "prune[003-034]"], None, b"", 1,
+                        b"ERROR: 'prune3' is not in nodeset\n")
+        # read the set from stdin
+        self._nodeset_t(["--index", "node5"], "node[0-9]\n", b"5\n")
+        # honor -O output format
+        self._nodeset_t(["--index", "node5", "-O", "idx=%s", "node[0-9]"],
+                        None, b"idx=5\n")
+        # set operations are applied before the lookup
+        self._nodeset_t(["--index", "node5", "node[0-9]", "-x", "node0"], None,
+                        b"4\n")
+        # -I/--slice is a transform like any other: --index sees the sliced set
+        self._nodeset_t(["--index", "node3", "-I", "0-4", "node[0-9]"], None,
+                        b"3\n")
+        self._nodeset_t(["--index", "node7", "-I", "0-4", "node[0-9]"], None,
+                        b"", 1, b"ERROR: 'node7' is not in nodeset\n")
+        # missing node: ValueError -> exit 1 (like list.index())
+        self._nodeset_t(["--index", "node42", "node[0-9]"], None, b"", 1,
+                        b"ERROR: 'node42' is not in nodeset\n")
+        # a single node is required
+        self._nodeset_t(["--index", "node[1-2]", "node[0-9]"], None, b"", 1,
+                        b"ERROR: index() argument must be a single node\n")
+        # --index is a command: incompatible with other commands and --pick
+        self._nodeset_t(["--index", "node5", "-c", "node[0-9]"], None, None, 2,
+                        b"Multiple commands not allowed.\n")
+        self._nodeset_t(["--index", "node5", "--pick", "2", "node[0-9]"], None,
+                        None, 2, b"--index cannot be combined with --pick\n")
+
+    def test_027_index_rangeset(self):
+        """test nodeset --index (rangeset mode)"""
+        self._nodeset_t(["-R", "--index", "5", "0-9"], None, b"5\n")
+        self._nodeset_t(["-R", "--index", "200", "0-100,200"], None, b"101\n")
+        self._nodeset_t(["-R", "--index", "18", "1,5,18-31"], None, b"2\n")
+        # zero-padding is significant
+        self._nodeset_t(["-R", "--index", "09", "08-10"], None, b"1\n")
+        # read the set from stdin
+        self._nodeset_t(["-R", "--index", "5"], "0-9\n", b"5\n")
+        # missing element: ValueError -> exit 1
+        self._nodeset_t(["-R", "--index", "50", "0-9"], None, b"", 1,
+                        b"ERROR: 50 is not in RangeSet\n")
+
+    def test_028_index_nd(self):
+        """test nodeset --index (multidimensional ordering)"""
+        # nD flattening is a cartesian product where the LAST dimension
+        # varies fastest; --index round-trips with -e/expand for every node.
+        # 2-D: da[1-2]p[1-3] expands da1p1 da1p2 da1p3 da2p1 da2p2 da2p3
+        nd2 = "da[1-2]p[1-3]"
+        for idx, node in enumerate(["da1p1", "da1p2", "da1p3",
+                                    "da2p1", "da2p2", "da2p3"]):
+            self._nodeset_t(["--index", node, nd2], None,
+                            ("%d\n" % idx).encode())
+        # 3-D: a[1-2]b[1-2]c[1-2] expands a1b1c1 a1b1c2 a1b2c1 a1b2c2
+        #      a2b1c1 a2b1c2 a2b2c1 a2b2c2 (c least significant, a most)
+        nd3 = "a[1-2]b[1-2]c[1-2]"
+        for idx, node in enumerate(["a1b1c1", "a1b1c2", "a1b2c1", "a1b2c2",
+                                    "a2b1c1", "a2b1c2", "a2b2c1", "a2b2c2"]):
+            self._nodeset_t(["--index", node, nd3], None,
+                            ("%d\n" % idx).encode())
+        # rightmost axis varies fastest: p cycles fully before da increments
+        self._nodeset_t(["--index", "da1p1", nd2], None, b"0\n")
+        self._nodeset_t(["--index", "da1p3", nd2], None, b"2\n")
+        self._nodeset_t(["--index", "da2p1", nd2], None, b"3\n")
+        self._nodeset_t(["--index", "da2p3", nd2], None, b"5\n")
+        # last axis is least significant (a1b1c1=0 .. a2b2c2=7)
+        self._nodeset_t(["--index", "a1b1c2", nd3], None, b"1\n")
+        self._nodeset_t(["--index", "a1b2c1", nd3], None, b"2\n")
+        self._nodeset_t(["--index", "a2b1c1", nd3], None, b"4\n")
+        self._nodeset_t(["--index", "a2b2c2", nd3], None, b"7\n")
+        # several vectors in one pattern: larger vector emitted first.
+        # da[1-2]p[1-3] (6 elts) precedes da[5-6]p[1-2] (4 elts)
+        nd2v = "da[1-2]p[1-3],da[5-6]p[1-2]"
+        for idx, node in enumerate(["da1p1", "da1p2", "da1p3",
+                                    "da2p1", "da2p2", "da2p3",
+                                    "da5p1", "da5p2", "da6p1", "da6p2"]):
+            self._nodeset_t(["--index", node, nd2v], None,
+                            ("%d\n" % idx).encode())
+        self._nodeset_t(["--index", "da5p1", nd2v], None, b"6\n")
+        self._nodeset_t(["--index", "da6p2", nd2v], None, b"9\n")
+
 
 class CLINodesetGroupResolverTest1(CLINodesetTestBase):
     """Unit test class for testing CLI/Nodeset.py with custom Group Resolver"""

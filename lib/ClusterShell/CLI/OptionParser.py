@@ -279,6 +279,9 @@ class OptionParser(optparse.OptionParser):
                           dest="regroup", default=False,
                           help="fold nodes using node groups (see -s "
                                "GROUPSOURCE)")
+        optgrp.add_option("--index", action="store", dest="index",
+                          metavar="NODE", type="string",
+                          help="output the index of NODE in the nodeset")
         optgrp.add_option("--list-sources", "--groupsources",
                           action="store_true", dest="groupsources",
                           default=False,

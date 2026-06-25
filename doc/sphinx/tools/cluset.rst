@@ -601,6 +601,66 @@ the resulting node set (or from the resulting range set with ``-R``)::
     node[11,13]
 
 
+.. _cluset-index:
+
+Finding the index of a node
+"""""""""""""""""""""""""""
+
+The ``--index`` command is the reverse of :ref:`slicing <cluset-slice>`:
+instead of selecting a node by its position, it outputs the zero-based index
+of a node within the resulting (ordered) node set. It is the command-line
+equivalent of the :meth:`.NodeSet.index` method::
+
+    $ cluset --index node5 node[0-9]
+    5
+
+If the node is not part of the set, an error is printed and a non-zero exit
+status is returned, so ``--index`` can also be used to test set membership::
+
+    $ cluset --index node42 node[0-9]
+    ERROR: 'node42' is not in nodeset
+
+It also works in range set mode with ``-R``::
+
+    $ cluset -R --index 18 1,5,18-31
+    2
+
+The position follows the same ordering as ``-e/--expand``. Two aspects of that
+ordering are worth knowing, as both can be surprising. First, when a node set
+spans several distinct patterns (different name templates), the patterns are
+sorted alphabetically by name, not by the order they were written or by the
+numbers they contain::
+
+    $ cluset -e node[1-4],bmc[10-20]
+    bmc10 bmc11 bmc12 bmc13 bmc14 bmc15 bmc16 bmc17 bmc18 bmc19 bmc20 node1 node2 node3 node4
+    $ cluset --index bmc10 node[1-4],bmc[10-20]
+    0
+    $ cluset --index node1 node[1-4],bmc[10-20]
+    11
+
+Second, for multidimensional node sets, the set is traversed as a cartesian
+product in which the last dimension varies fastest::
+
+    $ cluset -e rack[1-2]node[1-3]
+    rack1node1 rack1node2 rack1node3 rack2node1 rack2node2 rack2node3
+    $ cluset --index rack2node1 rack[1-2]node[1-3]
+    3
+
+For a one-dimensional node set (for example ``node[01-04]``) the index is just
+the node's ascending numeric position. A multidimensional node set has no
+single obvious order, so ClusterShell flattens it using its own convention,
+which is not guaranteed across versions; do not rely on a given index over
+time. Within a version it is always deterministic and depends only on the
+set's contents.
+
+.. note::
+
+   ``--index`` reflects ClusterShell's own ordering, so for a multidimensional
+   node list it is not guaranteed to match the node rank a resource manager
+   assigns (such as Slurm's ``$SLURM_NODEID``); use the value the resource
+   manager provides instead.
+
+
 .. _cluset-groups:
 
 Node groups
@@ -1015,7 +1075,7 @@ Arithmetic and special operations
 """""""""""""""""""""""""""""""""
 
 All arithmetic operations, as seen for node sets (cf.
-:ref:`cluset-arithmetic`:), are available for range sets, for example::
+:ref:`cluset-arithmetic`), are available for range sets, for example::
 
     $ cluset -fR 1-14 -x 10-20
     1-9
@@ -1035,8 +1095,8 @@ sets (cf. :ref:`cluset-extended-patterns`). However, as the union operator
 
 
 Besides arithmetic operations, special operations may be very convenient for
-range sets also (cf. :ref:`cluset-special`:).
-Below is an example with ``-I / --slice`` (cf. :ref:`cluset-slice`:)::
+range sets also (cf. :ref:`cluset-special`).
+Below is an example with ``-I / --slice`` (cf. :ref:`cluset-slice`)::
 
     $ cluset -fR -I 0 100-131
     100

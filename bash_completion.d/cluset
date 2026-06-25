@@ -40,7 +40,7 @@ _cluset()
 	done
 
 	case "$prev" in
-	-c|--count|-e|--expand|-f|--fold|\
+	-c|--count|-e|--expand|-f|--fold|--index|\
 	-x|--exclude|-i|--intersection|-X|--xor)
 		case "$cur" in
 		*:*)
