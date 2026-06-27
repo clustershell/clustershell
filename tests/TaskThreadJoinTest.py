@@ -6,8 +6,10 @@ Unit test for ClusterShell task's join feature in multithreaded
 environments
 """
 
+import sys
 import time
 import unittest
+from io import StringIO
 
 from ClusterShell.Task import *
 from ClusterShell.Event import EventHandler
@@ -128,3 +130,36 @@ class TaskThreadJoinTest(unittest.TestCase):
 
         task_wait()
         task.resume()
+
+    def testThreadTaskTerminateOnceOnRunningAbort(self):
+        """test task_cleanup() terminates a running task only once (#110)"""
+
+        tasks = []
+        for i in range(1, 5):
+            task = Task()
+            task.shell("sleep %d" % i)
+            tasks.append(task)
+
+        task_wait()
+        last = tasks[-1]
+        last.resume()
+        # make sure the last task is actually inside engine.run() before abort
+        deadline = time.time() + 5
+        while not last.running() and time.time() < deadline:
+            time.sleep(0.01)
+        self.assertTrue(last.running())
+
+        # a double _terminate() raises AttributeError on a Task thread; capture
+        # stderr to detect the spurious traceback (#110)
+        saved_stderr = sys.stderr
+        sys.stderr = StringIO()
+        try:
+            task_cleanup()
+            for task in tasks:
+                task.thread.join()
+            captured = sys.stderr.getvalue()
+        finally:
+            sys.stderr = saved_stderr
+
+        self.assertNotIn("AttributeError", captured)
+        self.assertNotIn("Traceback", captured)

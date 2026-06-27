@@ -962,6 +962,11 @@ class Task(object):
         Abort completion subroutine.
         """
         assert self._quit == True
+
+        # already fully terminated by a prior abort pass (#110)
+        if self._engine is None:
+            return
+
         self._terminated = True
 
         if kill:
