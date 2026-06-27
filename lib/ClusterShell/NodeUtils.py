@@ -42,6 +42,7 @@ import logging
 import os
 import shlex
 import time
+import warnings
 
 from string import Template
 from subprocess import Popen, PIPE
@@ -463,6 +464,8 @@ class GroupResolver(object):
     @init
     def set_verbosity(self, value):
         """Set debugging verbosity value (DEPRECATED: use logging.DEBUG)."""
+        warnings.warn("set_verbosity() is deprecated; use logging instead",
+                      DeprecationWarning, stacklevel=2)
         for source in self._sources.values():
             source.verbosity = value
 

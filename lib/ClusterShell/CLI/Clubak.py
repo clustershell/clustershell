@@ -31,7 +31,7 @@ import sys
 
 from ClusterShell.Defaults import DEFAULTS
 from ClusterShell.MsgTree import MsgTree, MODE_DEFER, MODE_TRACE
-from ClusterShell.NodeSet import NodeSet, NodeSetParseError, std_group_resolver
+from ClusterShell.NodeSet import NodeSet, NodeSetParseError
 from ClusterShell.NodeSet import set_std_group_resolver_config
 
 from ClusterShell.CLI.Display import Display, THREE_CHOICES
@@ -172,7 +172,6 @@ def clubak():
         return
 
     if options.debug:
-        std_group_resolver().set_verbosity(1)
         print("clubak: line_mode=%s gather=%s tree_depth=%d"
               % (bool(options.line_mode), bool(disp.gather), tree._depth()),
               file=sys.stderr)

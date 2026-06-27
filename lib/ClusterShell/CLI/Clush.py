@@ -952,8 +952,6 @@ def main():
     # Do we have nodes group?
     task = task_self()
     task.set_info("debug", config.verbosity >= VERB_DEBUG)
-    if config.verbosity == VERB_DEBUG:
-        std_group_resolver().set_verbosity(1)
     if options.nodes_all:
         all_nodeset = NodeSet.fromall()
         display.vprint(VERB_DEBUG, "Adding nodes from option -a: %s" % \
