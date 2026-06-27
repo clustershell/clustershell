@@ -43,6 +43,7 @@ except ImportError:
     import ConfigParser as configparser
 
 import logging
+import warnings
 
 from ClusterShell.NodeSet import NodeSet
 
@@ -449,6 +450,8 @@ class TopologyParser(configparser.ConfigParser):
                 self._topology = self.items("routes")
             else:
                 # compat routes section [deprecated since v1.7]
+                warnings.warn("topology: [Main] section is deprecated since "
+                              "v1.7, use [routes] instead", DeprecationWarning)
                 self._topology = self.items("Main")
         except configparser.Error:
             raise TopologyError(

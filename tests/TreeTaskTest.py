@@ -28,7 +28,7 @@ class TreeTaskTest(unittest.TestCase):
         """test task shell auto tree"""
         # initialize a dummy topology.conf file
         topofile = make_temp_file(dedent("""
-                        [Main]
+                        [routes]
                         %s: dummy-gw
                         dummy-gw: dummy-node"""% HOSTNAME).encode())
         task = task_self()
@@ -53,7 +53,7 @@ class TreeTaskTest(unittest.TestCase):
         """test task shell auto tree [TopologyError]"""
         # initialize an erroneous topology.conf file
         topofile = make_temp_file(dedent("""
-                        [Main]
+                        [routes]
                         %s: dummy-gw
                         dummy-gw: dummy-gw"""% HOSTNAME).encode())
         task = task_self()

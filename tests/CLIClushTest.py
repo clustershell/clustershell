@@ -949,7 +949,7 @@ class CLIClushTest_E_Topology(unittest.TestCase):
 
     def setUp(self):
         self.topofile = make_temp_file(dedent("""
-                        [Main]
+                        [routes]
                         %s: localhost
                         localhost: remote-node"""% HOSTNAME).encode())
 
