@@ -2,6 +2,7 @@
 Unit test library
 """
 
+import logging
 import os
 import socket
 import sys
@@ -95,6 +96,9 @@ def CLI_main(test, main, args, stdin, expected_stdout, expected_rc=0,
     saved_stdin = sys.stdin
     saved_stdout = sys.stdout
     saved_stderr = sys.stderr
+    # a CLI -d run calls logging.basicConfig(); snapshot root logging to restore it
+    saved_log_handlers = logging.root.handlers[:]
+    saved_log_level = logging.root.level
 
     # Capture standard streams
 
@@ -123,6 +127,12 @@ def CLI_main(test, main, args, stdin, expected_stdout, expected_rc=0,
     finally:
         sys.stdout = saved_stdout
         sys.stderr = saved_stderr
+        # undo logging config a CLI -d run leaked (handler bound to closed stderr)
+        for handler in logging.root.handlers:
+            if handler not in saved_log_handlers:
+                handler.close()
+        logging.root.handlers[:] = saved_log_handlers
+        logging.root.setLevel(saved_log_level)
         # close temporary file if we used one for stdin
         if saved_stdin != sys.stdin:
             sys.stdin.close()
