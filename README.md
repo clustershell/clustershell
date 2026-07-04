@@ -57,6 +57,24 @@ The following man pages are also provided:
 
     clush(1), clubak(1), nodeset(1), clush.conf(5), groups.conf(5)
 
+Building
+--------
+
+To build the Python source distribution and wheel from a source checkout:
+
+    $ python -m build
+
+The resulting tarball and wheel are written to the 'dist' directory.
+
+RPM packaging is not maintained in this repository. RPM packages for Fedora,
+RHEL and compatible distributions are maintained in the Fedora and EPEL
+dist-git repositories:
+
+    https://src.fedoraproject.org/rpms/clustershell
+
+To build RPMs locally, use that spec file, for example with 'fedpkg' or
+'rpmbuild'.
+
 Test Suite
 ----------
 
