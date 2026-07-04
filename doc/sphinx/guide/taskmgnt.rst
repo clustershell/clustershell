@@ -142,9 +142,10 @@ parameter (in seconds), for example::
 
     task.shell("uname -r", nodes=remote_nodes, handler=ehandler, timeout=5)
 
-This is the preferred way to specify a command timeout.
-:meth:`.EventHandler.ev_timeout` event is generated before the worker has finished to
-indicate that some nodes have timed out. You may then retrieve the nodes with
+This is the preferred way to specify a command timeout. When a worker times
+out, the :meth:`.EventHandler.ev_close` event is generated with its
+``timedout`` argument set to ``True`` to indicate that some nodes have timed
+out. You may then retrieve the nodes with
 :meth:`.DistantWorker.iter_keys_timeout()`.
 
 Submitting a file copy action
@@ -183,10 +184,10 @@ the timeout value in seconds. Once this time is elapsed when the Task is still
 running, the running Task raises ``TimeoutError`` exception, cleaning by the
 way all scheduled workers and timers. Using such a timeout ensures that the
 Task will not exceed a given time for all its scheduled works. You can also
-configure per-worker timeout that generates an event
-:meth:`.EventHandler.ev_timeout` but will not raise an exception, allowing the
-Task to continue. Indeed, using a per-worker timeout is the preferred way for
-most applications.
+configure per-worker timeout that generates an
+:meth:`.EventHandler.ev_close` event (with ``timedout`` set to ``True``) but
+will not raise an exception, allowing the Task to continue. Indeed, using a
+per-worker timeout is the preferred way for most applications.
 
 
 Getting Task results

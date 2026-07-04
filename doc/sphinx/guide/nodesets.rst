@@ -306,7 +306,7 @@ instance::
     @oss
 
 Any attempts to use a group-based method (like :meth:`.NodeSet.groups()` or
-:meth:`.NodeSet.regroups()`) on such "no group" NodeSet will raise a
+:meth:`.NodeSet.regroup()`) on such "no group" NodeSet will raise a
 *NodeSetExternalError* exception.
 
 

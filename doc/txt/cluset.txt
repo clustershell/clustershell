@@ -7,9 +7,9 @@ compute advanced cluster node set operations
 --------------------------------------------
 
 :Author: Stephane Thiell <sthiell@stanford.edu>
-:Date:   2025-01-23
+:Date:   2026-07-04
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
-:Version: 1.9.3
+:Version: 1.10
 :Manual section: 1
 :Manual group: ClusterShell User Manual
 
@@ -285,5 +285,5 @@ BUG REPORTS
 ===========
 
 Use the following URL to submit a bug report or feedback:
-  https://github.com/cea-hpc/clustershell/issues
+  https://github.com/clustershell/clustershell/issues
 

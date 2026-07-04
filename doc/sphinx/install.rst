@@ -20,10 +20,11 @@ ClusterShell should work with any Unix [#]_ operating systems which provides
 Python 2.7 or 3.x and OpenSSH or any compatible Secure Shell clients.
 
 .. warning:: While we are making our best effort to maintain Python 2
-   compatibility in ClusterShell 1.9.x, we no longer run tests for Python 2.
-   Therefore, functionality on Python 2 is not guaranteed and may break without
-   notice. For the best experience and continued support, it is strongly
-   recommended to use Python 3.
+   compatibility in the ClusterShell 1.10 series, we no longer run tests for
+   Python 2. Therefore, functionality on Python 2 is not guaranteed and may
+   break without notice. The 1.10 series is expected to be the last to support
+   Python 2; ClusterShell 1.11 will require Python 3. For the best experience
+   and continued support, it is strongly recommended to use Python 3.
 
 Furthermore, ClusterShell's engine has been optimized when the ``poll()``
 syscall is available or even better, when the ``epoll_wait()`` syscall is
@@ -65,7 +66,8 @@ Python support overview
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 As seen in :ref:`install-requirements`, ClusterShell supports Python 2.7 and
-onwards, at least up to Python 3.10 at the time of writing.
+onwards, and is regularly tested with Python 3.7 up to Python 3.14 at the time
+of writing.
 
 The table below provides a few examples of versions of Python supported by
 ClusterShell packages as found in some common Linux distributions:
@@ -286,7 +288,7 @@ Source
 Current source is available through Git, use the following command to retrieve
 the latest development version from the repository::
 
-    $ git clone git@github.com:cea-hpc/clustershell.git
+    $ git clone https://github.com/clustershell/clustershell.git
 
 
 .. [#] Unix in the same sense of the *Availability: Unix* notes in the Python

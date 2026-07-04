@@ -60,11 +60,13 @@ The following man pages are also provided:
 Test Suite
 ----------
 
-Regression testing scripts are available in the 'tests' directory:
+Regression testing scripts are available in the 'tests' directory. To run the
+whole test suite from the source tree root:
 
-    $ cd tests
-    $ nosetests -sv <Test.py>
-    $ nosetests -sv --all-modules
+    $ python -m unittest discover -v -s tests -p '*Test.py' -t .
+
+To run a single test module, narrow the discovery pattern, for example
+`-p 'NodeSetTest.py'`.
 
 You have to allow 'ssh localhost' and 'ssh $HOSTNAME' without any warnings for
 "remote" tests to run as expected. $HOSTNAME should not be 127.0.0.1 nor ::1.

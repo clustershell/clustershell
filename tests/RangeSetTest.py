@@ -597,9 +597,10 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(r2[5:10:2], RangeSet("12-28/8", autostep=2))
         self.assertEqual(r2[1:12:3], RangeSet("3,9,20,32"))
 
-        # FIXME: use nosetests/@raises to do that...
-        self.assertRaises(TypeError, r1.__getitem__, slice('foo', 'bar'))
-        self.assertRaises(TypeError, r1.__getitem__, slice(1, 3, 'bar'))
+        with self.assertRaises(TypeError):
+            r1[slice('foo', 'bar')]
+        with self.assertRaises(TypeError):
+            r1[slice(1, 3, 'bar')]
 
         r3 = RangeSet("0-600")
         self.assertEqual(r3[30:389], RangeSet("30-388"))

@@ -21,7 +21,7 @@ from ClusterShell.Worker.Worker import StreamWorker
 
 from .TLib import HOSTNAME
 
-# live logging with nosetests --nologcapture
+# enable live DEBUG logging when running the tests
 logging.basicConfig(level=logging.DEBUG)
 
 

@@ -3,6 +3,135 @@
 Release Notes
 =============
 
+Version 1.10
+------------
+
+We are very pleased to announce the release of ClusterShell 1.10, the first
+release made as a project of the `High Performance Software Foundation (HPSF)`_. It comes
+with faster group resolution on slow sources, a more reliable tree mode,
+new ``clush`` and ``clubak`` options, and refreshed project governance. We
+would like to thank everyone who contributed to this release in one way or
+another.
+
+Main changes in 1.10
+^^^^^^^^^^^^^^^^^^^^^
+
+Python support
+""""""""""""""
+
+ClusterShell 1.10 is regularly tested with Python 3.7 to 3.14 and still runs
+on Python 3.6 (for example on RHEL 8). See :ref:`install-requirements`.
+
+.. note:: ClusterShell 1.10 keeps best-effort, untested support for Python 2.7
+   for legacy HPC system environments. The 1.10 series is expected to be the
+   **last to support Python 2** — ClusterShell 1.11 will require Python 3.
+   Upgrading to Python 3 is strongly recommended, as Python 2 reached end of
+   life in 2020.
+
+Deprecations
+""""""""""""
+
+* ``NodeUtils.set_verbosity()`` and the ``[Main]`` section of ``topology.conf``
+  are deprecated and now emit a ``DeprecationWarning``; they will be removed in
+  a future release.
+
+Group sources
+"""""""""""""
+
+* A new **mapall** group source upcall can return all group-to-nodes mappings
+  in a single call. On slow sources, where resolving groups one by one is
+  expensive, this can dramatically speed up group resolution: ClusterShell issues
+  a single upcall instead of one **list** call followed by one **map** call per
+  group. See :ref:`group-sources-upcalls` and :ref:`group-external-caching`.
+
+* The bundled :ref:`Slurm group bindings <group-slurm-bindings>` now use
+  ``mapall`` so that partitions, reservations, node states, jobs, users,
+  accounts and QOS are each resolved with a single Slurm query.
+
+* A new :ref:`Ansible inventory group source example <group-ansible-bindings>`
+  is provided, resolving every group from an ``ansible-inventory`` dump with a
+  single ``mapall`` upcall.
+
+* Group source upcalls are no longer fed the standard input of the calling
+  process, preventing upcall commands from accidentally consuming stdin.
+
+Node sets
+"""""""""
+
+* The :class:`.NodeSet` and :class:`.RangeSet` classes gain a list-like
+  ``index()`` method returning the zero-based position of a node or element
+  (the inverse of indexing, with optional ``start``/``stop`` bounds), raising
+  ``ValueError`` when it is not present, like ``list.index()``.
+
+* :ref:`nodeset-tool` and :ref:`cluset-tool` expose this with a new ``--index``
+  command, the reverse of slicing (``-I/--slice``): it prints the position of a
+  node within the (ordered) set.
+
+clush and clubak
+""""""""""""""""
+
+* :ref:`clush-tool` and :ref:`clubak-tool` now also support the ``--axis``
+  option (already available in ``nodeset`` and ``cluset``) to choose which
+  dimension(s) are folded when displaying multidimensional node sets. The fold
+  axis can also be set permanently with the ``fold_axis`` option in the
+  :ref:`library defaults <defaults-config>` (``defaults.conf``); see
+  :ref:`clush-axis`. This is handy for example to disengage some nD folding when
+  working with Slurm.
+
+* Fixed output line buffering on Python 3.6.
+
+Tree mode
+"""""""""
+
+Tree mode, which uses gateways to reach very large clusters at scale, received
+a round of reliability fixes:
+
+* Implemented a general ``TreeWorker.abort()`` along with per-gateway abort, so
+  a worker can be cancelled cleanly and a failing gateway no longer blocks the
+  whole command; gateway failover was fixed accordingly.
+
+* ``ev_pickup`` now fires only once a command can no longer be rerouted, with a
+  proper 1:1 pairing with ``ev_hup`` and clearer reroute event reporting (shown
+  in ``clush`` and quietable with ``-q``).
+
+* Fixed reverse copy (``--rcopy``) when a remote node closes, so extraction
+  finishes locally without impacting the other nodes.
+
+* During a forward copy, ``tar``/``scp`` errors are now kept on the standard
+  error stream instead of being merged into the standard output.
+
+* Improved handling of ``MessageProcessingError`` with clearer diagnostics.
+
+* ``EngineClient`` now properly honors the abort flag on close.
+
+Bash completion
+"""""""""""""""
+
+* Complete local file paths for ``clush --copy``, and complete a command once
+  a target is set.
+
+* Handle short options written without a space, such as ``clush -wfoo``.
+
+* Treat ``-b``/``-B`` and the other no-argument options of ``clush`` and
+  ``cluset`` as flags during completion.
+
+Project and packaging
+"""""""""""""""""""""
+
+* ClusterShell joined the `High Performance Software Foundation (HPSF)`_. This release ships the
+  project charter, a DCO contribution policy, governance, code of conduct and
+  security policy as part of the HPSF onboarding.
+
+* Continuous integration now covers Python 3.14, and the test suite runs with
+  the standard library ``unittest`` (it no longer requires the abandoned *nose*
+  test runner).
+
+* Packaging metadata was cleaned up so ClusterShell publishes a proper
+  pure-Python wheel on PyPI.
+
+For more details, please have a look at `GitHub Issues for 1.10 milestone`_.
+
+
 Version 1.9
 -----------
 
@@ -779,6 +908,8 @@ Please see :ref:`install-pip-user`.
 .. _GitHub Issues for 1.9.1 milestone: https://github.com/cea-hpc/clustershell/issues?q=milestone%3A1.9.1
 .. _GitHub Issues for 1.9.2 milestone: https://github.com/cea-hpc/clustershell/issues?q=milestone%3A1.9.2
 .. _GitHub Issues for 1.9.3 milestone: https://github.com/cea-hpc/clustershell/issues?q=milestone%3A1.9.3
+.. _GitHub Issues for 1.10 milestone: https://github.com/clustershell/clustershell/issues?q=milestone%3A1.10
+.. _High Performance Software Foundation (HPSF): https://hpsf.io/
 .. _LGPL v2.1+: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
 .. _CeCILL-C V1: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
 .. _xCAT: https://xcat.org/

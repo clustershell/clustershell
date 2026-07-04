@@ -805,8 +805,8 @@ specifying the case-sensitive full Python module name of a worker module.
 .. _Python unified diff:
    http://docs.python.org/library/difflib.html#difflib.unified_diff
 
-.. _ticket #166: https://github.com/cea-hpc/clustershell/issues/166
-.. _ticket: https://github.com/cea-hpc/clustershell/issues/new
+.. _ticket #166: https://github.com/clustershell/clustershell/issues/166
+.. _ticket: https://github.com/clustershell/clustershell/issues/new
 
 .. _this paper: https://www.kernel.org/doc/ols/2012/ols2012-thiell.pdf
 

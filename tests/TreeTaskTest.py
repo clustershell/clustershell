@@ -13,7 +13,7 @@ from ClusterShell.Topology import TopologyError
 
 from .TLib import HOSTNAME, make_temp_file
 
-# live logging with nosetests --nologcapture
+# enable live DEBUG logging when running the tests
 logging.basicConfig(level=logging.DEBUG)
 
 
