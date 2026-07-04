@@ -64,5 +64,5 @@ See *man nodeset* (or *man cluset*) for more details.
 
 Please visit the ClusterShell website_.
 
-.. _website: http://cea-hpc.github.io/clustershell/
+.. _website: https://clustershell.readthedocs.io/
 

@@ -92,6 +92,6 @@ For example::
 
 .. [#] *padb*, a parallel application debugger (http://padb.pittman.org.uk/)
 
-.. _ticket #166: https://github.com/cea-hpc/clustershell/issues/166
-.. _ticket: https://github.com/cea-hpc/clustershell/issues/new
+.. _ticket #166: https://github.com/clustershell/clustershell/issues/166
+.. _ticket: https://github.com/clustershell/clustershell/issues/new
 

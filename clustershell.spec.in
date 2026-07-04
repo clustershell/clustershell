@@ -48,7 +48,7 @@ Group:          Productivity/Clustering/Computing
 Group:          System Environment/Base
 %endif
 %endif
-URL:            http://cea-hpc.github.io/clustershell/
+URL:            https://clustershell.readthedocs.io/
 Source0:        https://files.pythonhosted.org/packages/source/C/%{srcname}/%{srcname}-%{version}.tar.gz
 BuildArch:      noarch
 %if 0%{?py2}
@@ -242,6 +242,9 @@ rm -rf %{buildroot}
 %{bash_completions_dir}/nodeset
 
 %changelog
+* Sat Jul 04 2026 Stephane Thiell <sthiell@stanford.edu> 1.10-1
+- update to 1.10
+
 * Thu Jan 23 2025 Stephane Thiell <sthiell@stanford.edu> 1.9.3-1
 - update to 1.9.3
 

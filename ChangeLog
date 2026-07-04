@@ -1,3 +1,76 @@
+2026-07-04 S. Thiell <sthiell@stanford.edu>
+
+	* Version 1.10 released. The main changes are listed below.
+
+	* NodeUtils: add the 'mapall' group source upcall to retrieve all group
+	mappings in a single call, greatly speeding up group resolution on slow
+	sources (#612, #613)
+
+	* NodeUtils: do not pass stdin to group source upcalls (#581)
+
+	* NodeSet, RangeSet: add a list-like index() method returning the position
+	of a node or element, the inverse of [i] (#631, #633)
+
+	* cluset, nodeset: add a --index command to output a node's position in the
+	set, the reverse of -I/--slice (#637)
+
+	* groups.conf: add mapall upcalls to the Slurm group bindings (#623)
+
+	* groups.conf: add an Ansible inventory group source example (#610)
+
+	* clush, clubak: add --axis to fold nD node sets along selected axis only,
+	as already supported by nodeset and cluset (#356)
+
+	* Display: fix line buffering on Python 3.6 (#597)
+
+	* Tree: implement TreeWorker.abort() and per-gateway abort, with gateway
+	failover fixes (#229, #566)
+
+	* Tree: fire ev_pickup only once the command can no longer be rerouted and
+	improve reroute event reporting (#594)
+
+	* Tree: fix rcopy when a remote node closes (#545)
+
+	* Tree: improve handling of MessageProcessingError (#596)
+
+	* Tree: keep tar/scp errors on stderr instead of stdout during forward
+	copy (#622)
+
+	* Tree: pass filter='fully_trusted' to tarfile.extractall() (PEP 706) (#617)
+
+	* EngineClient: properly honor the abort flag on close (#591)
+
+	* Engine: fix set_events debug logging to identify the client and stream (#630)
+
+	* Task: only terminate a task once when killed, fixing a double termination
+	(#110, #640)
+
+	* NodeUtils, Topology: emit a DeprecationWarning for set_verbosity() and the
+	topology.conf [Main] section (#226, #639)
+
+	* Gateway: fix a Python 2 syntax error (#625)
+
+	* RangeSet: accept unicode strings on Python 2 (#635)
+
+	* completion: complete copy paths and command, and short options without
+	spaces (#585, #586)
+
+	* completion: treat -b/-B and clush's other no-arg options as flags (#598, #619)
+
+	* completion: fix cluset no-arg option lists (#620)
+
+	* doc: clarify the '*' all-nodes wildcard versus the literal 'all' group
+	source (#552)
+
+	* doc: HPSF onboarding (charter, DCO, governance) and misc doc fixes
+	(#577, #604)
+
+	* setup: clean up wheel packaging metadata (#634)
+
+	* CI: add Python 3.14 to the test matrix; run the test suite with the
+	standard library unittest instead of the abandoned nosetests runner
+	(#603, #618)
+
 2025-01-23 S. Thiell <sthiell@stanford.edu>
 
 	* Version 1.9.3 released. The main changes are listed below.

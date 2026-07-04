@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 # Copyright (C) 2008-2016 CEA/DAM
-# Copyright (C) 2016-2025 Stephane Thiell <sthiell@stanford.edu>
+# Copyright (C) 2016-2026 Stephane Thiell <sthiell@stanford.edu>
 #
 # This file is part of ClusterShell.
 #
@@ -23,7 +23,7 @@ import os
 from setuptools import setup, find_packages
 
 
-VERSION = '1.9.3'
+VERSION = '1.10'
 
 CFGDIR = 'etc/clustershell'
 MANDIR = 'share/man'
@@ -71,7 +71,7 @@ setup(name='ClusterShell',
       author_email='sthiell@stanford.edu',
       license='LGPLv2+',
       url='https://clustershell.readthedocs.io/',
-      download_url='https://github.com/cea-hpc/clustershell/archive/refs/tags/v%s.tar.gz' % VERSION,
+      download_url='https://github.com/clustershell/clustershell/archive/refs/tags/v%s.tar.gz' % VERSION,
       platforms=['GNU/Linux', 'BSD', 'MacOSX'],
       keywords=['clustershell', 'clush', 'clubak', 'nodeset'],
       description='ClusterShell library and tools',
