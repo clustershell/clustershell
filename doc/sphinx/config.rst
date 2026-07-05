@@ -274,7 +274,8 @@ The *groups.conf* files are parsed with Python's `ConfigParser`_:
     the path of the highest priority configuration directory found (where
     *groups.conf* resides). The default *confdir* value enables both
     system-wide and any installed user configuration (thanks to `$CFGDIR`).
-    Duplicate directory paths are ignored.
+    Duplicate directory paths are ignored. The key *groupsdir* is accepted as
+    an alias for *confdir*; if both are defined, *groupsdir* takes precedence.
   * *autodir* defines an optional list of directories where the ClusterShell
     library should look for **.yaml** files that define in-file group
     dictionaries. No need to call external commands for these files, they are
@@ -458,6 +459,9 @@ before executing shell commands:
 * *$CFGDIR* is replaced by *groups.conf* base directory path
 * *$SOURCE* is replaced by current source name (see an usage example just
   below)
+
+Upcall commands are executed with their standard input connected to
+``/dev/null``, so they must not expect any input on stdin.
 
 .. _group-external-caching:
 
@@ -774,6 +778,34 @@ Example of use with :ref:`nodeset-tool` on a cluster managed with Ansible::
 
 .. highlight:: text
 
+.. _topology-config:
+
+Tree topology
+-------------
+
+The optional *topology.conf* file defines the propagation routes used by
+ClusterShell's :ref:`tree execution mode <clush-tree>` to reach target nodes
+through gateway nodes. It is loaded from the same configuration directories as
+the other ClusterShell configuration files, the system-wide default being::
+
+    /etc/clustershell/topology.conf
+
+.. highlight:: ini
+
+Routes are declared under a ``[routes]`` section, for example::
+
+    [routes]
+    rio0: rio[10-13]
+    rio[10-11]: rio[100-240]
+    rio[12-13]: rio[300-440]
+
+.. highlight:: text
+
+An example file is provided with ClusterShell as *topology.conf.example*. See
+:ref:`clush-tree` for a full description of tree mode, including how routes are
+turned into a propagation tree and the related command line options (such as
+``--topology``).
+
 .. _defaults-config:
 
 Library Defaults
@@ -804,6 +836,105 @@ valid, it will used instead. In such case, the following configuration file
 will be tried first for ClusterShell defaults::
 
     $CLUSTERSHELL_CFGDIR/defaults.conf
+
+Settings
+^^^^^^^^
+
+Library defaults are organized in sections, each of them covering a
+particular ClusterShell subsystem. The following tables describe the
+available settings, grouped by section.
+
+The ``[task.default]`` section defines Task worker defaults.
+
++--------------------+----------------------------------------------------+
+| Key                | Value                                              |
++====================+====================================================+
+| stderr             | Whether to store stderr separately from stdout     |
+|                    | (default: no).                                     |
++--------------------+----------------------------------------------------+
+| stdin              | Whether to keep the command's standard input open  |
+|                    | for writing (e.g. via ``Worker.write()``); if      |
+|                    | disabled, EOF is sent at startup so commands that  |
+|                    | read from stdin do not block (default: yes).       |
++--------------------+----------------------------------------------------+
+| stdout_msgtree     | Whether to gather stdout in a message tree, as     |
+|                    | required to display gathered output, eg. with      |
+|                    | ``clush -b`` (default: yes).                       |
++--------------------+----------------------------------------------------+
+| stderr_msgtree     | Whether to gather stderr in a message tree         |
+|                    | (default: yes).                                    |
++--------------------+----------------------------------------------------+
+| engine             | Event engine backend: *auto*, *epoll*, *poll* or   |
+|                    | *select* (default: *auto*). With *auto*, the best  |
+|                    | available backend is selected: *epoll* first, then |
+|                    | *poll*, then *select*. Overriding the default is   |
+|                    | rarely needed and mostly useful for debugging.     |
++--------------------+----------------------------------------------------+
+| port_qlimit        | Accepted here only for 1.8 compatibility; a        |
+|                    | non-default value in the ``[engine]`` section      |
+|                    | takes precedence.                                  |
++--------------------+----------------------------------------------------+
+| auto_tree          | Whether to automatically enable                    |
+|                    | :ref:`tree mode <clush-tree>` when a               |
+|                    | *topology.conf* file is found (default: yes).      |
++--------------------+----------------------------------------------------+
+| local_workername   | Name of the worker module used for local           |
+|                    | execution (default: *exec*).                       |
++--------------------+----------------------------------------------------+
+| distant_workername | Name of the worker module used for remote          |
+|                    | execution (default: *ssh*; see the *rsh* use       |
+|                    | case below).                                       |
++--------------------+----------------------------------------------------+
+
+The ``[task.info]`` section defines Task runtime defaults.
+
++--------------------+----------------------------------------------------+
+| Key                | Value                                              |
++====================+====================================================+
+| debug              | Whether to enable library debugging output         |
+|                    | (default: no).                                     |
++--------------------+----------------------------------------------------+
+| fanout             | Size of the sliding window of connectors (eg. max  |
+|                    | number of *ssh(1)* processes allowed to run at the |
+|                    | same time) (default: 64).                          |
++--------------------+----------------------------------------------------+
+| grooming_delay     | Delay in seconds during which gateways aggregate   |
+|                    | identical output lines and return codes before     |
+|                    | sending them back in batch (tree mode)             |
+|                    | (default: 0.25).                                   |
++--------------------+----------------------------------------------------+
+| connect_timeout    | Timeout in seconds to allow a connection to        |
+|                    | establish; if set to 0, no timeout occurs          |
+|                    | (default: 10).                                     |
++--------------------+----------------------------------------------------+
+| command_timeout    | Timeout in seconds to allow a command to           |
+|                    | complete; if set to 0, no timeout occurs           |
+|                    | (default: 0).                                      |
++--------------------+----------------------------------------------------+
+
+The ``[engine]`` section defines event engine defaults.
+
++--------------------+----------------------------------------------------+
+| Key                | Value                                              |
++====================+====================================================+
+| port_qlimit        | Maximum number of messages that can be queued on   |
+|                    | an engine port, used for inter-thread task         |
+|                    | messaging (default: 100). This is the preferred    |
+|                    | section for this key; a non-default value here     |
+|                    | takes precedence over ``[task.default]`` (kept     |
+|                    | for 1.8 compatibility).                            |
++--------------------+----------------------------------------------------+
+
+The ``[nodeset]`` section defines NodeSet defaults.
+
++--------------------+----------------------------------------------------+
+| Key                | Value                                              |
++====================+====================================================+
+| fold_axis          | Axis or axes along which nD node sets are folded   |
+|                    | for display; empty by default, meaning that        |
+|                    | folding is computed on all axes (see               |
+|                    | :ref:`defaults-config-slurm`).                     |
++--------------------+----------------------------------------------------+
 
 Use case: rsh
 ^^^^^^^^^^^^^^

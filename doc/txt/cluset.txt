@@ -51,7 +51,8 @@ OPTIONS
     -L, --list-all      list node groups from all group sources (``-LL`` shows nodes and ``-LLL`` adds node count). Like ``-l``, if any nodesets are specified as argument, this command will find node groups these nodes belongs to (individually).
     -r, --regroup       fold nodes using node groups (see -s *GROUPSOURCE*)
     --index=NODE        output the index of NODE in the nodeset (reverse of -I/--slice)
-    --groupsources      list all active group sources (see ``groups.conf``\(5))
+    --list-sources, --groupsources
+                        list all active group sources (see ``groups.conf``\(5))
 
   Operations:
     -x SUB_NODES, --exclude=SUB_NODES
@@ -153,7 +154,7 @@ Any wildcard mask found is matched against all nodes from the group source (see 
 ``*`` means match zero or more characters of any type; ``?`` means match exactly one character of any type.
 This can be especially useful for server farms, or when cluster node names differ.
 
-Say that your group configuration is set to return the following “all nodes”:
+Say that your group configuration is set to return the following "all nodes":
   :$ cluset -f -a:
   
   | bckserv[1-2],dbserv[1-4],wwwserv[1-9]

@@ -146,6 +146,7 @@ class Defaults(object):
     * engine (string; default is ``'auto'``)
     * local_workername (string; default is ``'exec'``)
     * distant_workername (string; default is ``'ssh'``)
+    * auto_tree (boolean; default is ``True``)
     * debug (boolean; default is ``False``)
     * print_debug (function; default is internal)
     * fanout (integer; default is ``64``)

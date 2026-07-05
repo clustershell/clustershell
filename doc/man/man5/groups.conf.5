@@ -91,6 +91,8 @@ default group source). The variable \fI$CFGDIR\fP is replaced by the path of the
 highest priority configuration directory found (where groups.conf resides).
 The default confdir value enables both system\-wide and any installed user
 configuration (thanks to \fI$CFGDIR\fP). Duplicate directory paths are ignored.
+\fBgroupsdir\fP is accepted as an alias for \fBconfdir\fP and takes precedence
+when both are defined.
 .TP
 .B autodir
 Optional list of directories where the ClusterShell library should look for
@@ -155,7 +157,8 @@ Default is 3600 seconds. This is useful only for daemons using nodegroups.
 .sp
 When the library executes a group source external shell command, the current
 working directory is previously set to the corresponding confdir. This
-allows the use of relative paths for third party files in the command.
+allows the use of relative paths for third party files in the command. The
+command\(aqs standard input is connected to \fI/dev/null\fP\&.
 .sp
 In addition to context\-dependent $GROUP and $NODE variables described above, the
 two following variables are always available and also replaced before executing

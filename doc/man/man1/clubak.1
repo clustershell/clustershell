@@ -59,11 +59,20 @@ show \fBclubak\fP version number and exit
 gather nodes with same output (\-c is provided for \fBdshbak\fP(1)
 compatibility)
 .TP
+.B  \-B
+same as \-b; accepted for compatibility with \fBclush\fP(1), where \-B also gathers standard error
+.TP
+.B  \-v\fP,\fB  \-\-verbose
+be verbose, print informative messages; also echo each input line to standard output prefixed by \fBINPUT\fP
+.TP
 .B  \-d\fP,\fB  \-\-debug
 output more messages for debugging purpose
 .TP
 .B  \-L
 disable header block and order output by nodes
+.TP
+.B  \-N
+disable labeling of command line
 .TP
 .B  \-r\fP,\fB  \-\-regroup
 fold nodeset using node groups
@@ -88,6 +97,9 @@ faster but memory hungry mode (preload all messages per node)
 .TP
 .B  \-T\fP,\fB  \-\-tree
 message tree trace mode; switch to enable \fBClusterShell.MsgTree\fP trace mode, all keys/nodes being kept for each message element of the tree, thus allowing special output gathering
+.TP
+.BI \-\-interpret\-keys\fB= INTERPRET_KEYS
+whether to interpret keys (the field before the separator on each input line) as node sets. \fIINTERPRET_KEYS\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (the default). With \fBnever\fP, each key is kept as a plain string; with \fBalways\fP, every key must be a valid node set; with \fBauto\fP, keys are interpreted as node sets, but if any key cannot be parsed, \fBclubak\fP silently switches to treating all keys as plain strings.
 .TP
 .BI \-\-color\fB= WHENCOLOR
 \fBclush\fP can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. \fB\-\-color\fP command line option always takes precedence over environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR. \fB\-\-color\fP tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. \fIWHENCOLOR\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (which use color if standard output refers to a terminal). Color is set to [34m (blue foreground text) and cannot be modified.

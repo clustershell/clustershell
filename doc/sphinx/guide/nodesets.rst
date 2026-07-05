@@ -120,6 +120,13 @@ And also for multidimensional node sets::
     >>> print nodeset[::2]
     clu[1-2]-[1-10]-ib0
 
+Conversely, to find the zero-based position of a node in the set, use the
+:meth:`.NodeSet.index()` method (the inverse of ``__getitem__``), for
+example::
+
+    >>> print NodeSet("node[10-49]").index("node20")
+    10
+
 .. _class-NodeSet-split:
 
 To split a NodeSet object into *n* subsets, use the :meth:`.NodeSet.split()`
@@ -196,7 +203,7 @@ Node groups are prefixed with **@** character. Please see
 rules.
 
 Please also have a look at :ref:`Node groups configuration <groups-config>` to
-learn how to configure external node group bingings (sources). Once setup
+learn how to configure external node group bindings (sources). Once setup
 (please use the :ref:`nodeset-tool` command to check your configuration), the
 NodeSet parsing engine automatically resolves node groups. For example::
 

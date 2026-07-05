@@ -39,6 +39,13 @@ To iterate over the set's indexes as integers, you may use the new method
 :meth:`.RangeSet.intiter()`, which is the equivalent of iterating over the
 :class:`.RangeSet` object before v1.9.
 
+Since v1.10, the :meth:`.RangeSet.index()` method returns the zero-based
+position of an element, the reverse of :meth:`.RangeSet.__getitem__()`
+(zero-padding is significant when the element is given as a string)::
+
+    >>> RangeSet("10-49").index("20")
+    10
+
 .. _class-RangeSetND:
 
 RangeSetND class

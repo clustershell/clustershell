@@ -91,7 +91,7 @@ fold nodes using node groups (see \-s \fIGROUPSOURCE\fP)
 .BI \-\-index\fB= NODE
 output the index of NODE in the nodeset (reverse of \-I/\-\-slice)
 .TP
-.B  \-\-groupsources
+.B  \-\-list\-sources\fP,\fB  \-\-groupsources
 list all active group sources (see \fBgroups.conf\fP(5))
 .UNINDENT
 .TP
@@ -264,7 +264,7 @@ Any wildcard mask found is matched against all nodes from the group source (see 
 This can be especially useful for server farms, or when cluster node names differ.
 .INDENT 0.0
 .TP
-.B Say that your group configuration is set to return the following “all nodes”:
+.B Say that your group configuration is set to return the following \(dqall nodes\(dq:
 .INDENT 7.0
 .TP
 .B $ cluset \-f \-a

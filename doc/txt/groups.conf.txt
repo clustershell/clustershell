@@ -66,6 +66,8 @@ confdir
   highest priority configuration directory found (where groups.conf resides).
   The default confdir value enables both system-wide and any installed user
   configuration (thanks to *$CFGDIR*). Duplicate directory paths are ignored.
+  ``groupsdir`` is accepted as an alias for ``confdir`` and takes precedence
+  when both are defined.
 
 autodir
   Optional list of directories where the ClusterShell library should look for
@@ -124,7 +126,8 @@ cache_time
 
 When the library executes a group source external shell command, the current
 working directory is previously set to the corresponding confdir. This
-allows the use of relative paths for third party files in the command.
+allows the use of relative paths for third party files in the command. The
+command's standard input is connected to */dev/null*.
 
 In addition to context-dependent $GROUP and $NODE variables described above, the
 two following variables are always available and also replaced before executing
