@@ -6,6 +6,10 @@ NodeUtils
 .. autoclass:: GroupSource
     :members:
     :special-members:
+.. autoclass:: UpcallGroupSource
+    :members:
+    :special-members:
+    :exclude-members: __init__
 .. autoclass:: GroupResolver
     :members:
     :special-members:

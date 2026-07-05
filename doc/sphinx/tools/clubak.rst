@@ -55,6 +55,14 @@ node groups in results, use ``-r, --regroup``::
 Likewise, the ``--axis`` option folds the displayed node set along selected
 *nD* axis only, as described in :ref:`clush-axis`.
 
+By default, *clubak* interprets each key (the field before the separator on
+input lines) as a node set. Use ``--interpret-keys=never`` to keep keys as
+plain strings instead, for example to gather lines by arbitrary, non-node
+keys, or ``--interpret-keys=always`` to require that every key is a valid node
+set. In ``auto`` mode (the default), *clubak* interprets keys as node sets,
+but silently switches to treating all keys as plain strings if any key
+cannot be parsed.
+
 Like *clush*, *clubak* uses the :mod:`ClusterShell.MsgTree` module of the ClusterShell
 library.
 
@@ -90,7 +98,7 @@ For example::
        bis_second_func()
 
 
-.. [#] *padb*, a parallel application debugger (http://padb.pittman.org.uk/)
+.. [#] *padb*, a parallel application debugger
 
 .. _ticket #166: https://github.com/clustershell/clustershell/issues/166
 .. _ticket: https://github.com/clustershell/clustershell/issues/new

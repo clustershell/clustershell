@@ -150,7 +150,7 @@ still recognize options as specified below.
 |                    | <groups-config>` for default *group source*         |
 |                    | configuration).                                     |
 +--------------------+-----------------------------------------------------+
-| ``--groupsources`` | List all configured *group sources*, one per line,  |
+| ``--list-sources`` | List all configured *group sources*, one per line,  |
 |                    | as configured in *groups.conf* (see                 |
 |                    | :ref:`groups configuration <groups-config>`).       |
 |                    | The default *group source* is appended with         |
@@ -158,6 +158,7 @@ still recognize options as specified below.
 |                    | option is specified. This command is mainly here to |
 |                    | avoid reading any configuration files, or to check  |
 |                    | if all work fine when configuring *group sources*.  |
+|                    | Also available as ``--groupsources``.               |
 +--------------------+-----------------------------------------------------+
 
 .. _nodeset-commands-formatting:
@@ -701,9 +702,10 @@ Listing group sources
 
 As already mentioned, the following *nodeset* command is available to list
 configured group sources and also display the default group source (unless
-``-q`` is provided)::
+``-q`` is provided). The ``--list-sources`` and ``--groupsources`` options
+are equivalent::
 
-    $ nodeset --groupsources
+    $ nodeset --list-sources
     local (default)
     genders
     slurm

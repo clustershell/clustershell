@@ -393,6 +393,10 @@ even if all nodes have successfully run the command. When you hit CTRL-C with
     2.6.18-164.11.1.el5
     Keyboard interrupt (node1 did not complete).
 
+.. note:: In standard (non-gathered) mode, *clush* prefixes each output line
+   with the name of the originating node; use the ``-N`` option to disable this
+   labeling.
+
 .. _clush-axis:
 
 Choosing fold axis (nD)

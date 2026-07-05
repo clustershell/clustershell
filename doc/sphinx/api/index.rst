@@ -14,4 +14,5 @@ ClusterShell public API autodoc.
     Defaults
     Event
     EngineTimer
+    EnginePort
     workers/index

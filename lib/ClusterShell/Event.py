@@ -61,6 +61,10 @@ class EventHandler(object):
 
         *New in version 1.7.*
 
+        *Changed in version 1.10:* in tree mode, ``ev_pickup`` now fires
+        only once a command can no longer be rerouted, so it fires at
+        most once per node.
+
         :param worker: :class:`.Worker` derived object
         :param node: node (or key)
         """
