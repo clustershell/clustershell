@@ -1,0 +1,66 @@
+# Build and publish ClusterShell to PyPI via Trusted Publishing (OIDC) on a
+# version tag push. The tag must be exactly "v" + setup.py VERSION, e.g. v1.10.1.
+
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+  workflow_dispatch:       # manual dry run: build + check only, never publishes
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build sdist + wheel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5.2.0
+        with:
+          python-version: '3.x'
+      - name: Build and check
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade build twine
+          python -m build               # -> dist/*.tar.gz + dist/*-py3-none-any.whl
+          twine check --strict dist/*
+      - name: Check tag matches version
+        if: github.ref_type == 'tag'
+        run: |
+          set -euxo pipefail
+          test -f "dist/clustershell-${GITHUB_REF_NAME#v}.tar.gz"
+          grep -q "^__version__ = '${GITHUB_REF_NAME#v}'$" lib/ClusterShell/__init__.py
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    name: Upload to PyPI
+    needs: build
+    if: github.event_name == 'push' && github.ref_type == 'tag' && github.repository == 'clustershell/clustershell'
+    runs-on: ubuntu-latest
+    # The "pypi" environment requires manual approval (see repo Settings > Environments).
+    environment: pypi
+    permissions:
+      id-token: write      # mint the OIDC token for Trusted Publishing
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist/
+      - name: Publish to PyPI
+        # PyPI Trusted Publishing is registered for this repo + workflow file
+        # "release.yml" + environment "pypi"; renaming either breaks publishing
+        # until re-registered on PyPI.
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true   # publish re-runs are safe after a partial upload
