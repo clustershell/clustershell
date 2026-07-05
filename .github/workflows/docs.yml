@@ -1,0 +1,21 @@
+name: docs
+
+on: [push, pull_request, merge_group]
+
+permissions:
+  contents: read
+
+jobs:
+  sphinx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5.2.0
+      with:
+        python-version: '3.12'  # same as .readthedocs.yaml
+    - name: Install docs requirements (same pins as ReadTheDocs)
+      run: pip install -r doc/sphinx/requirements.txt
+    - name: Build docs with warnings as errors
+      run: sphinx-build -W --keep-going -b html doc/sphinx /tmp/html
