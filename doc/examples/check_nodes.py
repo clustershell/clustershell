@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # check_nodes.py: ClusterShell simple example script.
 #
 # This script runs a simple command on remote nodes and report node
@@ -10,7 +10,6 @@
 
 import optparse
 from datetime import date, datetime
-import time
 
 from ClusterShell.Event import EventHandler
 from ClusterShell.NodeSet import NodeSet
@@ -29,10 +28,10 @@ class CheckNodesResult(object):
     def show(self):
         """Display results"""
         if self.nodes_ok:
-            print "%s: OK (boot date: min %s, max %s)" % \
-                (self.nodes_ok, self.min_boot_date, self.max_boot_date)
+            print("%s: OK (boot date: min %s, max %s)" %
+                  (self.nodes_ok, self.min_boot_date, self.max_boot_date))
         if self.nodes_ko:
-            print "%s: FAILED" % self.nodes_ko
+            print("%s: FAILED" % self.nodes_ko)
 
 class CheckNodesHandler(EventHandler):
     """Our ClusterShell EventHandler"""
@@ -45,20 +44,18 @@ class CheckNodesHandler(EventHandler):
     def ev_read(self, worker, node, sname, msg):
         """Read event from remote nodes"""
         # this is an example to demonstrate remote result parsing
-        bootime = " ".join(msg.strip().split()[2:])
-        date_boot = None
-        for fmt in ("%Y-%m-%d %H:%M",): # formats with year
+        bootime = " ".join(msg.decode().strip().split()[2:])
+        # 'who -b' prints the boot date with or without the year
+        try:
+            date_boot = datetime.strptime(bootime, "%Y-%m-%d %H:%M")
+        except ValueError:
             try:
-                # datetime.strptime() is Python2.5+, use old method instead
-                date_boot = datetime(*(time.strptime(bootime, fmt)[0:6]))
+                # no year: prepend the current one before parsing
+                # (yearless dates are deprecated as of Python 3.13)
+                date_boot = datetime.strptime(
+                    "%d %s" % (date.today().year, bootime), "%Y %b %d %H:%M")
             except ValueError:
-                pass
-        for fmt in ("%b %d %H:%M",):    # formats without year
-            try:
-                date_boot = datetime(date.today().year, \
-                    *(time.strptime(bootime, fmt)[1:6]))
-            except ValueError:
-                pass
+                date_boot = None
         if date_boot:
             if not self.result.min_boot_date or \
                 self.result.min_boot_date > date_boot:
@@ -98,7 +95,7 @@ def main():
     nodes_target = NodeSet(options.nodes)
     task.set_info("fanout", options.fanout)
     if options.debug:
-        print "nodeset : %s" % nodes_target
+        print("nodeset : %s" % nodes_target)
         task.set_info("debug", True)
 
     # Create ClusterShell event handler

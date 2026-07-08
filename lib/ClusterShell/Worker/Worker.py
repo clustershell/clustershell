@@ -95,7 +95,7 @@ class Worker(object):
         >>> from ClusterShell.Event import EventHandler
         >>> class MyOutputHandler(EventHandler):
         ...     def ev_read(self, worker, node, sname, msg):
-        ...             print "%s: %s" % (node, line)
+        ...             print("%s: %s" % (node, msg.decode()))
         ...
     """
 
