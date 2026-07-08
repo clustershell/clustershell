@@ -42,9 +42,11 @@ OPTIONS
 =======
 
 --version      show ``clubak`` version number and exit
--b, -c         gather nodes with same output (-c is provided for ``dshbak``\(1)
-               compatibility)
+-b, -c, --dshbak
+               gather nodes with same output (-c and --dshbak are provided
+               for ``dshbak``\(1) compatibility)
 -B             same as -b; accepted for compatibility with ``clush``\(1), where -B also gathers standard error
+-q, --quiet    be quiet, print essential output only (eg. suppress the node count displayed next to gathered nodeset headers)
 -v, --verbose  be verbose, print informative messages; also echo each input line to standard output prefixed by ``INPUT``
 -d, --debug    output more messages for debugging purpose
 -L             disable header block and order output by nodes

@@ -476,9 +476,11 @@ class Task(object):
           - "stderr_msgtree": Same for stderr (default: True).
           - "engine": Used to specify an underlying Engine explicitly
             (default: "auto").
-          - "port_qlimit": Size of port messages queue (default: 32).
-          - "worker": Worker-based class used when spawning workers through
-            shell()/run().
+          - "port_qlimit": Size of port messages queue (default: 100).
+          - "local_workername": Worker name used when spawning workers
+            for local commands (default: "exec").
+          - "distant_workername": Worker name used when spawning workers
+            for distant commands (default: "ssh").
 
         Threading considerations:
 
@@ -529,7 +531,7 @@ class Task(object):
           - "fanout": Max number of registered clients in Engine at a
             time (default: 64).
           - "grooming_delay": Message maximum end-to-end delay requirement
-            used for traffic grooming, in seconds as float (default: 0.5).
+            used for traffic grooming, in seconds as float (default: 0.25).
           - "connect_timeout": Time in seconds to wait for connecting to
             remote host before aborting (default: 10).
           - "command_timeout": Time in seconds to wait for a command to
