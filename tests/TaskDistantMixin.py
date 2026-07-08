@@ -307,7 +307,7 @@ class TaskDistantMixin(object):
     def testShellEventsReadNoEOL(self):
         # init worker
         test_eh = self.__class__.TEventHandlerChecker(self)
-        worker = self._task.shell("/bin/echo -n okay", nodes=HOSTNAME, handler=test_eh)
+        worker = self._task.shell("printf okay", nodes=HOSTNAME, handler=test_eh)
         # run task
         self._task.resume()
         # test events received: start, close

@@ -28,7 +28,7 @@ class ExecTest(unittest.TestCase):
 
     def test_shell_syntax(self):
         """test ExecWorker with a command using shell syntax"""
-        cmd = "echo -n 1; echo -n 2"
+        cmd = "printf 1; printf 2"
         self.execw(nodes='localhost', handler=None, command=cmd)
         self.assertEqual(task_self().max_retcode(), 0)
         self.assertEqual(task_self().node_buffer('localhost'), b'12')
