@@ -24,7 +24,7 @@ of the library features.
 Requirements
 ------------
 
- * GNU/Linux, BSD, Mac OS X
+ * GNU/Linux, BSD, macOS
  * OpenSSH (ssh/scp) or rsh
  * Python 2.x (x >= 7) or Python 3.x (x >= 6)
  * PyYAML
@@ -43,9 +43,9 @@ Online documentation is available here:
     https://clustershell.readthedocs.io/
 
 The Sphinx documentation source is available under the doc/sphinx directory.
-Type 'make' to see all available formats (you need Sphinx installed and
-sphinx_rtd_theme to build the documentation). For example, to generate html
-docs, just type:
+Type 'make' to see all available formats (you need the packages listed in
+doc/sphinx/requirements.txt to build the documentation). For example, to
+generate html docs, just type:
 
     make html BUILDDIR=/dest/path
 
@@ -55,7 +55,7 @@ For local library API documentation, just type:
 
 The following man pages are also provided:
 
-    clush(1), clubak(1), nodeset(1), clush.conf(5), groups.conf(5)
+    clush(1), clubak(1), cluset(1), nodeset(1), clush.conf(5), groups.conf(5)
 
 Building
 --------

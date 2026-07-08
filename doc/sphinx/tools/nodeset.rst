@@ -1130,7 +1130,7 @@ example (Bourne shell), making it sort of a super `seq(1)`_ command::
     0 2 4 6 8
 
 
-.. [#] SLURM is an open-source resource manager (https://computing.llnl.gov/linux/slurm/)
+.. [#] Slurm is an open-source resource manager (https://slurm.schedmd.com/overview.html)
 
 .. _seq(1): http://linux.die.net/man/1/seq
 

@@ -43,11 +43,11 @@ Example of getting the current task object::
 So for a single-threaded application, a Task is a simple singleton (which
 instance is also available through :func:`.Task.task_self()`).
 
-To get the *Task* object associated to a specific thread identified by the
-identifier *tid*, you use the following::
+To get the *Task* object associated to a specific thread *thr* (a
+``threading.Thread`` object), you use the following::
 
     >>> from ClusterShell.Task import Task
-    >>> task = Task(thread_id=tid)
+    >>> task = Task(thread=thr)
 
 
 .. _class-Task-configure:
@@ -258,13 +258,13 @@ Changing default worker
 
 When calling :meth:`.Task.shell` or :meth:`.Task.copy` the Task object creates
 a worker instance for each call. When the *nodes* argument is defined, the
-worker class used for these calls is based on Task default *distant_worker*.
-Change this value to use another worker class, by example **Rsh**::
+worker used for these calls is based on Task default *distant_workername*
+(default: ``ssh``). Change this value to use another worker, by example
+**rsh**::
 
     from ClusterShell.Task import task_self
-    from ClusterShell.Worker.Rsh import WorkerRsh
 
-    task_self().set_default('distant_worker', WorkerRsh)
+    task_self().set_default('distant_workername', 'rsh')
 
 
 Thread safety and Task objects

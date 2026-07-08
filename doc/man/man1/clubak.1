@@ -55,12 +55,15 @@ ClusterShell library (see \fBpydoc ClusterShell.MsgTree\fP).
 .B  \-\-version
 show \fBclubak\fP version number and exit
 .TP
-.B  \-b\fP,\fB  \-c
-gather nodes with same output (\-c is provided for \fBdshbak\fP(1)
-compatibility)
+.B  \-b\fP,\fB  \-c\fP,\fB  \-\-dshbak
+gather nodes with same output (\-c and \-\-dshbak are provided
+for \fBdshbak\fP(1) compatibility)
 .TP
 .B  \-B
 same as \-b; accepted for compatibility with \fBclush\fP(1), where \-B also gathers standard error
+.TP
+.B  \-q\fP,\fB  \-\-quiet
+be quiet, print essential output only (eg. suppress the node count displayed next to gathered nodeset headers)
 .TP
 .B  \-v\fP,\fB  \-\-verbose
 be verbose, print informative messages; also echo each input line to standard output prefixed by \fBINPUT\fP
