@@ -339,6 +339,9 @@ class EngineClient(EngineBaseTimer):
                 if exc.errno == errno.EPIPE:
                     # broken pipe: log warning message and do NOT retry
                     LOGGER.warning('%r: %s', self, exc)
+                    # remove stream now; select engine has no POLLERR
+                    if self._engine:
+                        self._engine.remove_stream(self, wfile)
                     return
                 raise
             if wcnt > 0:
@@ -410,6 +413,11 @@ class EngineClient(EngineBaseTimer):
 
     def _write(self, sname, buf):
         """Add some data to be written to the client."""
+        if sname not in self.streams:
+            LOGGER.debug("dropping write to unknown or closed stream %s on "
+                         "client %s", sname, self.key)
+            return
+
         wfile = self.streams[sname]
         if self._engine and wfile.fd:
             wfile.wbuf += buf
