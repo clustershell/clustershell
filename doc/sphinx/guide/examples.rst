@@ -18,13 +18,13 @@ specific buffer and how to get gathered buffers::
 
     task.run("/bin/uname -r", nodes="green[36-39,133]")
 
-    print task.node_buffer("green37")
+    print(task.node_buffer("green37").decode())
 
     for buf, nodes in task.iter_buffers():
-            print nodes, buf
+        print(nodes, buf.message().decode())
 
     if task.max_retcode() != 0:
-        print "An error occurred (max rc = %s)" % task.max_retcode()
+        print("An error occurred (max rc = %s)" % task.max_retcode())
 
 
 Result::
@@ -32,7 +32,6 @@ Result::
     2.6.32-431.el6.x86_64
     ['green37', 'green38', 'green36', 'green39'] 2.6.32-431.el6.x86_64
     ['green133'] 3.10.0-123.20.1.el7.x86_64
-    Max return code is 0
 
 .. _prog-example-ev:
 
@@ -52,11 +51,11 @@ erroneous return codes::
     class MyHandler(EventHandler):
 
        def ev_read(self, worker, node, sname, msg):
-           print "%s: %s" % (node, msg)
+           print("%s: %s" % (node, msg.decode()))
 
        def ev_hup(self, worker, node, rc):
            if rc != 0:
-               print "%s: returned with error code %s" % (node, rc)
+               print("%s: returned with error code %s" % (node, rc))
 
     task = task_self()
 
@@ -68,10 +67,16 @@ erroneous return codes::
 *check_nodes.py* example script
 -------------------------------
 
+.. note:: The example scripts use ``#!/usr/bin/python3`` as ClusterShell is
+   usually installed for the system Python interpreter (distribution packages
+   or ``pip install --user``). If you installed ClusterShell in a virtual
+   environment, adjust the interpreter line accordingly (eg.
+   ``#!/usr/bin/env python3``).
+
 The following script is available as an example in the source repository and
 is usually packaged with ClusterShell::
 
-    #!/usr/bin/python
+    #!/usr/bin/python3
     # check_nodes.py: ClusterShell simple example script.
     #
     # This script runs a simple command on remote nodes and report node
@@ -83,7 +88,6 @@ is usually packaged with ClusterShell::
 
     import optparse
     from datetime import date, datetime
-    import time
 
     from ClusterShell.Event import EventHandler
     from ClusterShell.NodeSet import NodeSet
@@ -102,10 +106,10 @@ is usually packaged with ClusterShell::
         def show(self):
             """Display results"""
             if self.nodes_ok:
-                print "%s: OK (boot date: min %s, max %s)" % \
-                    (self.nodes_ok, self.min_boot_date, self.max_boot_date)
+                print("%s: OK (boot date: min %s, max %s)" %
+                      (self.nodes_ok, self.min_boot_date, self.max_boot_date))
             if self.nodes_ko:
-                print "%s: FAILED" % self.nodes_ko
+                print("%s: FAILED" % self.nodes_ko)
 
     class CheckNodesHandler(EventHandler):
         """Our ClusterShell EventHandler"""
@@ -118,20 +122,18 @@ is usually packaged with ClusterShell::
         def ev_read(self, worker, node, sname, msg):
             """Read event from remote nodes"""
             # this is an example to demonstrate remote result parsing
-            bootime = " ".join(msg.strip().split()[2:])
-            date_boot = None
-            for fmt in ("%Y-%m-%d %H:%M",): # formats with year
+            bootime = " ".join(msg.decode().strip().split()[2:])
+            # 'who -b' prints the boot date with or without the year
+            try:
+                date_boot = datetime.strptime(bootime, "%Y-%m-%d %H:%M")
+            except ValueError:
                 try:
-                    # datetime.strptime() is Python2.5+, use old method instead
-                    date_boot = datetime(*(time.strptime(bootime, fmt)[0:6]))
+                    # no year: prepend the current one before parsing
+                    # (yearless dates are deprecated as of Python 3.13)
+                    date_boot = datetime.strptime(
+                        "%d %s" % (date.today().year, bootime), "%Y %b %d %H:%M")
                 except ValueError:
-                    pass
-            for fmt in ("%b %d %H:%M",):    # formats without year
-                try:
-                    date_boot = datetime(date.today().year, \
-                        *(time.strptime(bootime, fmt)[1:6]))
-                except ValueError:
-                    pass
+                    date_boot = None
             if date_boot:
                 if not self.result.min_boot_date or \
                     self.result.min_boot_date > date_boot:
@@ -171,7 +173,7 @@ is usually packaged with ClusterShell::
         nodes_target = NodeSet(options.nodes)
         task.set_info("fanout", options.fanout)
         if options.debug:
-            print "nodeset : %s" % nodes_target
+            print("nodeset : %s" % nodes_target)
             task.set_info("debug", True)
 
         # Create ClusterShell event handler
@@ -194,7 +196,8 @@ The following example shows how to use the NodeSet class to expand
 ``$SLURM_NODELIST`` environment variable in a Parallel Python batch script
 launched by SLURM. This variable may contain folded node sets. If ClusterShell
 is not available system-wide on your compute cluster, you need to follow
-:ref:`install-pip-user` first.
+:ref:`install-pip-user` first. On Python 3, Parallel Python is available as
+the ppft_ package.
 
 .. highlight:: bash
 
@@ -206,24 +209,24 @@ Example of SLURM ``pp.sbatch`` to submit using ``sbatch pp.sbatch``::
     #SBATCH --ntasks-per-node 1
 
     # run the servers
-    srun ~/.local/bin/ppserver.py -w $SLURM_CPUS_PER_TASK -t 300 &
+    srun ~/.local/bin/ppserver -w $SLURM_CPUS_PER_TASK -t 300 &
     sleep 10
 
     # launch the parallel processing
-    python -u ./pp_jobs.py
+    python3 -u ./pp_jobs.py
 
 .. highlight:: python
 
 Example of a ``pp_jobs.py`` script::
 
-    #!/usr/bin/env python
+    #!/usr/bin/python3
 
     import os, time
     import pp
     from ClusterShell.NodeSet import NodeSet
 
-    # get the nodelist form Slurm
-    nodeset = NodeSet(os.environ['SLURM_NODELIST'])
+    # get the nodelist from Slurm
+    nodelist = NodeSet(os.environ['SLURM_NODELIST'])
 
     # start the servers (ncpus=0 will make sure that none is started locally)
     # casting nodelist to tuple/list will correctly expand $SLURM_NODELIST
@@ -232,19 +235,21 @@ Example of a ``pp_jobs.py`` script::
     # make sure the servers have enough time to start
     time.sleep(5)
 
-    # test function to execute on the remove nodes
+    # test function to execute on the remote nodes
     def test_func():
-        print os.uname()
+        print(os.uname())
 
     # start the jobs
     job_1 = job_server.submit(test_func,(),(),("os",))
     job_2 = job_server.submit(test_func,(),(),("os",))
 
     # retrieve the results
-    print job_1()
-    print job_2()
+    print(job_1())
+    print(job_2())
 
     # Cleanup
     job_server.print_stats()
     job_server.destroy()
 
+
+.. _ppft: https://pypi.org/project/ppft/

@@ -40,18 +40,18 @@ a basic usage of the :class:`.NodeSet` class::
     >>> nodeset = NodeSet()
     >>> nodeset.add("node7")
     >>> nodeset.add("node6")
-    >>> print nodeset
+    >>> print(nodeset)
     node[6-7]
 
 :class:`.NodeSet` class provides several object constructors::
 
-    >>> print NodeSet("node[1-5]")
+    >>> print(NodeSet("node[1-5]"))
     node[1-5]
-    >>> print NodeSet.fromlist(["node1", "node2", "node3"])
+    >>> print(NodeSet.fromlist(["node1", "node2", "node3"]))
     node[1-3]
-    >>> print NodeSet.fromlist(["node[1-5]", "node[6-10]"])
+    >>> print(NodeSet.fromlist(["node[1-5]", "node[6-10]"]))
     node[1-10]
-    >>> print NodeSet.fromlist(["clu-1-[1-4]", "clu-2-[1-4]"])
+    >>> print(NodeSet.fromlist(["clu-1-[1-4]", "clu-2-[1-4]"]))
     clu-[1-2]-[1-4]
 
 All corresponding Python sets operations are available, for example::
@@ -59,12 +59,12 @@ All corresponding Python sets operations are available, for example::
     >>> from ClusterShell.NodeSet import NodeSet
     >>> ns1 = NodeSet("node[10-42]")
     >>> ns2 = NodeSet("node[11-16,18-39]")
-    >>> print ns1.difference(ns2)
+    >>> print(ns1.difference(ns2))
     node[10,17,40-42]
-    >>> print ns1 - ns2
+    >>> print(ns1 - ns2)
     node[10,17,40-42]
     >>> ns3 = NodeSet("node[1-14,40-200]")
-    >>> print ns3.intersection(ns1)
+    >>> print(ns3.intersection(ns1))
     node[10-14,40-42]
 
 
@@ -77,54 +77,54 @@ this (set operation is working with either a native nodeset or a string)::
     >>> nodeset = NodeSet("node[1-10]")
     >>> nodeset2 = NodeSet("node7")
     >>> nodeset.difference_update(nodeset2)
-    >>> print nodeset
+    >>> print(nodeset)
     node[1-6,8-10]
     >>> 
     >>> nodeset.difference_update("node8")
-    >>> print nodeset
+    >>> print(nodeset)
     node[1-6,9-10]
 
 NodeSet ordered content leads to the following being allowed::
 
     >>> nodeset = NodeSet("node[10-49]")
-    >>> print nodeset[0]
+    >>> print(nodeset[0])
     node10
-    >>> print nodeset[-1]
+    >>> print(nodeset[-1])
     node49
-    >>> print nodeset[10:]
+    >>> print(nodeset[10:])
     node[20-49]
-    >>> print nodeset[:5]
+    >>> print(nodeset[:5])
     node[10-14]
-    >>> print nodeset[::4]
+    >>> print(nodeset[::4])
     node[10,14,18,22,26,30,34,38,42,46]
 
 And it works for node names without index, for example::
 
     >>> nodeset = NodeSet("lima,oscar,zulu,alpha,delta,foxtrot,tango,x-ray")
-    >>> print nodeset
+    >>> print(nodeset)
     alpha,delta,foxtrot,lima,oscar,tango,x-ray,zulu
-    >>> print nodeset[0]
+    >>> print(nodeset[0])
     alpha
-    >>> print nodeset[-2]
+    >>> print(nodeset[-2])
     x-ray
 
 And also for multidimensional node sets::
 
     >>> nodeset = NodeSet("clu1-[1-10]-ib[0-1],clu2-[1-10]-ib[0-1]")
-    >>> print nodeset
+    >>> print(nodeset)
     clu[1-2]-[1-10]-ib[0-1]
-    >>> print nodeset[0]
+    >>> print(nodeset[0])
     clu1-1-ib0
-    >>> print nodeset[-1]
+    >>> print(nodeset[-1])
     clu2-10-ib1
-    >>> print nodeset[::2]
+    >>> print(nodeset[::2])
     clu[1-2]-[1-10]-ib0
 
 Conversely, to find the zero-based position of a node in the set, use the
 :meth:`.NodeSet.index()` method (the inverse of ``__getitem__``), for
 example::
 
-    >>> print NodeSet("node[10-49]").index("node20")
+    >>> print(NodeSet("node[10-49]").index("node20"))
     10
 
 .. _class-NodeSet-split:
@@ -133,7 +133,7 @@ To split a NodeSet object into *n* subsets, use the :meth:`.NodeSet.split()`
 method, for example::
 
     >>> for nodeset in NodeSet("node[10-49]").split(2):
-    ...     print nodeset
+    ...     print(nodeset)
     ... 
     node[10-29]
     node[30-49]
@@ -144,7 +144,7 @@ To split a NodeSet object into contiguous subsets, use the
 :meth:`.NodeSet.contiguous()` method, for example::
 
     >>> for nodeset in NodeSet("node[10-49,51-53,60-64]").contiguous():
-    ...     print nodeset
+    ...     print(nodeset)
     ... 
     node[10-49]
     node[51-53]
@@ -182,7 +182,7 @@ and symmetric difference (with special character *"^"*) operations. String
 patterns are read from left to right, by proceeding any character operators
 accordingly. The following example shows how you can use this feature::
 
-    >>> print NodeSet("node[10-42],node46!node10")
+    >>> print(NodeSet("node[10-42],node46!node10"))
     node[11-42,46]
 
 
@@ -207,11 +207,11 @@ learn how to configure external node group bindings (sources). Once setup
 (please use the :ref:`nodeset-tool` command to check your configuration), the
 NodeSet parsing engine automatically resolves node groups. For example::
 
-    >>> print NodeSet("@oss")
+    >>> print(NodeSet("@oss"))
     example[4-5]
-    >>> print NodeSet("@compute")
+    >>> print(NodeSet("@compute"))
     example[32-159]
-    >>> print NodeSet("@compute,@oss")
+    >>> print(NodeSet("@compute,@oss"))
     example[4-5,32-159]
 
 That is, all NodeSet-based applications share the same system-wide node group
@@ -222,7 +222,7 @@ When the **all** group upcall is configured (:ref:`node groups configuration
 <groups-config>`), you can also use the following :class:`.NodeSet`
 constructor::
 
-    >>> print NodeSet.fromall()
+    >>> print(NodeSet.fromall())
     example[4-6,32-159]
 
 When group upcalls are not properly configured, this constructor will raise a
@@ -239,8 +239,8 @@ In order to find node groups a specified node set belongs to, you can use the
 dictionary where keys are groups found and values, provided for convenience,
 are tuples of the form *(group_nodeset, contained_nodeset)*. For example::
 
-    >>> for group, (group_nodes, contained_nodes) in NodeSet("@oss").groups().iteritems():
-    ...     print group, group_nodes, contained_nodes
+    >>> for group, (group_nodes, contained_nodes) in NodeSet("@oss").groups().items():
+    ...     print(group, group_nodes, contained_nodes)
     ... 
     @all example[4-6,32-159] example[4-5]
     @oss example[4-5] example[4-5]
@@ -248,11 +248,11 @@ are tuples of the form *(group_nodeset, contained_nodeset)*. For example::
 
 More usage examples follow::
 
-    >>> print NodeSet("example4").groups().keys()
+    >>> list(NodeSet("example4").groups().keys())
     ['@all', '@oss']
-    >>> print NodeSet("@mds").groups().keys()
+    >>> list(NodeSet("@mds").groups().keys())
     ['@all', '@mds']
-    >>> print NodeSet("dummy0").groups().keys()
+    >>> list(NodeSet("dummy0").groups().keys())
     []
 
 .. _class-NodeSet-regroup:
@@ -264,7 +264,7 @@ If needed group configuration conditions are met (cf. :ref:`node groups
 configuration <groups-config>`), you can use the :meth:`.NodeSet.regroup()`
 method to reduce node sets using matching groups, whenever possible::
 
-    >>> print NodeSet("example[4-6]").regroup()
+    >>> print(NodeSet("example[4-6]").regroup())
     @mds,@oss
 
 The nodeset command makes use of the :meth:`.NodeSet.regroup()` method when
@@ -285,7 +285,7 @@ to use another configuration file::
     >>> from ClusterShell.NodeSet import NodeSet, set_std_group_resolver
     >>> from ClusterShell.NodeUtils import GroupResolverConfig
     >>> set_std_group_resolver(GroupResolverConfig("/other/groups.conf"))
-    >>> print NodeSet("@oss")
+    >>> print(NodeSet("@oss"))
     other[10-20]
 
 It is possible to restore :class:`.NodeSet` *default group resolver* by
@@ -307,9 +307,9 @@ parsing engine will not recognize **@** group characters anymore, for
 instance::
 
     >>> from ClusterShell.NodeSet import NodeSet, RESOLVER_NOGROUP
-    >>> print NodeSet("@oss")
+    >>> print(NodeSet("@oss"))
     example[4-5]
-    >>> print NodeSet("@oss", resolver=RESOLVER_NOGROUP)
+    >>> print(NodeSet("@oss", resolver=RESOLVER_NOGROUP))
     @oss
 
 Any attempts to use a group-based method (like :meth:`.NodeSet.groups()` or

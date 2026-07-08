@@ -38,11 +38,11 @@ Usage example
   >>> # Remove from nodeset
   ... nodeset.difference_update("cluster[2-5,8-31]")
   >>> # Print nodeset as a pdsh-like pattern
-  ... print nodeset
+  ... print(nodeset)
   cluster[1,6-7,32]
   >>> # Iterate over node names in nodeset
   ... for node in nodeset:
-  ...     print node
+  ...     print(node)
   cluster1
   cluster6
   cluster7
@@ -1258,7 +1258,7 @@ class NodeSet(NodeSetBase):
 
         >>> nodeset = NodeSet("blue[1-50]")
         >>> nodeset.remove("blue[36-40]")
-        >>> print nodeset
+        >>> print(nodeset)
         blue[1-35,41-50]
 
     Additionally, the NodeSet class recognizes the "extended string
@@ -1583,7 +1583,7 @@ class NodeSet(NodeSetBase):
         less 1. Current nodeset remains unmodified.
 
         >>> for nodeset in NodeSet("foo[1-5]").split(3):
-        ...     print nodeset
+        ...     print(nodeset)
         foo[1-2]
         foo[3-4]
         foo5

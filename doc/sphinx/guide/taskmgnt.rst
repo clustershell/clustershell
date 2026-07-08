@@ -102,11 +102,11 @@ function searches for any known patterns and print a modified debug line to
 stdout when found::
 
     def print_csdebug(task, s):
-       m = re.search("(\w+): SHINE:\d:(\w+):", s)
+       m = re.search(r"(\w+): SHINE:\d:(\w+):", s)
        if m:
-           print "%s<pickle>" % m.group(0)
+           print("%s<pickle>" % m.group(0))
        else:
-           print s
+           print(s)
 
     # Install the new debug printing function
     task_self().set_info("print_debug", print_csdebug)

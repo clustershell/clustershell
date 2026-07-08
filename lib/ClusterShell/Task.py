@@ -37,8 +37,8 @@ Simple example of use:
 >>> 
 >>> # get results
 ... for output, nodelist in task.iter_buffers():
-...     print '%s: %s' % (NodeSet.fromlist(nodelist), output)
-... 
+...     print('%s: %s' % (NodeSet.fromlist(nodelist), output.message().decode()))
+...
 
 """
 
@@ -1257,8 +1257,8 @@ class Task(object):
         Usage example:
 
         >>> for buffer, nodelist in task.iter_buffers():
-        ...     print NodeSet.fromlist(nodelist)
-        ...     print buffer
+        ...     print(NodeSet.fromlist(nodelist))
+        ...     print(buffer.message().decode())
         """
         return self._iter_msgtree('stdout', match_keys)
 
