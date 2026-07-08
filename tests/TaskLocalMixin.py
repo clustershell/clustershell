@@ -84,7 +84,7 @@ class TaskLocalMixin(object):
         task = task_self()
 
         # init worker
-        worker = task.shell("for i in $(seq 1 100000); do echo -n ' huge! '; done")
+        worker = task.shell("for i in $(seq 1 100000); do printf ' huge! '; done")
 
         # run task
         task.resume()
@@ -695,7 +695,7 @@ class TaskLocalMixin(object):
     def testSimpleCommandReadNoEOL(self):
         task = task_self()
         # init worker
-        worker = task.shell("echo -n okay")
+        worker = task.shell("printf okay")
         # run task
         task.resume()
         self.assertEqual(worker.read(), b"okay")
