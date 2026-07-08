@@ -98,6 +98,15 @@ h2
     {
     margin: 0 20px 0 243px;
     }
+#why pre.term
+    {
+    background: #22333B;
+    color: #E2EBED;
+    font: 12px/140% Consolas, Monaco, "Courier New", monospace;
+    padding: 10px 14px;
+    margin: 14px 0 10px 0;
+    overflow-x: auto;
+    }
 #supportingText p, #why p
     {
     line-height: 150%;
