@@ -5,8 +5,10 @@ Unit test for StreamWorker
 import os
 import unittest
 
+from ClusterShell.Defaults import DEFAULTS
+from ClusterShell.Engine.Select import EngineSelect
 from ClusterShell.Worker.Worker import StreamWorker, WorkerError
-from ClusterShell.Task import task_self
+from ClusterShell.Task import task_self, task_terminate
 from ClusterShell.Event import EventHandler
 
 
@@ -369,3 +371,60 @@ class StreamTest(unittest.TestCase):
         self.assertEqual(hdlr.read_count, 1) # single line only
         os.close(rfd1)
         os.close(wfd1)
+
+    def test_011_broken_pipe_on_write_twice(self):
+        """test StreamWorker with broken pipe and subsequent writes"""
+
+        # This test is similar to test_008 but performs more write() calls
+        # after the broken pipe error to check they are safely dropped.
+
+        class TestH(EventHandler):
+            def __init__(self, testcase, rfd):
+                self.testcase = testcase
+                self.rfd = rfd
+                self.check_hup = 0
+                self.check_written = 0
+
+            def ev_hup(self, worker, node, rc):
+                self.check_hup += 1
+
+            def ev_written(self, worker, node, sname, size):
+                self.check_written += 1
+                self.testcase.assertEqual(os.read(self.rfd, 1024), b"initial")
+                # close reader, that will stop the StreamWorker
+                os.close(self.rfd)
+                worker.write(b"final")
+                # stream may be closed at this point; check that subsequent
+                # writes are dropped without error
+                worker.write(b"more", "test")
+                worker.set_write_eof()
+
+        rfd, wfd = os.pipe()
+
+        hdlr = TestH(self, rfd)
+        worker = StreamWorker(handler=hdlr)
+
+        worker.set_writer("test", wfd) # closefd=True
+        worker.write(b"initial", "test")
+
+        self.run_worker(worker)
+        self.assertEqual(hdlr.check_hup, 1)
+        self.assertEqual(hdlr.check_written, 1)
+
+
+class StreamEngineSelectTest(StreamTest):
+    """run all StreamTest tests under the select engine"""
+
+    def setUp(self):
+        # switch Engine
+        task_terminate()
+        self.engine_id_save = DEFAULTS.engine
+        DEFAULTS.engine = EngineSelect.identifier
+        # select should be supported anywhere...
+        self.assertEqual(task_self().info('engine'),
+                         EngineSelect.identifier)
+
+    def tearDown(self):
+        # restore Engine
+        DEFAULTS.engine = self.engine_id_save
+        task_terminate()
