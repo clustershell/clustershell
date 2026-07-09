@@ -2,6 +2,7 @@
 Unit test for ClusterShell.Gateway
 """
 
+import base64
 import logging
 import os
 import re
@@ -318,7 +319,7 @@ class TreeGatewayTest(TreeGatewayBaseTest):
         """test gateway channel message missing payload"""
         self._check_channel_err(
             '<message msgid="14" type="CFG" gateway="n1"></message>',
-            'Message CFG has an invalid payload')
+            re.compile(r'Message CFG has an invalid payload'))
 
     def test_channel_err_unexpected_pl(self):
         """test gateway channel message unexpected payload"""
@@ -331,14 +332,23 @@ class TreeGatewayTest(TreeGatewayBaseTest):
         # Generate TypeError (py2) or binascii.Error (py3)
         self._check_channel_err(
             '<message msgid="14" type="CFG" gateway="n1">bar</message>',
-            'Message CFG has an invalid payload')
+            re.compile(r'Message CFG has an invalid payload'))
 
     def test_channel_err_badenc_pickle_pl(self):
         """test gateway channel message badly encoded payload (pickle)"""
         # Generate pickle error
         self._check_channel_err(
             '<message msgid="14" type="CFG" gateway="n1">barm</message>',
-            'Message CFG has an invalid payload')
+            re.compile(r'Message CFG has an invalid payload'))
+
+    def test_channel_err_pickle_proto_pl(self):
+        """test gateway channel message payload with unknown pickle protocol"""
+        # Generate ValueError (unsupported pickle protocol: 7)
+        payload = base64.b64encode(b'\x80\x07spam').decode()
+        self._check_channel_err(
+            '<message msgid="14" type="CFG" gateway="n1">%s</message>'
+            % payload,
+            re.compile(r'Message CFG has an invalid payload'))
 
     def test_channel_basic_abort(self):
         """test gateway channel aborted while opened"""
@@ -492,3 +502,17 @@ class TreeGatewayTest(TreeGatewayBaseTest):
         """test gateway channel write multi (remote=False)"""
         self._check_channel_ctl_shell("cat", "n[10-49]", True, False,
                                       StdOutMessage, b"ok", write_buf=b"ok\n")
+
+
+class TreeMessageTest(unittest.TestCase):
+    """test tree communication messages (no gateway needed)"""
+
+    def test_msg_pickle_protocol(self):
+        """test message payload pickle protocol pin (wire format)"""
+        msg = ConfigurationMessage('n1')
+        msg.data_encode({'foo': 'bar'})
+        raw = base64.b64decode(msg.data)
+        # pickle protocol 2+ starts with PROTO opcode then protocol number
+        self.assertEqual(raw[0:1], b'\x80')
+        self.assertLessEqual(bytearray(raw)[1], 4)  # bytearray for py2 compat
+        self.assertEqual(msg.data_decode(), {'foo': 'bar'})

@@ -47,6 +47,8 @@ try:
 except ImportError:  # Python 2 compat
     import cPickle
 
+from pickle import HIGHEST_PROTOCOL
+
 import base64
 import binascii
 import logging
@@ -74,6 +76,10 @@ ENCODING = 'utf-8'
 
 # See Message.data_encode()
 DEFAULT_B64_LINE_LENGTH = 65536
+
+# Gateway messages may cross Python versions within a tree: cap the pickle
+# protocol at 4, readable since Python 3.4 (Python 2 writes protocol 2)
+GW_PICKLE_PROTOCOL = min(HIGHEST_PROTOCOL, 4)
 
 
 class MessageProcessingError(Exception):
@@ -298,7 +304,7 @@ class Message(object):
         # Base64 transfer encoding for MIME mandates a fixed line length
         # of 76 characters, which is way too small for our per-line ev_read
         # mechanism. So use b64encode() here instead of encodestring().
-        encoded = base64.b64encode(cPickle.dumps(inst))
+        encoded = base64.b64encode(cPickle.dumps(inst, GW_PICKLE_PROTOCOL))
 
         # We now follow relaxed RFC-4648 for base64, but we still add some
         # newlines to very long lines to avoid memory pressure (eg. --rcopy).
@@ -316,10 +322,11 @@ class Message(object):
         # if self.data is None then an exception is raised here
         try:
             return cPickle.loads(base64.b64decode(self.data))
-        except (EOFError, TypeError, cPickle.UnpicklingError, binascii.Error):
+        except (EOFError, TypeError, ValueError, cPickle.UnpicklingError,
+                binascii.Error) as exc:
             # raised by cPickle.loads() if self.data is not valid
             raise MessageProcessingError('Message %s has an invalid payload'
-                                         % self.ident)
+                                         ' (%s)' % (self.ident, exc))
 
     def data_update(self, raw):
         """append data to the instance (used for deserialization)"""
