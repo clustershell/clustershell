@@ -1282,6 +1282,16 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(r0.padding, None)
         self.assertEqual(str(r0), "0-10,15-20")
 
+    def test_padding_property_getter(self):
+        # largest padding wins
+        self.assertEqual(RangeSet("5,05,005").padding, 3)
+        self.assertEqual(RangeSet("00-99,000").padding, 3)
+        # longer unpadded elements do not mask a padded one
+        self.assertEqual(RangeSet("05,100").padding, 2)
+        self.assertEqual(RangeSet("1-10").padding, None)
+        self.assertEqual(RangeSet("-10--5,05").padding, 2)
+        self.assertEqual(RangeSet().padding, None)
+
     def test_strip_whitespaces(self):
         r0 = RangeSet(" 1,5,39-42,100")
         self._testRS(" 1,5,39-42,100", "1,5,39-42,100", 7)

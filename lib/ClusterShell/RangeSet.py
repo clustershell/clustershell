@@ -254,13 +254,12 @@ class RangeSet(set):
     def padding(self):
         """Get largest padding value of whole set"""
         result = None
-        for si in self:
-            idx, digitlen = int(si), len(si)
+        for si in set.__iter__(self):
+            digitlen = len(si)
             # explicitly padded?
             if digitlen > 1 and si[0] == '0':
-                # result always grows bigger as we iterate over a sorted set
-                # with largest padded values at the end
-                result = digitlen
+                if result is None or digitlen > result:
+                    result = digitlen
         return result
 
     @padding.setter
