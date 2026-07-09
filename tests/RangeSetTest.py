@@ -4,6 +4,7 @@
 """Unit test for RangeSet"""
 
 import binascii
+import copy
 import pickle
 import unittest
 import warnings
@@ -1106,6 +1107,21 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(rngset[0], '1')
         self.assertEqual(rngset[1], '2')
         self.assertEqual(rngset[-1], '100')
+
+    def test_pickle_empty(self):
+        """test empty RangeSet pickling"""
+        rngset = pickle.loads(pickle.dumps(RangeSet(autostep=3)))
+        self.assertEqual(rngset, RangeSet())
+        self.assertEqual(str(rngset), "")
+        self.assertEqual(len(rngset), 0)
+        self.assertEqual(rngset.autostep, 3)
+
+    def test_deepcopy_empty(self):
+        """test empty RangeSet deepcopy (uses __reduce__ too)"""
+        rngset = copy.deepcopy(RangeSet())
+        self.assertEqual(rngset, RangeSet())
+        self.assertEqual(str(rngset), "")
+        self.assertEqual(len(rngset), 0)
 
     def testIntersectionLength(self):
         """test RangeSet intersection/length"""
