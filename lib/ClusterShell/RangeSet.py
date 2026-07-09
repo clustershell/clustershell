@@ -337,7 +337,8 @@ class RangeSet(set):
 
     def __reduce__(self):
         """Return state information for pickling."""
-        return self.__class__, (str(self),), \
+        pattern = str(self) if self else None  # RangeSet("") raises by design
+        return self.__class__, (pattern,), \
             { 'padding': self.padding, \
               '_autostep': self._autostep, \
               '_version' : RangeSet._VERSION }
