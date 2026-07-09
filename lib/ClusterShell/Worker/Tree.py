@@ -201,9 +201,9 @@ class TreeWorker(DistantWorker):
                 invoke_gw_args.append("%s=%s" % (envname, envval))
 
         # It is critical to launch a remote Python executable with the same
-        # major version (ie. python or python3) as we use the (default) pickle
-        # protocol and for example, version 3+ (Python 3 with bytes
-        # support) cannot be unpickled by Python 2.
+        # major version (ie. python or python3): the pickle protocol used
+        # for gateway messages is pinned (Communication.GW_PICKLE_PROTOCOL)
+        # but still differs between Python 2 and Python 3.
         python_executable = os.getenv('CLUSTERSHELL_GW_PYTHON_EXECUTABLE',
                                       basename(sys.executable or 'python'))
         invoke_gw_args.append(python_executable)
