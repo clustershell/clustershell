@@ -565,6 +565,38 @@ contiguous node set in an expanded manner to separate lines::
     node11 node12 node13 node14 node15 node16 node17 node18 node19
 
 
+How nD folding works
+""""""""""""""""""""
+
+Internally, a multidimensional node set is stored as a list of *range
+vectors*, one range set per axis: ``x[1-2]c[1-4]`` is the vector
+``(1-2; 1-4)`` and represents the Cartesian product of its axes, that is
+2 x 4 = 8 nodes. When node sets are combined, ClusterShell *folds* the
+result in two steps: it first rewrites it as vectors that do not overlap,
+then repeatedly merges any two vectors that are identical on all axes but
+one — the only kind of merge that is always exact (for example,
+``x1c[1-4]`` and ``x2c[1-4]`` merge into ``x[1-2]c[1-4]``). Vectors are
+finally sorted, larger first. The folded output is canonical: it depends
+only on the resulting set of nodes, not on the order in which node sets
+were combined or expressed.
+
+Folding aims for compact output but does not guarantee the smallest
+possible number of vectors, as computing an optimal decomposition is a
+hard combinatorial problem. The exact decomposition of an equivalent node
+set may also vary between ClusterShell releases, so scripts should compare
+node sets with set operations rather than by their string representations.
+For example, to check that two node sets are equal, use ``-X`` (symmetric
+difference) to count the nodes that are in one set but not in the other::
+
+    $ nodeset -c "x1c[1-4],x2c[1-4]" -X "x[1-2]c[1-4]"
+    0
+
+A count of 0 means the two node sets contain exactly the same nodes. With
+``-f`` instead of ``-c``, the command prints the differing nodes, if any::
+
+    $ nodeset -f "x1c[1-4],x2c[1-4]" -X "x[1-2]c[1-5]"
+    x[1-2]c5
+
 Choosing fold axis (nD)
 """""""""""""""""""""""
 

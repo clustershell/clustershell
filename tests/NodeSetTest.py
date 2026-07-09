@@ -2261,21 +2261,21 @@ class NodeSetTest(unittest.TestCase):
         ns1.add("a[0-1]b[2-3]c[4-5]")
         self.assertEqual(ns1, NodeSet("a[0-1]b[2-3]c[4-5],a[0-2]b1c4,a2b[2-3]c4"))
         self.assertEqual(ns1, NodeSet("a2b[1-3]c4,a0b[1-2]c4,a0b3c[4-5],a1b[1-2]c4,a1b3c[4-5],a0b2c5,a1b2c5"))
-        self.assertEqual(str(ns1), "a[0-1]b[1-2]c4,a[0-1]b3c[4-5],a2b[1-3]c4,a[0-1]b2c5")
+        self.assertEqual(str(ns1), "a[0-1]b[2-3]c[4-5],a2b[1-3]c4,a[0-1]b1c4")
         self.assertEqual(len(ns1), 13)
 
         ns1 = NodeSet("a[0-1]b[2-3]c[4-5]")
         ns1.add("a[0-2]b[1-3]c[4]")
         self.assertEqual(ns1, NodeSet("a[0-1]b[2-3]c[4-5],a[0-2]b1c4,a2b[2-3]c4"))
         self.assertEqual(ns1, NodeSet("a2b[1-3]c4,a0b[1-2]c4,a0b3c[4-5],a1b[1-2]c4,a1b3c[4-5],a0b2c5,a1b2c5"))
-        self.assertEqual(str(ns1), "a[0-1]b[1-2]c4,a[0-1]b3c[4-5],a2b[1-3]c4,a[0-1]b2c5")
+        self.assertEqual(str(ns1), "a[0-1]b[2-3]c[4-5],a2b[1-3]c4,a[0-1]b1c4")
         self.assertEqual(len(ns1), 13)
 
         ns1 = NodeSet("a[0-2]b[1-3]c[4],a[0-1]b[2-3]c[4-5]")
         self.assertEqual(ns1, NodeSet("a[0-2]b[1-3]c[4],a[0-1]b[2-3]c[4-5]"))
         self.assertEqual(ns1, NodeSet("a2b[1-3]c4,a0b[1-2]c4,a0b3c[4-5],a1b[1-2]c4,a1b3c[4-5],a0b2c5,a1b2c5"))
         self.assertEqual(ns1, NodeSet("a[0-2]b[1-3]c4,a[0-1]b[2-3]c5"))
-        self.assertEqual(str(ns1), "a[0-1]b[1-2]c4,a[0-1]b3c[4-5],a2b[1-3]c4,a[0-1]b2c5")
+        self.assertEqual(str(ns1), "a[0-1]b[2-3]c[4-5],a2b[1-3]c4,a[0-1]b1c4")
         self.assertEqual(len(ns1), 13)
 
         ns1 = NodeSet("a[0-2]b[1-3]c[4-6],a[0-1]b[2-3]c[4-5]")
@@ -2330,7 +2330,7 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(len(ns1.difference(ns2)), 6)
 
         ns1 = NodeSet("a[0-2]b[1-3]c[4],a[0-1]b[2-3]c[4-5]")
-        self.assertEqual(str(ns1), "a[0-1]b[1-2]c4,a[0-1]b3c[4-5],a2b[1-3]c4,a[0-1]b2c5")
+        self.assertEqual(str(ns1), "a[0-1]b[2-3]c[4-5],a2b[1-3]c4,a[0-1]b1c4")
         self.assertEqual(ns1, NodeSet("a[0-2]b[1-3]c[4],a[0-1]b[2-3]c[4-5]"))
         self.assertEqual(ns1, NodeSet("a[0-1]b[2-3]c[4-5],a[0-2]b1c4,a2b[2-3]c4"))
         self.assertEqual(ns1, NodeSet("a2b[1-3]c4,a0b[1-2]c4,a0b3c[4-5],a1b[1-2]c4,a1b3c[4-5],a0b2c5,a1b2c5"))
