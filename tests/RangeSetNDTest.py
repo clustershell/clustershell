@@ -183,12 +183,41 @@ class RangeSetNDTest(unittest.TestCase):
             veclist.append((v1, v2, v3))
         self._testRS(veclist, "0; 5; 10\n1; 6; 11\n10; 15; 20\n11; 16; 21\n12; 17; 22\n13; 18; 23\n14; 19; 24\n15; 20; 25\n16; 21; 26\n17; 22; 27\n18; 23; 28\n19; 24; 29\n2; 7; 12\n20; 25; 30\n21; 26; 31\n22; 27; 32\n23; 28; 33\n24; 29; 34\n25; 30; 35\n26; 31; 36\n27; 32; 37\n28; 33; 38\n29; 34; 39\n3; 8; 13\n4; 9; 14\n5; 10; 15\n6; 11; 16\n7; 12; 17\n8; 13; 18\n9; 14; 19\n", 30)
 
+    def test_folding_multivariate(self):
+        # overlapping vectors absorbed into last-axis groups when expanding
+        self._testRS([["1", "2", "5"], ["1", "3", "5"], ["1", "2-3", "6"]],
+                     "1; 2-3; 5-6\n", 4)
+        # full 3D box rebuilt from single elements (multi-axis merges)
+        veclist = [(x, y, z) for x in (0, 1) for y in (0, 1) for z in (0, 1)]
+        self._testRS(veclist, "0-1; 0-1; 0-1\n", 8)
+        # merges cascading over both leading axes
+        self._testRS([["1", "1", "1"], ["1", "2", "1"], ["2", "1-2", "1"]],
+                     "1-2; 1-2; 1\n", 4)
+        # mixed length zero padding across overlapping vectors
+        self._testRS([["05", "1-2"], ["5", "1-2"], ["05-06", "2-3"]],
+                     "05; 1-3\n06; 2-3\n5; 1-2\n", 7)
+        # negative ranges
+        self._testRS([["-2-0", "1-2"], ["-1-1", "2-3"]],
+                     "-1-0; 1-3\n-2; 1-2\n1; 2-3\n", 10)
+
+    def test_folding_canonical(self):
+        # the same 13 nodes as two overlapping boxes, in both orders...
+        folded = "0-1; 2-3; 4-5\n2; 1-3; 4\n0-1; 1; 4\n"
+        self._testRS([["0-2", "1-3", "4"], ["0-1", "2-3", "4-5"]], folded, 13)
+        self._testRS([["0-1", "2-3", "4-5"], ["0-2", "1-3", "4"]], folded, 13)
+        # ...then as individual nodes in scrambled order
+        self._testRS([["1", "2", "5"], ["1", "2", "4"], ["0", "2", "5"],
+                      ["1", "3", "5"], ["2", "3", "4"], ["1", "1", "4"],
+                      ["2", "2", "4"], ["1", "3", "4"], ["0", "3", "4"],
+                      ["0", "3", "5"], ["0", "1", "4"], ["0", "2", "4"],
+                      ["2", "1", "4"]], folded, 13)
+
     def test_union(self):
         rn1 = RangeSetND([["10-100", "1-3"], ["1100-1300", "2-3"]])
         self.assertEqual(str(rn1), "1100-1300; 2-3\n10-100; 1-3\n")
         self.assertEqual(len(rn1), 675)
         rn2 = RangeSetND([["1100-1200", "1"], ["10-49", "1,3"]])
-        self.assertEqual(str(rn2), "12-13,1100-1200; 1\n10-11,14-49; 1,3\n12-13; 3\n")
+        self.assertEqual(str(rn2), "1100-1200; 1\n10-49; 1,3\n")
         self.assertEqual(len(rn2), 181)
         rnu = rn1.union(rn2)
         self.assertEqual(str(rnu), "10-100,1100-1200; 1-3\n1201-1300; 2-3\n")
@@ -209,7 +238,7 @@ class RangeSetNDTest(unittest.TestCase):
             rn1 = RangeSetND([["10", "10-13"], ["10", "9-12"]])
             rn2 = RangeSetND([["1100-1200", "1"], ["10-49", "1,3"]])
             rn1 |= rn2
-            self.assertEqual(str(rn2), "12-13,1100-1200; 1\n10-11,14-49; 1,3\n12-13; 3\n")
+            self.assertEqual(str(rn2), "1100-1200; 1\n10-49; 1,3\n")
             self.assertEqual(len(rn2), 181)
             rn2 = set([3, 5])
             self.assertRaises(TypeError, rn1.__ior__, rn2)
@@ -575,3 +604,8 @@ class RangeSetNDTest(unittest.TestCase):
         rn.update(RangeSetND([["0-4,16", "0"]]))
         self.assertEqual(len(rn), 51)
         self.assertEqual(str(rn), "0-16; 0-2\n")
+        # difference_update() leaves axis objects shared between vectors
+        rn.difference_update(RangeSetND([["8-12", "0-2"]]))
+        self.assertEqual(len(rn), 36)
+        self.assertEqual(rn, rebuilt(rn))
+        self.assertEqual(str(rn), "0-7,13-16; 0-2\n")

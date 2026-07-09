@@ -1265,8 +1265,13 @@ class RangeSetND(object):
             #   (2) larger dim first  (#elements)
             #   (3) lower first index first
             #   (4) lower last index first
-            return (-reduce(mul, [len(rg) for rg in rgvec]), \
-                    tuple((-len(rg), rg[0], rg[-1]) for rg in rgvec))
+            size = 1
+            subkeys = []
+            for rg in rgvec:
+                srtvec = rg._sorted()  # call _sorted() only once per axis
+                size *= len(srtvec)
+                subkeys.append((-len(srtvec), srtvec[0], srtvec[-1]))
+            return (-size, tuple(subkeys))
         self._veclist.sort(key=rgveckeyfunc)
 
     @precond_fold()
@@ -1319,69 +1324,72 @@ class RangeSetND(object):
         self._dirty = False
 
     def _fold_multivariate_expand(self):
-        """Multivariate nD folding: expand [phase 1]"""
-        self._veclist = [[RangeSet.fromone(i, autostep=self.autostep)
-                          for i in tvec]
-                         for tvec in set(self._iter())]
+        """Multivariate nD folding: expand [phase 1]
+
+        Group unique elements by leading coordinates, building maximal
+        disjoint vectors along the last axis."""
+        rows = {}
+        for rgvec in self._veclist:
+            last = rgvec[-1]
+            if not last:
+                continue
+            for prefix in product(*rgvec[:-1]):
+                row = rows.get(prefix)
+                if row is None:
+                    rows[prefix] = set(last)
+                else:
+                    row.update(last)
+
+        veclist = []
+        for prefix, elems in rows.items():
+            rgvec = []
+            for coord in prefix:
+                rg = RangeSet()
+                rg._autostep = self._autostep
+                set.add(rg, coord)  # fresh set
+                rgvec.append(rg)
+            rg = RangeSet()
+            rg._autostep = self._autostep
+            set.update(rg, elems)  # fresh set
+            rgvec.append(rg)
+            veclist.append(rgvec)
+        self._veclist = veclist
 
     def _fold_multivariate_merge(self):
-        """Multivariate nD folding: merge [phase 2]"""
-        full = False  # try easy O(n) passes first
-        chg = True    # new pass (eg. after change on veclist)
+        """Multivariate nD folding: merge [phase 2]
+
+        Merge vectors that differ by only one axis: group them by their
+        other axes (hashable frozenset keys), one axis at a time, until
+        no more merges are found. Expanded vectors are always disjoint,
+        so merging is a simple disjoint union on the differing axis."""
+        veclist = self._veclist
+        dim = self.dim()
+        # skip last axis on first pass, it was already merged by expand
+        startpos = dim - 2
+        chg = len(veclist) > 1
         while chg:
             chg = False
-            self._sort()  # sort veclist before new pass
-            index1, index2 = 0, 1
-            while (index1 + 1) < len(self._veclist):
-                # use 2 references on iterator to compare items by couples
-                item1 = self._veclist[index1]
-                index2 = index1 + 1
-                index1 += 1
-                while index2 < len(self._veclist):
-                    item2 = self._veclist[index2]
-                    index2 += 1
-                    new_item = [None] * len(item1)
-                    nb_diff = 0
-                    # compare 2 rangeset vector, item by item, the idea being
-                    # to merge vectors if they differ only by one item
-                    for pos, (rg1, rg2) in enumerate(zip(item1, item2)):
-                        if rg1 == rg2:
-                            new_item[pos] = rg1
-                        elif not rg1 & rg2: # merge on disjoint ranges
-                            nb_diff += 1
-                            if nb_diff > 1:
-                                break
-                            new_item[pos] = rg1 | rg2
-                        # if fully contained, keep the largest one
-                        elif (rg1 > rg2 or rg1 < rg2): # and nb_diff == 0:
-                            nb_diff += 1
-                            if nb_diff > 1:
-                                break
-                            new_item[pos] = max(rg1, rg2)
-                        # otherwise, compute rangeset intersection and
-                        # keep the two disjoint part to be handled
-                        # later...
-                        else:
-                            # intersection but do nothing
-                            nb_diff = 2
-                            break
-                    # one change has been done: use this new item to compare
-                    # with other
-                    if nb_diff <= 1:
-                        chg = True
-                        item1 = self._veclist[index1 - 1] = new_item
-                        index2 -= 1
-                        self._veclist.pop(index2)
-                    elif not full:
-                        # easy pass so break to avoid scanning all
-                        # index2; advance with next index1 for now
-                        break
-            if not chg and not full:
-                # if no change was done during the last normal pass, we do a
-                # full O(n^2) pass. This pass is done only at the end in the
-                # hope that most vectors have already been merged by easy
-                # O(n) passes.
-                chg = full = True
+            for pos in range(startpos, -1, -1):
+                if len(veclist) < 2:
+                    break
+                groups = {}
+                merged = False
+                for rgvec in veclist:
+                    key = tuple(map(frozenset, rgvec[:pos])) + \
+                          tuple(map(frozenset, rgvec[pos+1:]))
+                    gvec = groups.get(key)
+                    if gvec is None:
+                        groups[key] = rgvec
+                    else:
+                        # disjoint union on the only differing axis
+                        gvec[pos].update(rgvec[pos])
+                        merged = True
+                if merged:
+                    veclist = list(groups.values())
+                    chg = True
+            startpos = dim - 1
+        self._veclist = veclist
+        self._sort()
 
     def __or__(self, other):
         """Return the union of two RangeSetNDs as a new RangeSetND.

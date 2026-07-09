@@ -3,9 +3,12 @@
 
 """Unit test for RangeSet"""
 
+import ast
 import binascii
 import copy
+import inspect
 import pickle
+import sys
 import unittest
 import warnings
 
@@ -1485,6 +1488,36 @@ class RangeSetTest(unittest.TestCase):
         missing = mutators - set(vars(RangeSet))
         self.assertEqual(missing, set(),
                          "set mutators not overridden: %s" % sorted(missing))
+
+    def test_no_raw_set_mutation_of_other_objects(self):
+        """test that inner sets are mutated through RangeSet methods only"""
+        # a raw set.<mutator>(x, ...) call skips the _sorted_cache reset:
+        # only allowed on self (inside the override) or on a freshly
+        # created, never-read set marked with a trailing '# fresh set'
+        mutators = set(vars(set)) - set(vars(frozenset))
+        mutators.discard('__getattribute__')  # not a mutator
+        source = inspect.getsource(sys.modules[RangeSet.__module__])
+        lines = source.splitlines()
+        offenders = []
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Call) or not node.args:
+                continue
+            func = node.func
+            if not isinstance(func, ast.Attribute) \
+                    or func.attr not in mutators:
+                continue
+            if not (isinstance(func.value, ast.Name)
+                    and func.value.id == 'set'):
+                continue
+            target = node.args[0]
+            if isinstance(target, ast.Name) and target.id == 'self':
+                continue
+            if lines[node.lineno - 1].endswith('# fresh set'):
+                continue
+            offenders.append("line %d: set.%s()" % (node.lineno, func.attr))
+        self.assertEqual(offenders, [],
+                         "raw set mutation of non-self object: %s"
+                         % ", ".join(offenders))
 
     def test_pop(self):
         """test RangeSet.pop()"""
