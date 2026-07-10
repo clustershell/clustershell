@@ -333,6 +333,37 @@ class TreeWorkerTestBase(unittest.TestCase):
             srcdir.cleanup()
             destdir.cleanup()
 
+    def _tree_rcopy_dir_error(self, target):
+        """helper to rcopy directory to a bad dest (extract error -> stderr)"""
+        teh = TEventHandler()
+        srcdir = make_temp_dir()
+        srcfile = make_temp_file(b'Lorem Ipsum', suffix=".txt", dir=srcdir.name)
+        destdir = make_temp_dir()
+        # conflicting regular files at extract paths so untar always fails
+        for tgt in NodeSet(target):
+            conflict = join(destdir.name, basename(srcdir.name) + '.' + tgt)
+            with open(conflict, 'wb') as cfile:
+                cfile.write(b'conflict')
+        try:
+            worker = self.task.rcopy(srcdir.name, destdir.name, nodes=target,
+                                     handler=teh)
+            self.task.run()
+            target_cnt = len(NodeSet(target))
+            self.assertEqual(teh.ev_start_cnt, 1)
+            self.assertEqual(teh.ev_pickup_cnt, target_cnt)
+            self.assertEqual(teh.ev_hup_cnt, target_cnt)
+            self.assertEqual(teh.ev_timedout_cnt, 0)
+            self.assertEqual(teh.ev_close_cnt, 1)
+            # the rcopy failed: extract error must be reported as stderr
+            self.assertTrue(teh.ev_read_cnt > 0)
+            self.assertEqual(teh.read_snames, set([worker.SNAME_STDERR]))
+            # as bytes, like any other message (not the exception object)
+            self.assertTrue(isinstance(teh.last_read, bytes))
+        finally:
+            srcfile.close()
+            srcdir.cleanup()
+            destdir.cleanup()
+
 
 @unittest.skipIf(HOSTNAME == 'localhost', "does not work with hostname set to 'localhost'")
 class TreeWorkerTest(TreeWorkerTestBase):
@@ -634,6 +665,18 @@ class TreeWorkerTest(TreeWorkerTestBase):
     def test_tree_rcopy_file_foreign(self):
         """test tree rcopy: file, direct target, not in topology"""
         self._tree_rcopy_file(NODE_FOREIGN)
+
+    def test_tree_rcopy_dir_error_direct(self):
+        """test tree rcopy: bad dest, direct target -> stderr"""
+        self._tree_rcopy_dir_error(NODE_DIRECT)
+
+    def test_tree_rcopy_dir_error_distant(self):
+        """test tree rcopy: bad dest, distant target via gateway -> stderr"""
+        self._tree_rcopy_dir_error(NODE_DISTANT)
+
+    def test_tree_rcopy_dir_error_distant2(self):
+        """test tree rcopy: bad dest, distant 2 targets via gateway -> stderr"""
+        self._tree_rcopy_dir_error(NODE_DISTANT2)
 
     def test_tree_rcopy_no_tarfile_warning(self):
         """test tree rcopy: no tarfile warning leaks (PEP 706, <3.14 compat)"""
