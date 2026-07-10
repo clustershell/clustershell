@@ -1221,6 +1221,11 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(str(nodeset[8:10]), "stone9,wood1")
         self.assertEqual(str(nodeset[9:10]), "wood1")
         self.assertEqual(str(nodeset[9:]), "wood[1-9]")
+        # multiple patterns with stepped slices
+        self.assertEqual(str(nodeset[::2]), "stone[1,3,5,7,9],wood[2,4,6,8]")
+        self.assertEqual(str(nodeset[1::2]), "stone[2,4,6,8],wood[1,3,5,7,9]")
+        self.assertEqual(str(nodeset[2:15:4]), "stone[3,7],wood[2,6]")
+        self.assertEqual(str(nodeset[::-2]), "stone[2,4,6,8],wood[1,3,5,7,9]")
         nodeset = NodeSet("stone[1-9],water[10-12],wood[1-9]")
         self.assertEqual(str(nodeset[8:10]), "stone9,water10")
         self.assertEqual(str(nodeset[11:15]), "water12,wood[1-3]")
@@ -1229,6 +1234,7 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(str(nodeset[8:11]), "stone9,water,wood1")
         self.assertEqual(str(nodeset[9:11]), "water,wood1")
         self.assertEqual(str(nodeset[9:12]), "water,wood[1-2]")
+        self.assertEqual(str(nodeset[8::2]), "stone9,wood[1,3,5,7,9]")
 
     def test_bad_slices(self):
         nodeset = NodeSet("cluster[1-30]c[1-2]")
