@@ -125,6 +125,7 @@ class EngineEPoll(Engine):
                 # might get interrupted by a signal
                 if ex.errno == errno.EINTR:
                     continue
+                raise
 
             for fd, event in evlist:
 
