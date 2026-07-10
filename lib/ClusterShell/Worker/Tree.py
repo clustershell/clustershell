@@ -468,15 +468,19 @@ class TreeWorker(DistantWorker):
                     tarfileobj.write(buf)
                 tarfileobj.flush()
                 tarfileobj.seek(0)
-                tmptar = tarfile.open(fileobj=tarfileobj)
+                tmptar = None
                 try:
+                    tmptar = tarfile.open(fileobj=tarfileobj)
                     self.logger.debug("%s extracting %d members in dest %s",
                                       node, len(tmptar.getmembers()), self.dest)
                     tmptar.extractall(path=self.dest, **_TAR_EXTRACT_KWARGS)
-                except IOError as ex:
-                    self._on_remote_node_msgline(node, ex, 'stderr', gateway)
+                # see PEP 3151
+                except (IOError, OSError, tarfile.TarError) as ex:
+                    self._on_remote_node_msgline(node, str(ex).encode(),
+                                                 'stderr', gateway)
                 finally:
-                    tmptar.close()
+                    if tmptar is not None:
+                        tmptar.close()
                 del self._rcopy_bufs[node]
                 del self._rcopy_tars[node]
             else:
