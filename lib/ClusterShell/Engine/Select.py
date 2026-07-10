@@ -27,6 +27,7 @@ The select() system call is available on almost every UNIX-like systems.
 """
 
 import errno
+import logging
 import select
 import sys
 import time
