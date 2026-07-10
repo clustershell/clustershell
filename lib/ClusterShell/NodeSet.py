@@ -446,7 +446,7 @@ class NodeSetBase(object):
                 sl_next += num
                 if (sl_next - sl_start) % sl_step:
                     sl_next = sl_start + \
-                        ((sl_next - sl_start)/sl_step + 1) * sl_step
+                        ((sl_next - sl_start)//sl_step + 1) * sl_step
                 if sl_next >= sl_stop:
                     break
                 length += cnt
