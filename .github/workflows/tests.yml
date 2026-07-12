@@ -42,11 +42,11 @@ jobs:
         sed -i "2iexport PYTHONPATH=\$PYTHONPATH:$PYTHON_SITE_PACKAGES" ~/.bashrc
         head -3 ~/.bashrc
         ssh 127.0.0.2 'python -c "import ClusterShell; print(ClusterShell.__file__)"'
-    - name: Install pdsh to test WorkerPdsh
+    - name: Install pdsh (WorkerPdsh) and bash-completion (completion tests)
       run: |
         set -euxo pipefail
         sudo apt-get update
-        sudo apt-get -y install pdsh
+        sudo apt-get -y install pdsh bash-completion
         sudo sh -c 'echo ssh > /etc/pdsh/rcmd_default'
     - name: Add tests/bin to remote PATH
       run: |
