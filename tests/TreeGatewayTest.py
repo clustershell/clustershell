@@ -6,6 +6,7 @@ import base64
 import logging
 import os
 import re
+import select
 import unittest
 import xml.sax
 
@@ -24,6 +25,9 @@ from .TLib import HOSTNAME
 
 # enable live DEBUG logging when running the tests
 logging.basicConfig(level=logging.DEBUG)
+
+# max time (secs) to wait for a gateway reply before failing the test
+RECV_TIMEOUT = 30
 
 
 class Gateway(object):
@@ -60,7 +64,9 @@ class Gateway(object):
         self.send(msgstr.encode())
 
     def recv(self):
-        """recv buf from pseudo stdout (blocking call)"""
+        """recv buf from pseudo stdout (blocking call with timeout)"""
+        if not select.select([self.pipe_stdout[0]], [], [], RECV_TIMEOUT)[0]:
+            raise RuntimeError("no gateway reply after %ds" % RECV_TIMEOUT)
         return os.read(self.pipe_stdout[0], 4096)
 
     def wait(self):
