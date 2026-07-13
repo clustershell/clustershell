@@ -756,6 +756,12 @@ aliases (e.g. with dynamic inventory) are not directly usable with
 :ref:`clush-tool`. These commands can be adapted to your inventory as needed,
 for instance to emit ``ansible_host`` instead.
 
+Another common adaptation is to strip a DNS domain suffix when the inventory
+contains fully qualified hostnames but short names resolve on the cluster.
+Append ``| sub("\\.example\\.com$"; "")`` to the ``map`` and ``all`` filters,
+and in ``mapall``, apply it to each hostname by changing ``[r($d;.)]`` to
+``[r($d;.) | sub("\\.example\\.com$"; "")]``.
+
 The ``mapall`` upcall resolves every group in a single ``ansible-inventory
 --list`` call. As ``--list`` always dumps the whole inventory regardless of the
 group being queried, this avoids running one ``ansible-inventory`` command per
