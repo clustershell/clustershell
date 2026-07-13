@@ -10,6 +10,9 @@
 # Replace /path/to/inventory with your inventory path or directory,
 # or set ANSIBLE_INVENTORY in your environment to override it.
 #
+# Hostnames can be post-processed in jq, for instance to strip a DNS domain
+# suffix; see the Ansible inventory bindings section of the online docs.
+#
 [ansible]
 
 # Resolve group members, recursing into child groups
