@@ -30,6 +30,5 @@ include doc/extras/vim/syntax/*.vim
 include doc/extras/vim/ftdetect/*.vim
 include doc/examples/*.py
 include doc/examples/defaults.conf-rsh
-include doc/epydoc/*.conf
 include tests/*.py
 include tests/bin/*
