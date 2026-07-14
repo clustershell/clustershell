@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="490" viewBox="0 0 760 490" role="img" aria-labelledby="t d">
+  <title id="t">ClusterShell tree execution mode</title>
+  <desc id="d">Animation of a command propagating from the head node to target nodes, directly or through gateways that can be chained, then results being gathered back to the head node.</desc>
+  <style>
+    .box  { fill: #eef3f8; stroke: #64748b; stroke-width: 1.2; }
+    .gwb  { fill: #f5ecdc; stroke: #64748b; stroke-width: 1.2; }
+    .edge { stroke: #8b98a7; stroke-width: 1.3; fill: none; }
+    .lbl  { fill: #1e293b; font-weight: 600; }
+    .mut  { fill: #7d8590; }
+    .dot  { opacity: 0; }
+    .cmd  { fill: #3b82f6; }
+    .res  { fill: #26a269; }
+
+    /* command: head to gateways and direct target (1 hop) */
+    @keyframes mvA {
+      0%, 2%    { opacity: 0; transform: translate(0, 0); }
+      4%        { opacity: 1; }
+      13%       { opacity: 1; }
+      15%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+    /* command: gateways to targets and GW3 to GW4 (2 hops) */
+    @keyframes mvB {
+      0%, 17%   { opacity: 0; transform: translate(0, 0); }
+      19%       { opacity: 1; }
+      28%       { opacity: 1; }
+      30%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+    /* command: GW4 to its targets (3 hops) */
+    @keyframes mvC {
+      0%, 31%   { opacity: 0; transform: translate(0, 0); }
+      33%       { opacity: 1; }
+      37%       { opacity: 1; }
+      39%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+    /* results: all targets reply to their parent once propagation completed */
+    @keyframes mvRetLeaf {
+      0%, 46%   { opacity: 0; transform: translate(0, 0); }
+      48%       { opacity: 1; }
+      54%       { opacity: 1; }
+      56%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+    /* results: GW1, GW2 and GW4 reply after grooming their children */
+    @keyframes mvRetGW {
+      0%, 62%   { opacity: 0; transform: translate(0, 0); }
+      64%       { opacity: 1; }
+      70%       { opacity: 1; }
+      72%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+    /* results: GW3 replies last, after grooming its target and GW4 */
+    @keyframes mvRetGW3 {
+      0%, 76%   { opacity: 0; transform: translate(0, 0); }
+      78%       { opacity: 1; }
+      82%       { opacity: 1; }
+      84%, 100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+    }
+
+    @keyframes gwF {
+      0%, 13%   { fill: #f5ecdc; }
+      15%, 17%  { fill: #cfe2ff; }
+      23%       { fill: #f5ecdc; }
+      54%       { fill: #f5ecdc; }
+      56%, 62%  { fill: #d9efe2; }
+      66%, 100% { fill: #f5ecdc; }
+    }
+    @keyframes gw3F {
+      0%, 13%   { fill: #f5ecdc; }
+      15%, 17%  { fill: #cfe2ff; }
+      23%       { fill: #f5ecdc; }
+      54%       { fill: #f5ecdc; }
+      56%, 76%  { fill: #d9efe2; }
+      80%, 100% { fill: #f5ecdc; }
+    }
+    @keyframes gw4F {
+      0%, 28%   { fill: #f5ecdc; }
+      30%, 33%  { fill: #cfe2ff; }
+      39%       { fill: #f5ecdc; }
+      54%       { fill: #f5ecdc; }
+      56%, 62%  { fill: #d9efe2; }
+      66%, 100% { fill: #f5ecdc; }
+    }
+    @keyframes tgDirF {
+      0%, 13%   { fill: #eef3f8; }
+      15%, 46%  { fill: #cfe2ff; }
+      50%, 100% { fill: #eef3f8; }
+    }
+    @keyframes tgR2F {
+      0%, 28%   { fill: #eef3f8; }
+      30%, 46%  { fill: #cfe2ff; }
+      50%, 100% { fill: #eef3f8; }
+    }
+    @keyframes tgR3F {
+      0%, 37%   { fill: #eef3f8; }
+      39%, 46%  { fill: #cfe2ff; }
+      50%, 100% { fill: #eef3f8; }
+    }
+    @keyframes headF {
+      0%, 82%   { fill: #eef3f8; }
+      84%, 90%  { fill: #d9efe2; }
+      96%, 100% { fill: #eef3f8; }
+    }
+
+    .gw    { animation: gwF 8s linear infinite; }
+    .gw3   { animation: gw3F 8s linear infinite; }
+    .gw4   { animation: gw4F 8s linear infinite; }
+    .tgDir { animation: tgDirF 8s linear infinite; }
+    .tgR2  { animation: tgR2F 8s linear infinite; }
+    .tgR3  { animation: tgR3F 8s linear infinite; }
+    .hd    { animation: headF 8s linear infinite; }
+    .pA    { animation: mvA 8s linear infinite; }
+    .pB    { animation: mvB 8s linear infinite; }
+    .pC    { animation: mvC 8s linear infinite; }
+    .pL    { animation: mvRetLeaf 8s linear infinite; }
+    .pG    { animation: mvRetGW 8s linear infinite; }
+    .pG3   { animation: mvRetGW3 8s linear infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .dot { display: none; }
+      .box, .gwb { animation: none !important; }
+    }
+  </style>
+
+  <!-- edges -->
+  <g class="edge">
+    <line x1="380" y1="57"  x2="140" y2="135"/>
+    <line x1="380" y1="57"  x2="300" y2="135"/>
+    <line x1="380" y1="57"  x2="560" y2="135"/>
+    <line x1="380" y1="57"  x2="430" y2="136"/>
+    <line x1="140" y1="165" x2="84"  y2="271"/>
+    <line x1="140" y1="165" x2="140" y2="271"/>
+    <line x1="140" y1="165" x2="196" y2="271"/>
+    <line x1="300" y1="165" x2="244" y2="271"/>
+    <line x1="300" y1="165" x2="300" y2="271"/>
+    <line x1="300" y1="165" x2="356" y2="271"/>
+    <line x1="560" y1="165" x2="520" y2="271"/>
+    <line x1="560" y1="165" x2="610" y2="270"/>
+    <line x1="610" y1="300" x2="578" y2="381"/>
+    <line x1="610" y1="300" x2="634" y2="381"/>
+    <line x1="610" y1="300" x2="672" y2="385"/>
+  </g>
+
+  <!-- nodes -->
+  <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <rect class="box hd" x="320" y="23" width="120" height="34" rx="6"/>
+    <text class="lbl" x="380" y="45" font-size="13.5" text-anchor="middle">Head node</text>
+
+    <rect class="gwb gw" x="108" y="135" width="64" height="30" rx="5"/>
+    <text class="lbl" x="140" y="155" font-size="12.5" text-anchor="middle">GW1</text>
+    <rect class="gwb gw" x="268" y="135" width="64" height="30" rx="5"/>
+    <text class="lbl" x="300" y="155" font-size="12.5" text-anchor="middle">GW2</text>
+    <rect class="gwb gw3" x="528" y="135" width="64" height="30" rx="5"/>
+    <text class="lbl" x="560" y="155" font-size="12.5" text-anchor="middle">GW3</text>
+
+    <rect class="box tgDir" x="412" y="136" width="36" height="28" rx="4"/>
+    <text class="mut" x="430" y="186" font-size="11" font-style="italic" text-anchor="middle">direct (no route)</text>
+
+    <rect class="box tgR2" x="66"  y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="122" y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="178" y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="226" y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="282" y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="338" y="271" width="36" height="28" rx="4"/>
+    <rect class="box tgR2" x="502" y="271" width="36" height="28" rx="4"/>
+
+    <rect class="gwb gw4" x="578" y="270" width="64" height="30" rx="5"/>
+    <text class="lbl" x="610" y="290" font-size="12.5" text-anchor="middle">GW4</text>
+
+    <rect class="box tgR3" x="560" y="381" width="36" height="28" rx="4"/>
+    <rect class="box tgR3" x="616" y="381" width="36" height="28" rx="4"/>
+    <text class="mut" x="678" y="400" font-size="16" text-anchor="middle">&#8230;</text>
+
+    <!-- legend: node types left, message types right, evenly spaced -->
+    <rect class="box" x="187" y="442" width="14" height="12" rx="2"/>
+    <text class="mut" x="209" y="452" font-size="12">target node</text>
+    <rect class="gwb" x="185" y="467" width="18" height="14" rx="3"/>
+    <text class="mut" x="209" y="478" font-size="12">gateway</text>
+    <circle class="cmd" cx="467" cy="448" r="5"/>
+    <text class="mut" x="479" y="452" font-size="12">command propagation</text>
+    <circle class="res" cx="467" cy="474" r="5"/>
+    <text class="mut" x="479" y="478" font-size="12">results gathering</text>
+  </g>
+
+  <!-- pulses -->
+  <g>
+    <circle class="dot cmd pA"  cx="380" cy="57"  r="5" style="--dx:-240px; --dy:78px"/>
+    <circle class="dot cmd pA"  cx="380" cy="57"  r="5" style="--dx:-80px;  --dy:78px"/>
+    <circle class="dot cmd pA"  cx="380" cy="57"  r="5" style="--dx:180px;  --dy:78px"/>
+    <circle class="dot cmd pA"  cx="380" cy="57"  r="5" style="--dx:50px;   --dy:79px"/>
+
+    <circle class="dot cmd pB"  cx="140" cy="165" r="5" style="--dx:-56px;  --dy:106px"/>
+    <circle class="dot cmd pB"  cx="140" cy="165" r="5" style="--dx:0px;    --dy:106px"/>
+    <circle class="dot cmd pB"  cx="140" cy="165" r="5" style="--dx:56px;   --dy:106px"/>
+    <circle class="dot cmd pB"  cx="300" cy="165" r="5" style="--dx:-56px;  --dy:106px"/>
+    <circle class="dot cmd pB"  cx="300" cy="165" r="5" style="--dx:0px;    --dy:106px"/>
+    <circle class="dot cmd pB"  cx="300" cy="165" r="5" style="--dx:56px;   --dy:106px"/>
+    <circle class="dot cmd pB"  cx="560" cy="165" r="5" style="--dx:-40px;  --dy:106px"/>
+    <circle class="dot cmd pB"  cx="560" cy="165" r="5" style="--dx:50px;   --dy:105px"/>
+
+    <circle class="dot cmd pC"  cx="610" cy="300" r="5" style="--dx:-32px;  --dy:81px"/>
+    <circle class="dot cmd pC"  cx="610" cy="300" r="5" style="--dx:24px;   --dy:81px"/>
+    <circle class="dot cmd pC"  cx="610" cy="300" r="5" style="--dx:62px;   --dy:85px"/>
+
+    <circle class="dot res pL" cx="430" cy="136" r="5" style="--dx:-50px;  --dy:-79px"/>
+    <circle class="dot res pL" cx="84"  cy="271" r="5" style="--dx:56px;   --dy:-106px"/>
+    <circle class="dot res pL" cx="140" cy="271" r="5" style="--dx:0px;    --dy:-106px"/>
+    <circle class="dot res pL" cx="196" cy="271" r="5" style="--dx:-56px;  --dy:-106px"/>
+    <circle class="dot res pL" cx="244" cy="271" r="5" style="--dx:56px;   --dy:-106px"/>
+    <circle class="dot res pL" cx="300" cy="271" r="5" style="--dx:0px;    --dy:-106px"/>
+    <circle class="dot res pL" cx="356" cy="271" r="5" style="--dx:-56px;  --dy:-106px"/>
+    <circle class="dot res pL" cx="520" cy="271" r="5" style="--dx:40px;   --dy:-106px"/>
+    <circle class="dot res pL" cx="578" cy="381" r="5" style="--dx:32px;   --dy:-81px"/>
+    <circle class="dot res pL" cx="634" cy="381" r="5" style="--dx:-24px;  --dy:-81px"/>
+    <circle class="dot res pL" cx="672" cy="385" r="5" style="--dx:-62px;  --dy:-85px"/>
+
+    <circle class="dot res pG" cx="140" cy="135" r="5" style="--dx:240px;  --dy:-78px"/>
+    <circle class="dot res pG" cx="300" cy="135" r="5" style="--dx:80px;   --dy:-78px"/>
+    <circle class="dot res pG" cx="610" cy="270" r="5" style="--dx:-50px;  --dy:-105px"/>
+
+    <circle class="dot res pG3" cx="560" cy="135" r="5" style="--dx:-180px; --dy:-78px"/>
+  </g>
+</svg>

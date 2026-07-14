@@ -173,29 +173,13 @@ The Tree mode of ClusterShell has been the subject of `this paper`_ presented
 at the Ottawa Linux Symposium Conference in 2012 and at the PyHPC 2013
 workshop in Denver, USA.
 
-.. highlight:: text
+The animated diagram below illustrates the hierarchical command propagation
+principle with a head node, gateways (GW) and target nodes:
 
-The diagram below illustrates the hierarchical command propagation principle
-with a head node, gateways (GW) and target nodes::
-
-                           .-----------.
-                           | Head node |
-                           '-----------'
-                                /|\
-                  .------------' | '--.-----------.
-                 /               |     \           \
-            .-----.           .-----.   \          .-----.
-            | GW1 |           | GW2 |    \         | GW3 |
-            '-----'           '-----'     \        '-----'
-              /|\               /|\        \          |\
-           .-' | '-.         .-' | '-.      \         | '---.
-          /    |    \       /    |    \      \        |      \
-       .---. .---. .---. .---. .---. .---.  .---.   .---.   .-----.
-       '---' '---' '---' '---' '---' '---'  '---'   '---'   | GW4 |
-                     target nodes                           '-----'
-                                                               |
-                                                              ...
-
+.. image:: ../_static/clush-tree-mode.svg
+   :alt: Command propagation from the head node to target nodes, directly or
+         through gateways, and results gathering back to the head node.
+   :width: 100%
 
 The Tree mode is implemented at the library level, so that all applications
 using ClusterShell may benefits from it. However, this section describes how
