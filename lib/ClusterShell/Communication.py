@@ -244,7 +244,7 @@ class Channel(EventHandler):
             self.logger.error("SAXParseException: %s: %s", ex.getMessage(), msg)
             # Warning: do not send malformed raw message back
             if self.initiator:
-                self.recv(StdErrMessage(node, ex.getMessage()))
+                self.recv(StdErrMessage(node, ex.getMessage().encode(ENCODING)))
             else:
                 # target, not initiator: we can send an error message back
                 self.send(ErrorMessage('Parse error: %s' % ex.getMessage()))
@@ -255,7 +255,7 @@ class Channel(EventHandler):
             self.logger.error("MessageProcessingError: %s (initiator=%s)",
                               ex, self.initiator)
             if self.initiator:
-                self.recv(StdErrMessage(node, str(ex)))
+                self.recv(StdErrMessage(node, str(ex).encode(ENCODING)))
             else:
                 # target, not initiator: we can send an error message back
                 self.send(ErrorMessage(str(ex)))

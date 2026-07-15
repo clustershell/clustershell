@@ -16,6 +16,7 @@ from ClusterShell.Communication import ConfigurationMessage, ControlMessage, \
     TimeoutMessage, StartMessage, EndMessage, XMLReader
 from ClusterShell.Gateway import GatewayChannel
 from ClusterShell.NodeSet import NodeSet
+from ClusterShell.Propagation import PropagationChannel
 from ClusterShell.Task import Task, task_self
 from ClusterShell.Topology import TopologyGraph
 from ClusterShell.Worker.Tree import TreeWorker
@@ -522,3 +523,67 @@ class TreeMessageTest(unittest.TestCase):
         self.assertEqual(raw[0:1], b'\x80')
         self.assertLessEqual(bytearray(raw)[1], 4)  # bytearray for py2 compat
         self.assertEqual(msg.data_decode(), {'foo': 'bar'})
+
+
+class ChannelWorkerStub(object):
+    """stub channel worker for head-side channel tests"""
+
+    def __init__(self):
+        self.aborted = False
+
+    def write(self, buf, sname=None):
+        return len(buf)
+
+    def abort(self):
+        self.aborted = True
+
+
+class MetaWorkerStub(object):
+    """stub metaworker recording remote node messages"""
+
+    def __init__(self):
+        self.msglines = []
+
+    def _on_remote_node_msgline(self, node, msg, sname, gateway):
+        self.msglines.append((node, msg, sname, gateway))
+
+
+class TreeHeadChannelErrorTest(unittest.TestCase):
+    """test head-side (initiator) channel errors (no gateway needed)"""
+
+    def setUp(self):
+        self.chan = PropagationChannel(task_self(), 'gw1')
+        self.chan.worker = ChannelWorkerStub()
+        self.mw = MetaWorkerStub()
+        self.chan.workers[id(self.mw)] = self.mw
+        # gateway greeting opens the channel
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          ('<channel version="%s">' % __version__).encode())
+        self.assertTrue(self.chan.opened)
+
+    def test_head_channel_err_invalid_tag(self):
+        """test head channel invalid tag reported as stderr"""
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<foo></foo>')
+        [(node, msg, sname, gateway)] = self.mw.msglines
+        self.assertEqual(node, 'gw1')
+        self.assertEqual(msg, b'Invalid starting tag foo')
+        self.assertEqual(sname, 'stderr')
+        self.assertEqual(gateway, 'gw1')
+        # fatal channel error: channel must be closed
+        self.assertTrue(self.chan.worker.aborted)
+        self.assertFalse(self.chan.opened)
+
+    def test_head_channel_err_parse_error(self):
+        """test head channel parse error reported as stderr"""
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<message type="ABC"</message>')
+        [(node, msg, sname, gateway)] = self.mw.msglines
+        self.assertEqual(node, 'gw1')
+        self.assertTrue(isinstance(msg, bytes))
+        self.assertIn(b'not well-formed', msg)
+        self.assertEqual(sname, 'stderr')
+        self.assertEqual(gateway, 'gw1')
+        # fatal channel error: channel must be closed
+        self.assertTrue(self.chan.worker.aborted)
+        self.assertFalse(self.chan.opened)
