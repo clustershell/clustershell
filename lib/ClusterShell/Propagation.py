@@ -35,6 +35,7 @@ from ClusterShell.Communication import (Channel, ControlMessage, StdOutMessage,
                                         RoutedMessageBase, ErrorMessage,
                                         ConfigurationMessage, TimeoutMessage,
                                         RoutingMessage)
+from ClusterShell.Communication import ENCODING
 from ClusterShell.Topology import TopologyError
 
 
@@ -260,6 +261,17 @@ class PropagationChannel(Channel):
         cfg.data_encode(self.task.topology)
         self.send(cfg)
 
+    def _report_stderr(self, nodeset, buf):
+        """report buf as stderr of nodeset, as seen from the gateway"""
+        # trailing newline: splitlines() would drop an empty buf entirely (#249)
+        lines = (buf + b'\n').splitlines()
+
+        for metaworker in self.workers.values():
+            for line in lines:
+                for node in nodeset:
+                    metaworker._on_remote_node_msgline(node, line, 'stderr',
+                                                       self.gateway)
+
     def recv(self, msg):
         """process incoming messages"""
         self.logger.debug("recv: %s", msg)
@@ -269,14 +281,7 @@ class PropagationChannel(Channel):
         elif msg.type == StdErrMessage.ident and msg.srcid == 0:
             # Handle error messages when channel is not established yet
             # or if messages are non-routed (eg. gateway-related)
-            nodeset = NodeSet(msg.nodes)
-            decoded = msg.data_decode() + b'\n'
-
-            for metaworker in self.workers.values():
-                for line in decoded.splitlines():
-                    for node in nodeset:
-                        metaworker._on_remote_node_msgline(node, line, 'stderr',
-                                                           self.gateway)
+            self._report_stderr(NodeSet(msg.nodes), msg.data_decode())
         elif self.setup:
             self.recv_ctl(msg)
         elif self.opened:
@@ -350,6 +355,10 @@ class PropagationChannel(Channel):
             self.logger.debug("CTL - connection with gateway fully established")
             self.setup = True
             self.send_dequeue()
+        elif msg.type == ErrorMessage.ident:
+            # gateway error before setup (eg. invalid CFG payload)
+            self._report_stderr(NodeSet(self.gateway),
+                                msg.reason.encode(ENCODING))
         else:
             self.logger.debug("_state_config error (msg=%s)", msg)
 

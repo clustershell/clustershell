@@ -18,7 +18,7 @@ from ClusterShell.Gateway import GatewayChannel
 from ClusterShell.NodeSet import NodeSet
 from ClusterShell.Propagation import PropagationChannel
 from ClusterShell.Task import Task, task_self
-from ClusterShell.Topology import TopologyGraph
+from ClusterShell.Topology import TopologyError, TopologyGraph
 from ClusterShell.Worker.Tree import TreeWorker
 from ClusterShell.Worker.Worker import StreamWorker
 
@@ -587,3 +587,34 @@ class TreeHeadChannelErrorTest(unittest.TestCase):
         # fatal channel error: channel must be closed
         self.assertTrue(self.chan.worker.aborted)
         self.assertFalse(self.chan.opened)
+
+    def test_head_channel_gw_error_before_setup(self):
+        """test gateway error before setup reported as stderr"""
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<message type="ERR" msgid="0" reason="Message CFG '
+                          b'has an invalid payload (unsupported pickle '
+                          b'protocol: 5)"></message>')
+        [(node, msg, sname, gateway)] = self.mw.msglines
+        self.assertEqual(node, 'gw1')
+        self.assertEqual(msg, b'Message CFG has an invalid payload'
+                              b' (unsupported pickle protocol: 5)')
+        self.assertEqual(sname, 'stderr')
+        self.assertEqual(gateway, 'gw1')
+
+    def test_head_channel_gw_error_empty_reason(self):
+        """test gateway error with empty reason reported as empty line"""
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<message type="ERR" msgid="0" reason=""></message>')
+        self.assertEqual(self.mw.msglines, [('gw1', b'', 'stderr', 'gw1')])
+
+    def test_head_channel_gw_error_after_setup(self):
+        """test gateway error after setup raises TopologyError"""
+        # gateway ACK completes channel setup
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<message type="ACK" msgid="0" ack="0"></message>')
+        self.assertTrue(self.chan.setup)
+        self.assertRaises(TopologyError, self.chan.ev_read, self.chan.worker,
+                          'gw1', self.chan.SNAME_READER,
+                          b'<message type="ERR" msgid="1" reason="bad news">'
+                          b'</message>')
+        self.assertEqual(self.mw.msglines, [])
