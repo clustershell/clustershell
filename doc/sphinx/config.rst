@@ -34,7 +34,7 @@ the following files is found, in priority order::
    useful for Python virtual environments.
 
 In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will used instead. In such case, the following configuration file
+valid, it will be used instead. In that case, the following configuration file
 will be tried first for ``clush``::
 
     $CLUSTERSHELL_CFGDIR/clush.conf
@@ -224,18 +224,18 @@ of the following files is found, in priority order::
    useful for Python virtual environments.
 
 In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will used instead. In such case, the following configuration file
+valid, it will be used instead. In that case, the following configuration file
 will be tried first for *groups.conf*::
 
     $CLUSTERSHELL_CFGDIR/groups.conf
 
-This makes possible for an user to have its own *node groups* configuration.
-If no readable configuration file is found, group support will be disabled but
-other node set operations will still work.
+This makes it possible for a user to have their own *node groups*
+configuration. If no readable configuration file is found, group support will
+be disabled but other node set operations will still work.
 
 *groups.conf* defines configuration sub-directories, but may also define
-source definitions by itself. These **sources** provide external calls that
-are detailed in :ref:`group-external-sources`.
+group sources by itself. These **sources** provide external calls that are
+detailed in :ref:`group-external-sources`.
 
 The following example shows the content of a *groups.conf* file where node
 groups are bound to the source named *genders* by default::
@@ -256,39 +256,54 @@ groups are bound to the source named *genders* by default::
     list: sinfo -h -o "%P"
     reverse: sinfo -h -N -o "%P" -n $NODE
 
-The *groups.conf* files are parsed with Python's `ConfigParser`_:
+The *groups.conf* files are parsed with Python's `ConfigParser`_. The first
+section whose name is *Main* accepts the settings described in the following
+table.
 
-* The first section whose name is *Main* accepts the following keywords:
++---------+------------------------------------------------------------+
+| Key     | Value                                                      |
++=========+============================================================+
+| default | **Name of the default group source.**                      |
+|         |                                                            |
+|         | Used when a group is specified without a source, e.g.      |
+|         | ``@compute`` instead of ``@genders:compute``. Must be the  |
+|         | name of an existing group source.                          |
++---------+------------------------------------------------------------+
+| confdir | **Directories to search for .conf files that define        |
+|         | additional group sources.**                                |
+|         |                                                            |
+|         | Each ``.conf`` file in these directories may define one or |
+|         | more group source sections, as documented below. These     |
+|         | sources are merged with the group sources defined in the   |
+|         | main *groups.conf*. Duplicate group source sections are    |
+|         | not allowed in those files. Configuration files that are   |
+|         | not readable by the current user are ignored (except the   |
+|         | one that defines the default group source). The variable   |
+|         | `$CFGDIR` is replaced by the path of the highest priority  |
+|         | configuration directory found (where *groups.conf*         |
+|         | resides). The default *confdir* value enables both         |
+|         | system-wide and any installed user configuration (thanks   |
+|         | to `$CFGDIR`). Duplicate directory paths are ignored. The  |
+|         | key *groupsdir* is accepted as an alias for *confdir*; if  |
+|         | both are defined, *groupsdir* takes precedence.            |
++---------+------------------------------------------------------------+
+| autodir | **Directories to search for YAML group files.**            |
+|         |                                                            |
+|         | These files define node groups directly, without the need  |
+|         | for external commands, and are parsed by the ClusterShell  |
+|         | library itself, making them faster than upcall-based group |
+|         | sources (see :ref:`group-file-based`). A single file may   |
+|         | define multiple group sources. The variable `$CFGDIR` is   |
+|         | replaced by the path of the highest priority configuration |
+|         | directory found (where *groups.conf* resides). The default |
+|         | *autodir* value enables both system-wide and any installed |
+|         | user configuration (thanks to `$CFGDIR`). Duplicate        |
+|         | directory paths are ignored.                               |
++---------+------------------------------------------------------------+
 
-  * *default* defines a **default node group source** (eg. by referencing a
-    valid section header)
-  * *confdir* defines an optional list of directory paths where the
-    ClusterShell library should look for **.conf** files which define group
-    sources to use.  Each file in these directories with the .conf suffix
-    should contain one or more node group source sections as documented below.
-    These will be merged with the group sources defined in the main
-    *groups.conf* to form the complete set of group sources to use. Duplicate
-    group source sections are not allowed in those files. Configuration files
-    that are not readable by the current user are ignored (except the one that
-    defines the default group source). The variable `$CFGDIR` is replaced by
-    the path of the highest priority configuration directory found (where
-    *groups.conf* resides). The default *confdir* value enables both
-    system-wide and any installed user configuration (thanks to `$CFGDIR`).
-    Duplicate directory paths are ignored. The key *groupsdir* is accepted as
-    an alias for *confdir*; if both are defined, *groupsdir* takes precedence.
-  * *autodir* defines an optional list of directories where the ClusterShell
-    library should look for **.yaml** files that define in-file group
-    dictionaries. No need to call external commands for these files, they are
-    parsed by the ClusterShell library itself. Multiple group source
-    definitions in the same file is supported. The variable `$CFGDIR` is
-    replaced by the path of the highest priority configuration directory found
-    (where *groups.conf* resides). The default *confdir* value enables both
-    system-wide and any installed user configuration (thanks to `$CFGDIR`).
-    Duplicate directory paths are ignored.
-
-* Each following section (`genders`, `slurm`) defines a  group source. The
-  map, mapall, all, list and reverse upcalls are explained below in
-  :ref:`group-sources-upcalls`.
+Each following section, like `genders` and `slurm` in the example above,
+defines a group source. The **map**, **mapall**, **all**, **list** and
+**reverse** upcalls are explained below in :ref:`group-sources-upcalls`.
 
 .. _group-file-based:
 
@@ -304,7 +319,7 @@ YAML group files
 """"""""""""""""
 
 Cluster node groups can be defined in straightforward YAML files. In such a
-file, each YAML dictionary defines group to nodes mapping. **Different
+file, each YAML dictionary defines a group-to-nodes mapping. **Different
 dictionaries** are handled as **different group sources**.
 
 For compatibility reasons with previous versions of ClusterShell, this is not
@@ -326,7 +341,8 @@ Ensure that *autodir* is set in :ref:`groups_config_conf`::
 
 In the following example, we also changed the default group source
 to **roles** in :ref:`groups_config_conf` (the first dictionary defined in
-the example), so that *@roles:groupname* can just be shorted *@groupname*.
+the example), so that *@roles:groupname* can just be shortened to
+*@groupname*.
 
 .. highlight:: yaml
 
@@ -403,46 +419,72 @@ Group source upcalls
 """"""""""""""""""""
 
 Each node group source is defined by a section name (*source* name) and up to
-five upcalls:
+five upcalls, described in the following table.
 
-* **map**: External shell command used to resolve a group name into a node
-  set, list of nodes or list of node sets (separated by space characters or by
-  carriage returns). The variable *$GROUP* is replaced before executing the
-  command. Either **map** or **mapall** must be defined.
-* **mapall**: Optional external shell command that should return all
-  group-to-nodes mappings for this group source in a single call, one
-  ``group: nodes`` line per group. Useful when the source can dump all its
-  groups at once (eg. with ``sinfo`` or ``ansible-inventory --list``), as a
-  single call then serves both **map** and **list** queries from the cache.
-  **mapall** output takes precedence over the **list** upcall. If **map** is
-  also defined, it is used as a fallback for groups missing from the
-  **mapall** output (or all groups if caching is disabled); otherwise,
-  missing groups resolve to an empty node set.
-  The first ``:`` on each line separates the group name from the nodes, so
-  group names must be single words without ``:``. Duplicate group lines are
-  merged. A malformed output line makes the whole **mapall** call fail
-  (nothing is cached and the next query retries), and a failing **mapall**
-  command does not fall back to **map**.
-* **all**: Optional external shell command that should return a node set, list
-  of nodes or list of node sets of all nodes for this group source. If not
-  specified, the library will try to resolve all nodes by using the **list**
-  external command in the same group source followed by **map** for each
-  available group. The notion of *all nodes* is used by ``clush -a`` and also
-  by the special group name ``@*`` (or ``@source:*``).
-* **list**: Optional external shell command that should return the list of all
-  groups for this group source (separated by space characters or by carriage
-  returns). This upcall is not used when **mapall** is defined (unless
-  caching is disabled), as the group list is then derived from its output.
-  If neither **list** nor **mapall** is specified, ClusterShell won't be
-  able to list any available groups (eg. with ``nodeset -l``), so it is
-  highly recommended to set one of them.
-* **reverse**: Optional external shell command used to find the group(s) of a
-  single node. The variable *$NODE* is previously replaced. If this external
-  call is not specified, the reverse operation is computed in memory by the
-  library from the **list** and **map** external calls, if available. Also, if
-  the number of nodes to reverse is greater than the number of available
-  groups, the reverse external command is avoided automatically to reduce
-  resolution time.
++---------+------------------------------------------------------------+
+| Upcall  | Description                                                |
++=========+============================================================+
+| map     | **Resolves a group name into a node set.**                 |
+|         |                                                            |
+|         | External shell command that should return a node set, list |
+|         | of nodes or list of node sets (separated by space          |
+|         | characters or by carriage returns). The variable *$GROUP*  |
+|         | is replaced before executing the command. Either ``map``   |
+|         | or ``mapall`` must be defined.                             |
++---------+------------------------------------------------------------+
+| mapall  | **Returns all group-to-nodes mappings of the source in a   |
+|         | single call.**                                             |
+|         |                                                            |
+|         | Optional external shell command that should print one      |
+|         | ``group: nodes`` line per group. Useful when the source    |
+|         | can dump all its groups at once (e.g. with ``sinfo`` or    |
+|         | ``ansible-inventory --list``), as a single call then       |
+|         | serves both ``map`` and ``list`` queries from the cache.   |
+|         | ``mapall`` output takes precedence over the ``list``       |
+|         | upcall. If ``map`` is also defined, it is used as a        |
+|         | fallback for groups missing from the ``mapall`` output (or |
+|         | all groups if caching is disabled); otherwise, missing     |
+|         | groups resolve to an empty node set. The first ``:`` on    |
+|         | each line separates the group name from the nodes, so      |
+|         | group names must be single words without ``:``. Duplicate  |
+|         | group lines are merged. A malformed output line makes the  |
+|         | whole ``mapall`` call fail (nothing is cached and the next |
+|         | query retries), and a failing ``mapall`` command does not  |
+|         | fall back to ``map``.                                      |
++---------+------------------------------------------------------------+
+| all     | **Returns all nodes of the group source.**                 |
+|         |                                                            |
+|         | Optional external shell command that should return a node  |
+|         | set, list of nodes or list of node sets. If not specified, |
+|         | the library will try to resolve all nodes by using the     |
+|         | ``list`` external command in the same group source         |
+|         | followed by ``map`` for each available group. The notion   |
+|         | of *all nodes* is used by ``clush -a`` and also by the     |
+|         | special group name ``@*`` (or ``@source:*``).              |
++---------+------------------------------------------------------------+
+| list    | **Returns all group names of the source.**                 |
+|         |                                                            |
+|         | Optional external shell command that should return the     |
+|         | group names (separated by space characters or by carriage  |
+|         | returns). This upcall is not used when ``mapall`` is       |
+|         | defined (unless caching is disabled), as the group list is |
+|         | then derived from its output. If neither ``list`` nor      |
+|         | ``mapall`` is specified, ClusterShell will not be able to  |
+|         | list any available groups (e.g. with ``nodeset -l`` or     |
+|         | ``cluset -l``), so it is highly recommended to set one of  |
+|         | them.                                                      |
++---------+------------------------------------------------------------+
+| reverse | **Finds the groups a single node belongs to.**             |
+|         |                                                            |
+|         | Optional external shell command. The variable *$NODE* is   |
+|         | replaced before executing the command. If this external    |
+|         | call is not specified, the reverse operation is computed   |
+|         | in memory by the library from the ``list`` and ``map``     |
+|         | external calls, if available. Also, if the number of nodes |
+|         | to reverse is greater than the number of available groups, |
+|         | the reverse external command is avoided automatically to   |
+|         | reduce resolution time.                                    |
++---------+------------------------------------------------------------+
 
 .. highlight:: ini
 
@@ -452,12 +494,12 @@ upcall, instead of separate **map** and **list** upcalls::
     [slurmpart,sp]
     mapall: sinfo -h -o "%R: %N"
 
-In addition to context-dependent *$GROUP* and *$NODE* variables described
-above, the two following variables are always available and also replaced
-before executing shell commands:
+In addition to the context-dependent *$GROUP* and *$NODE* variables
+described above, the following two variables are always available and also
+replaced before executing shell commands:
 
-* *$CFGDIR* is replaced by *groups.conf* base directory path
-* *$SOURCE* is replaced by current source name (see an usage example just
+* *$CFGDIR* is replaced by the *groups.conf* base directory path
+* *$SOURCE* is replaced by the current source name (see a usage example just
   below)
 
 Upcall commands are executed with their standard input connected to
@@ -516,9 +558,9 @@ Return code of external calls
 """""""""""""""""""""""""""""
 
 Each external command might return a non-zero return code when the operation
-is not doable. But if the call return zero, for instance, for a non-existing
-group, the user will not receive any error when trying to resolve such unknown
-group. The desired behavior is up to the system administrator.
+is not doable. But if the call returns zero, for instance for a non-existing
+group, the user will not receive any error when trying to resolve such an
+unknown group. The desired behavior is up to the system administrator.
 
 .. _group-slurm-bindings:
 
@@ -832,7 +874,7 @@ one of the following files is found, in priority order::
     $HOME/.local/etc/clustershell/defaults.conf
 
 In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will used instead. In such case, the following configuration file
+valid, it will be used instead. In that case, the following configuration file
 will be tried first for ClusterShell defaults::
 
     $CLUSTERSHELL_CFGDIR/defaults.conf

@@ -10,3 +10,9 @@
 .wy-table-responsive {
     overflow: visible !important;
 }
+
+/* restore spacing between paragraphs inside table cells (the theme sets
+   margin-bottom: 0 on td > p, collapsing headline/detail paragraphs) */
+html.writer-html5 .rst-content table.docutils td > p:not(:last-child) {
+    margin-bottom: 12px;
+}

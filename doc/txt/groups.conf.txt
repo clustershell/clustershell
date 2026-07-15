@@ -73,10 +73,10 @@ autodir
   Optional list of directories where the ClusterShell library should look for
   **.yaml** files that define in-file group dictionaries. No need to call
   external commands for these files, they are parsed by the ClusterShell library
-  itself.  Multiple group source definitions in the same file is supported. The
+  itself.  Multiple group source definitions in the same file are supported. The
   variable *$CFGDIR* is replaced by the path of the highest priority
   configuration directory found (where groups.conf resides). The default
-  confdir value enables both system-wide and any installed user configuration
+  autodir value enables both system-wide and any installed user configuration
   (thanks to *$CFGDIR*). Duplicate directory paths are ignored.
 
 
