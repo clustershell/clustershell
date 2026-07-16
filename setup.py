@@ -23,7 +23,7 @@ import os
 from setuptools import setup, find_packages
 
 
-VERSION = '1.10'
+VERSION = '1.10.1'
 
 CFGDIR = 'etc/clustershell'
 MANDIR = 'share/man'
@@ -69,7 +69,6 @@ setup(name='ClusterShell',
                      'nodeset=ClusterShell.CLI.Nodeset:main'],
                    },
       author='Stephane Thiell',
-      author_email='sthiell@stanford.edu',
       license='LGPLv2+',
       url='https://clustershell.readthedocs.io/',
       download_url='https://github.com/clustershell/clustershell/archive/refs/tags/v%s.tar.gz' % VERSION,

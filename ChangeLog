@@ -1,3 +1,52 @@
+2026-07-16 S. Thiell <stephane@thiell.com>
+
+	* Version 1.10.1 released. The main changes are listed below.
+
+	* setup: install the ansible.conf.example group source example, which
+	was missing from binary packages in 1.10 (#645)
+
+	* NodeSet: fix stepped slices across multiple patterns on Python 3 (#661)
+
+	* RangeSet: fix unpickling of empty sets (#658)
+
+	* Communication: pin the pickle protocol used for gateway messages, fixing
+	tree mode across mixed Python versions with Python 3.14 (#658)
+
+	* Communication: fix TypeError when reporting channel errors (#673)
+
+	* Tree: report gateway errors received before channel setup (#674)
+
+	* Tree: fix rcopy extraction error reporting (#663)
+
+	* EngineClient: remove stream on broken pipe, fixing a possible hang with
+	the select engine (#651, #652)
+
+	* Engine: fix error handling in the EPoll and Select event loops (#662)
+
+	* conf: remove the deprecated Cray ACE group source example (#644)
+
+	* packaging: remove the unmaintained in-repo RPM spec file; RPM packaging
+	is maintained in the Fedora and EPEL repositories (#643)
+
+	* doc: refresh the installation guide (#653)
+
+	* doc: port library examples to Python 3 (#654)
+
+	* doc: coverage, accuracy and rendering improvements across man pages and
+	Sphinx docs (#648, #655, #666, #671, #675)
+
+	* doc: modernize the Sphinx build: remove stale epydoc config, enable
+	viewcode, update build requirements; animate the tree mode diagram
+	(#667, #668, #669, #670)
+
+	* tests: add bash completion tests and improve test portability and
+	reliability (#650, #664, #665)
+
+	* CI: build the documentation with warnings as errors on every change (#649)
+
+	* CI: publish releases to PyPI with a GitHub Actions workflow using
+	Trusted Publishing (#646)
+
 2026-07-04 S. Thiell <sthiell@stanford.edu>
 
 	* Version 1.10 released. The main changes are listed below.
