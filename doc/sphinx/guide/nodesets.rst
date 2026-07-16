@@ -20,7 +20,7 @@ and :class:`.RangeSetND` APIs match standard Python sets.  A command-line
 interface (:ref:`nodeset-tool`) which implements most of :class:`.NodeSet`
 features, is also available.
 
-Other classes of the ClusterShell library makes use of the :class:`.NodeSet`
+Other classes of the ClusterShell library make use of the :class:`.NodeSet`
 class when they come to deal with distant nodes.
 
 Using NodeSet
@@ -150,8 +150,8 @@ To split a NodeSet object into contiguous subsets, use the
     node[51-53]
     node[60-64]
 
-For further details, please use the following command to see full
-:class:`.NodeSet` API documentation.
+For further details, please see the full :doc:`NodeSet API documentation
+</api/NodeSet>`.
 
 
 .. _class-NodeSet-nD:
@@ -159,11 +159,11 @@ For further details, please use the following command to see full
 Multidimensional considerations
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Version 1.7 introduces full support of multidimensional NodeSet (eg.
+Version 1.7 introduces full support of multidimensional NodeSet (e.g.
 *da[2-5]c[1-2]p[0-1]*). The :class:`.NodeSet` interface is the same,
 multidimensional patterns are automatically detected by the parser and
 processed internally. While expanding a multidimensional NodeSet is easily
-solved by performing a cartesian product of all dimensions, folding nodes is
+solved by performing a Cartesian product of all dimensions, folding nodes is
 much more complex and time consuming. To reduce the performance impact of such
 feature, the :class:`.NodeSet` class still relies on :class:`.RangeSet` when
 only one dimension is varying (see :ref:`class-RangeSet`).  Otherwise, it uses
@@ -179,7 +179,7 @@ Extended String Pattern
 pattern*, adding support for union (with special character *","*), difference
 (with special character *"!"*), intersection (with special character *"&"*)
 and symmetric difference (with special character *"^"*) operations. String
-patterns are read from left to right, by proceeding any character operators
+patterns are read from left to right, by processing any character operators
 accordingly. The following example shows how you can use this feature::
 
     >>> print(NodeSet("node[10-42],node46!node10"))
@@ -234,8 +234,9 @@ Finding node groups
 ^^^^^^^^^^^^^^^^^^^
 
 In order to find node groups a specified node set belongs to, you can use the
-:meth:`.NodeSet.groups()` method. This method is used by ``nodeset -l
-<nodeset>`` command (see :ref:`nodeset-group-finding`). It returns a Python
+:meth:`.NodeSet.groups()` method. This method is used by the ``nodeset -l
+<nodeset>`` or ``cluset -l <nodeset>`` command (see
+:ref:`nodeset-group-finding`). It returns a Python
 dictionary where keys are groups found and values, provided for convenience,
 are tuples of the form *(group_nodeset, contained_nodeset)*. For example::
 
@@ -267,8 +268,9 @@ method to reduce node sets using matching groups, whenever possible::
     >>> print(NodeSet("example[4-6]").regroup())
     @mds,@oss
 
-The nodeset command makes use of the :meth:`.NodeSet.regroup()` method when
-using the *-r* switch (see :ref:`nodeset-regroup`).
+The ``nodeset`` and ``cluset`` commands make use of the
+:meth:`.NodeSet.regroup()` method when using the *-r* switch (see
+:ref:`nodeset-regroup`).
 
 
 .. _class-NodeSet-groups-override:
@@ -325,4 +327,4 @@ The :class:`.NodeSet` class supports object serialization through the standard
 
 
 
-.. _Python sets: http://docs.python.org/library/sets.html
+.. _Python sets: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset

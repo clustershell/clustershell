@@ -7,7 +7,7 @@ benefits of using ClusterShell are to:
 
 * provide an efficient, parallel and highly scalable command execution engine
   in Python,
-* support an unified node groups syntax and external group access (see the
+* support a unified node groups syntax and external group access (see the
   :class:`.NodeSet` class),
 * significantly speed up initial cluster setup and daily administrative tasks
   when using tools like :ref:`clush-tool` and :ref:`cluset-tool` /

@@ -41,7 +41,7 @@ provides additional features. For instance, \fBclubak\fP always displays
 its results sorted by node/nodeset.
 .sp
 You do not need to use \fBclubak\fP when using \fBclush\fP(1) as all output
-formatting features are already included in. It is provided for other usages,
+formatting features are already included in it. It is provided for other usages,
 like post\-processing results of the form \(dq\fInode:output\fP\(dq.
 .sp
 Like \fBclush\fP(1), \fBclubak\fP uses the \fIClusterShell.MsgTree\fP module of the
@@ -63,7 +63,7 @@ for \fBdshbak\fP(1) compatibility)
 same as \-b; accepted for compatibility with \fBclush\fP(1), where \-B also gathers standard error
 .TP
 .B  \-q\fP,\fB  \-\-quiet
-be quiet, print essential output only (eg. suppress the node count displayed next to gathered nodeset headers)
+be quiet, print essential output only (e.g. suppress the node count displayed next to gathered nodeset headers)
 .TP
 .B  \-v\fP,\fB  \-\-verbose
 be verbose, print informative messages; also echo each input line to standard output prefixed by \fBINPUT\fP
@@ -75,19 +75,19 @@ output more messages for debugging purpose
 disable header block and order output by nodes
 .TP
 .B  \-N
-disable labeling of command line
+disable labeling of command output
 .TP
 .B  \-r\fP,\fB  \-\-regroup
 fold nodeset using node groups
 .TP
 .BI \-\-axis\fB= RANGESET
-for nD nodesets, fold the displayed nodeset (eg. in gathered output headers) along provided axis only. Axis are indexed from 1 to n and can be specified here either using the rangeset syntax, eg. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per\-invocation equivalent of the \fBfold_axis\fP library default.
+for nD nodesets, fold the displayed nodeset (e.g. in gathered output headers) along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per\-invocation equivalent of the \fBfold_axis\fP library default.
 .TP
 .BI \-s \ GROUPSOURCE\fR,\fB \ \-\-groupsource\fB= GROUPSOURCE
 optional \fBgroups.conf\fP(5) group source to use
 .TP
 .BI \-\-groupsconf\fB= FILE
-use alternate config file for groups.conf(5)
+use alternate config file for \fBgroups.conf\fP(5)
 .TP
 .B  \-G\fP,\fB  \-\-groupbase
 do not display group source prefix (always \fI@groupname\fP)
@@ -99,13 +99,13 @@ node / line content separator string (default: \fI:\fP)
 faster but memory hungry mode (preload all messages per node)
 .TP
 .B  \-T\fP,\fB  \-\-tree
-message tree trace mode; switch to enable \fBClusterShell.MsgTree\fP trace mode, all keys/nodes being kept for each message element of the tree, thus allowing special output gathering
+message tree trace mode; switch to enable \fBClusterShell.MsgTree\fP trace mode, all keys/nodes being kept for each message element of the tree, thus allowing special output display
 .TP
 .BI \-\-interpret\-keys\fB= INTERPRET_KEYS
 whether to interpret keys (the field before the separator on each input line) as node sets. \fIINTERPRET_KEYS\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (the default). With \fBnever\fP, each key is kept as a plain string; with \fBalways\fP, every key must be a valid node set; with \fBauto\fP, keys are interpreted as node sets, but if any key cannot be parsed, \fBclubak\fP silently switches to treating all keys as plain strings.
 .TP
 .BI \-\-color\fB= WHENCOLOR
-\fBclush\fP can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. \fB\-\-color\fP command line option always takes precedence over environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR. \fB\-\-color\fP tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. \fIWHENCOLOR\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (which use color if standard output refers to a terminal). Color is set to [34m (blue foreground text) and cannot be modified.
+\fBclubak\fP can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. \fB\-\-color\fP command line option always takes precedence over environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR. \fB\-\-color\fP tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. \fIWHENCOLOR\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (which uses color if standard output refers to a terminal). Color is set to [34m (blue foreground text) and cannot be modified.
 .TP
 .B  \-\-diff
 show diff between gathered outputs
@@ -159,7 +159,7 @@ node2: 9
 \fI\%https://github.com/clustershell/clustershell/issues\fP
 .UNINDENT
 .SH AUTHOR
-Stephane Thiell <sthiell@stanford.edu>
+Stephane Thiell
 .SH COPYRIGHT
 GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 .\" Generated by docutils manpage writer.

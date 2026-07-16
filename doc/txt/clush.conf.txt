@@ -6,7 +6,7 @@
 Configuration file for `clush`
 ------------------------------
 
-:Author: Stephane Thiell, <sthiell@stanford.edu>
+:Author: Stephane Thiell
 :Date:   2026-07-04
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 :Version: 1.10
@@ -22,14 +22,17 @@ DESCRIPTION
 Locations
 ---------
 
-``clush``\(1) obtains configuration options from the following sources in the
-following order:
+``clush``\(1) obtains configuration options from the following sources, in
+decreasing order of precedence:
 
  1. command-line options
- 2. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*)
- 3. local pip user installation (*$HOME/.local/etc/clustershell/clush.conf*)
- 4. global configuration file (*$CLUSTERSHELL_CFGDIR/clush.conf*, defaults to
-    */etc/clustershell/clush.conf*)
+ 2. *$CLUSTERSHELL_CFGDIR/clush.conf* (only used when $CLUSTERSHELL_CFGDIR
+    is defined)
+ 3. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*,
+    defaults to *$HOME/.config/clustershell/clush.conf*)
+ 4. Python virtual environment (*{sys.prefix}/etc/clustershell/clush.conf*)
+ 5. local pip user installation (*$HOME/.local/etc/clustershell/clush.conf*)
+ 6. system-wide configuration file (*/etc/clustershell/clush.conf*)
 
 For each parameter, the first obtained value will be used.
 
@@ -67,7 +70,7 @@ connect_timeout
   passed to ssh. If set to *0*, no timeout occurs.
 command_prefix
   Command prefix. Generally used for specific run modes, for example to
-  implement ``sudo``\(8\) support.
+  implement ``sudo``\(8) support.
 command_timeout
   Timeout in seconds to allow a command to complete since the connection has
   been established. This parameter is passed to ssh.  In addition, the
@@ -80,7 +83,7 @@ color
   environment variables are taken into account only with `auto` argument.
   ``color`` tells  whether to use ANSI colors to surround node or nodeset
   prefix/header with escape sequences to display them in color on the terminal.
-  Valid arguments are ``never``, ``always`` or ``auto`` (which use color if
+  Valid arguments are ``never``, ``always`` or ``auto`` (which uses color if
   standard output/error refer to a terminal). Colors are set to [34m (blue
   foreground text) for stdout and [31m (red foreground text) for stderr, and
   cannot be modified.
@@ -100,7 +103,7 @@ maxrc
 password_prompt
   Enable password prompt and password forwarding to stdin? (yes/no) Generally
   used for specific run modes, for example to implement interactive
-  ``sudo``\(8\) support.
+  ``sudo``\(8) support.
 verbosity
   Set the verbosity level: `0` (quiet), `1` (default), `2` (verbose) or more
   (debug).
@@ -119,7 +122,7 @@ rsh_path
   Set the rsh binary path to use for remote connection (default is
   `rsh`). You could easily use mrsh or krsh by simply changing this value.
 rcp_path
-  Same a rsh_path for rcp command. (Default is `rcp`)
+  Same as rsh_path for rcp command. (Default is `rcp`)
 rsh_options
   Set additional options to pass to the underlying rsh/rcp command.
 
@@ -128,13 +131,13 @@ Run modes
 Since version 1.9, clush has support for run modes, which are special
 ``clush.conf``\(5) settings with a given name. Two run modes are provided in
 example configuration files that can be copied and modified. They implement
-password-based authentication with ``sshpass``\(1\) and support of interactive
-``sudo``\(8\) with password.
+password-based authentication with ``sshpass``\(1) and support of interactive
+``sudo``\(8) with password.
 
 To use a run mode with ``clush --mode``, install a configuration file in one of
 ``clush.conf``\(5)'s `confdir` (usually ``clush.conf.d``). Only configuration
-files ending in `.conf` are scanned. If the user running ``clush``\(1\) doesn't
-have read access to a configuration file, is it ignored. When ``--mode`` is
+files ending in `.conf` are scanned. If the user running ``clush``\(1) doesn't
+have read access to a configuration file, it is ignored. When ``--mode`` is
 specified, you can display all available run modes for the current user by
 enabling debug mode (``-d``).
 
@@ -170,11 +173,16 @@ FILES
   User configuration file for clush. If $XDG_CONFIG_HOME is not defined,
   *$HOME/.config/clustershell/clush.conf* is used instead.
 
+*{sys.prefix}/etc/clustershell/clush.conf*
+  Configuration file when ClusterShell is installed in a Python virtual
+  environment.
+
 *$HOME/.local/etc/clustershell/clush.conf*
   Local user configuration file for clush (default installation for pip --user)
 
 *~/.clush.conf*
-  Deprecated per-user clush configuration file.
+  Deprecated per-user clush configuration file (no longer read since
+  version 1.9).
 
 
 HISTORY
@@ -189,7 +197,7 @@ from *clush.conf*.  External commands whose outputs were used by ``clush``
 SEE ALSO
 ========
 
-``clush``\(1), ``groups.conf``\(5), ``sshpass``\(1\), ``sudo``\(8\).
+``clush``\(1), ``groups.conf``\(5), ``sshpass``\(1), ``sudo``\(8).
 
 https://clustershell.readthedocs.io/
 

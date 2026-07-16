@@ -9,14 +9,14 @@ clush
 gathering their results. It can execute commands interactively or can be used
 within shell scripts and other applications. It is a partial front-end to the
 :class:`.Task` class of the ClusterShell library (cf. :ref:`class-Task`).
-*clush* currently makes use of the Ssh worker of ClusterShell that only
-requires *ssh(1)* (we tested with OpenSSH SSH client).
+*clush* currently makes use of the Ssh worker of ClusterShell by default,
+which only requires *ssh(1)* (we tested with OpenSSH SSH client).
 
 Some features of *clush* command line tool are:
 
 * two modes of parallel cluster commands execution:
 
-  + :ref:`flat mode <clush-flat>`: sliding window of local or remote (eg.
+  + :ref:`flat mode <clush-flat>`: sliding window of local or remote (e.g.
     *ssh(1)*) commands
   + :ref:`tree mode <clush-tree>`: commands propagated to the targets
     through a tree of pre-configured gateways; gateways are then using a
@@ -31,8 +31,8 @@ Some features of *clush* command line tool are:
 * *pdsh* [#]_ options backward compatibility
 
 *clush* can be started non-interactively to run a shell command, or can be
-invoked as an interactive shell. Both modes are discussed here (clush-oneshot
-clush-interactive).
+invoked as an interactive shell. Both modes are discussed here (see
+:ref:`clush-oneshot` and :ref:`clush-interactive`).
 
 Target and filter nodes
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -46,7 +46,7 @@ Command line options
 The ``-w`` option allows you to specify remote hosts by using ClusterShell
 :class:`.NodeSet` syntax, including the node groups *@group* special syntax
 (cf. :ref:`nodeset-groupsexpr`) and the Extended String Patterns syntax (see
-:ref:`class-NodeSet-extended-patterns`) to benefits from :class:`.NodeSet`
+:ref:`class-NodeSet-extended-patterns`) to benefit from :class:`.NodeSet`
 basic arithmetic (like ``@Agroup&@Bgroup``). Additionally, the ``-x`` option
 allows you to exclude nodes from remote hosts list (the same NodeSet syntax
 can be used here). Nodes exclusion has priority over nodes addition.
@@ -85,8 +85,7 @@ nodes, in the sense of ClusterShell node groups (see
 **all** external shell command upcall).  If not properly configured, the
 ``-a`` option may lead to a runtime error like::
 
-    clush: External error: Not enough working external calls (all, or map +
-    list) defined to get all node
+    clush: External error: Not enough working methods (all or map + list) to get all nodes
 
 .. _clush-pick:
 
@@ -103,7 +102,7 @@ following example will run a script on a single random node picked from the
 Host files
 """"""""""
 
-The option ``--hostfile`` (or ``--machinefile``)  may be used to specify a
+The option ``--hostfile`` (or ``--machinefile``) may be used to specify a
 path to a file containing a list of single hosts, node sets or node groups,
 separated by spaces and lines.  It may be specified multiple times (one per
 file).
@@ -182,7 +181,7 @@ principle with a head node, gateways (GW) and target nodes:
    :width: 100%
 
 The Tree mode is implemented at the library level, so that all applications
-using ClusterShell may benefits from it. However, this section describes how
+using ClusterShell may benefit from it. However, this section describes how
 to use the tree mode with the **clush** command only.
 
 .. _clush-tree-enabling:
@@ -244,7 +243,7 @@ using the ``--topology`` command line option.
    representation of the initial propagation tree used. This is useful when
    working on Tree mode configuration.
 
-Enabling tree mode should be as much transparent as possible to the end user.
+Enabling tree mode should be as transparent as possible to the end user.
 Most **clush** options, including options defined in
 :ref:`clush.conf <clush-config>` or specified using ``-O`` or ``-o`` (ssh
 options) are propagated to the gateways and taken into account there.
@@ -261,10 +260,10 @@ behavior:
   leaf nodes using a *distant worker* like *ssh*.
 * Changing it to **no** will make *clush* establish connections up to the leaf
   parent nodes only, then the commands are executed locally on the gateways
-  (like if it would be with ``--worker=exec`` on the gateways themselves).
+  (as it would be with ``--worker=exec`` on the gateways themselves).
   This execution mode allows users to schedule remote commands on gateways
   that take a node as an argument. On large clusters, this is useful to spread
-  the load and resources used of one-shot monitoring, IPMI, or other commands
+  the load and resources used by one-shot monitoring, IPMI, or other commands
   on gateways. A simple example of use is::
 
       $ clush -w node[100-199] --remote=no /usr/sbin/ipmipower -h %h-ipmi -s
@@ -283,7 +282,7 @@ node by delegating the first steps of this CPU intensive task to the gateways.
 Fanout considerations
 """""""""""""""""""""
 
-ClusterShell uses a "sliding window" or  *fanout* of processes to avoid too
+ClusterShell uses a "sliding window" or *fanout* of processes to avoid too
 many concurrent connections and to conserve resources on the initiating hosts.
 See :ref:`clush-flat` for more details about this.
 
@@ -292,7 +291,7 @@ gateway. That is, if the *fanout* is **16**, each gateway will initiate up to
 **16** connections to their target nodes at the same time.
 
 .. note:: This is likely to **change** in the future, as it makes the *fanout*
-   behaviour different if you are using the tree mode or not. For example,
+   behavior different if you are using the tree mode or not. For example,
    some administrators are using a *fanout* value of 1 to "sequentialize" a
    command on the cluster. In tree mode, please note that in that case, each
    gateway will be able to run a command at the same time.
@@ -303,7 +302,7 @@ Remote Python executable
 """"""""""""""""""""""""
 
 You must use the same major version of Python on the gateways and the root
-node. By default, the same python executable name than the one used on the
+node. By default, the same python executable name as the one used on the
 root node will be used to launch the gateways, that is, `python` or `python3`
 (using relative path for added flexibility). You may override the selection
 of the remote Python interpreter by defining the following environment
@@ -333,7 +332,7 @@ Non-interactive (or one-shot) mode
 
 When *clush* is started non-interactively, the command is executed on the
 specified remote hosts in parallel (given the current *fanout* value and the
-number of commands to execute (see *fanout* library settings in
+number of commands to execute; see *fanout* library settings in
 :ref:`class-Task-configure`).
 
 .. _clush-gather:
@@ -344,7 +343,7 @@ Output gathering options
 If option ``-b`` or ``--dshbak`` is specified, *clush* waits for command
 completion while displaying a :ref:`progress indicator <clush-progress>` and
 then displays gathered output results. If standard output is redirected to a
-file, *clush* detects it and disable any progress indicator.
+file, *clush* detects it and disables any progress indicator.
 
 .. warning:: *clush*  will only consolidate identical command outputs if the
    command return codes are also the same.
@@ -360,7 +359,7 @@ display digested output results::
     2.6.35.6-45.fc14.x86_64
 
 
-It is common to cancel such command execution because a node is hang. When
+It is common to cancel such command execution because a node is hung. When
 using *pdsh* and *dshbak*, due to the pipe, all nodes output will be lost,
 even if all nodes have successfully run the command. When you hit CTRL-C with
 *clush*, the task is canceled but received output is not lost::
@@ -387,11 +386,11 @@ Choosing fold axis (nD)
 """""""""""""""""""""""
 
 When displaying gathered results for multidimensional node sets, *clush* folds
-the nodeset header along all *nD* axis by default. As other cluster tools
+the nodeset header along all *nD* axes by default. As other cluster tools
 barely support nD nodeset syntax, the ``--axis`` option lets you fold the
-displayed nodeset along one (or a few) axis only. ``--axis`` value is a set of
-integers from 1 to n representing selected nD axis, in the form of a number or
-a rangeset (eg. ``1``, ``1-2``, ``1,3``); a single negative number folds along
+displayed nodeset along one axis (or a few axes) only. ``--axis`` value is a set of
+integers from 1 to n representing selected nD axes, in the form of a number or
+a rangeset (e.g. ``1``, ``1-2``, ``1,3``); a single negative number folds along
 the last axis whatever the number of dimensions used. Because a node set may
 have several different dimensions, axis indices are silently truncated to fall
 in the allowed range. For example, to gather output but fold the header along
@@ -519,7 +518,7 @@ string typed so far.
 Single-character interactive commands
 """""""""""""""""""""""""""""""""""""
 
-*clush* also recognizes special single-character prefixes that allows the user
+*clush* also recognizes special single-character prefixes that allow the user
 to see and modify the current nodeset (the nodes where the commands are
 executed). These single-character interactive commands are detailed below:
 
@@ -575,7 +574,7 @@ you use the interactive mode and have some suggestions.
 File copying mode
 ^^^^^^^^^^^^^^^^^
 
-When *clush* is started with  the ``-c``  or  ``--copy``  option, it will
+When *clush* is started with the ``-c`` or ``--copy`` option, it will
 attempt to copy specified files and/or directories to the provided cluster
 nodes. The ``--dest`` option can be used to specify a single path where all
 the file(s) should be copied to on the target nodes.
@@ -626,7 +625,7 @@ to install a run mode.
 
 This section describes how to use the run modes from the provided example
 files. To use an installed run mode, just use the ``--mode`` or ``-m``
-command line option followed by the mode name (eg. ``sudo``, ``sshpass``,
+command line option followed by the mode name (e.g. ``sudo``, ``sshpass``,
 etc.).
 
 .. _clush-sshpass:
@@ -726,7 +725,7 @@ Overriding clush.conf settings
 *clush* default settings are found in a configuration described in
 :ref:`clush configuration <clush-config>`. To override any settings, use the
 ``--option`` command line option (or ``-O`` for the shorter version), and
-repeat as needed. Here is a simple example to disable the use colors in the
+repeat as needed. Here is a simple example to disable the use of colors in the
 output nodeset header::
 
     $ clush -O color=never -w node[11-12] -b echo ok
@@ -778,8 +777,8 @@ By default, ClusterShell supports the following worker identifiers:
 * **rsh**: remote worker based on *rsh*
 * **ssh**: remote worker based on *ssh* (default)
 * **pdsh**: remote worker based on *pdsh* that requires *pdsh* to be
-  installed; doesn't provide write support (eg. you cannot ``cat file | clush
-  --worker pdsh``); it is primarily an 1-to-n worker example.
+  installed; doesn't provide write support (e.g. you cannot ``cat file | clush
+  --worker pdsh``); it is primarily a 1-to-n worker example.
 
 Worker modules distributed outside of ClusterShell are also supported by
 specifying the case-sensitive full Python module name of a worker module.
@@ -789,9 +788,8 @@ specifying the case-sensitive full Python module name of a worker module.
 .. [#] LLNL parallel remote shell utility
    (https://software.llnl.gov/repo/#!/chaos/pdsh)
 
-.. _seq(1): http://linux.die.net/man/1/seq
 .. _Python unified diff:
-   http://docs.python.org/library/difflib.html#difflib.unified_diff
+   https://docs.python.org/3/library/difflib.html#difflib.unified_diff
 
 .. _ticket #166: https://github.com/clustershell/clustershell/issues/166
 .. _ticket: https://github.com/clustershell/clustershell/issues/new

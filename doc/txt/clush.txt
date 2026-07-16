@@ -6,7 +6,7 @@
 execute shell commands on a cluster
 -----------------------------------
 
-:Author: Stephane Thiell <sthiell@stanford.edu>
+:Author: Stephane Thiell
 :Date:   2026-07-04
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 :Version: 1.10
@@ -54,7 +54,7 @@ Non-interactive mode
 
   The ``-w`` option allows you to specify remote hosts by using ClusterShell
   NodeSet syntax, including the node groups ``@group`` special syntax and the
-  ``Extended Patterns`` syntax to benefits from NodeSet basic arithmetic
+  ``Extended Patterns`` syntax to benefit from NodeSet basic arithmetic
   (like ``@Agroup\&@Bgroup``). See EXTENDED PATTERNS in ``nodeset``\(1) and
   also ``groups.conf``\(5) for more information.
 
@@ -82,7 +82,7 @@ Interactive session
   searching through the command history for lines containing a specified
   string. For instance, type Control-R to search in the history for the next
   entry matching the search string typed so far.  ``clush`` also recognizes
-  special single-character prefixes that allows the user to see and modify
+  special single-character prefixes that allow the user to see and modify
   the current nodeset (the nodes where the commands are executed).
 
   Single-character interactive commands are:
@@ -106,7 +106,9 @@ Local execution ( ``--worker=exec`` or ``-R exec`` )
   dedicated *exec* worker to launch the command *locally*, for each node.
   Some parameters could be used in the command line to make a different
   command for each node. ``%h`` or ``%host`` will be replaced by node name and
-  ``%n`` or ``%rank`` by the remote rank [0-N] (to get a literal % use %%)
+  ``%n`` or ``%rank`` by the remote rank [0-N] (to get a literal % use %%).
+  ``%hosts`` will be replaced by the full target nodeset, in which case the
+  command is executed only once.
 
 File copying mode ( ``--copy`` )
   When ``clush`` is started with the ``-c`` or ``--copy`` option, it will
@@ -134,8 +136,8 @@ OPTIONS
 -s GROUPSOURCE, --groupsource=GROUPSOURCE
                       optional ``groups.conf``\(5) group source to use
 -n, --nostdin         do not watch for possible input from stdin; this should be used when ``clush`` is run in the background (or in scripts).
---groupsconf=FILE     use alternate config file for groups.conf(5)
---conf=FILE           use alternate config file for clush.conf(5)
+--groupsconf=FILE     use alternate config file for ``groups.conf``\(5)
+--conf=FILE           use alternate config file for ``clush.conf``\(5)
 -O <KEY=VALUE>, --option=<KEY=VALUE>
                       override any key=value ``clush.conf``\(5) options (repeat as needed)
 
@@ -151,20 +153,20 @@ Selecting target nodes:
   --topology=FILE     topology configuration file to use for tree mode
   --pick=N            pick N node(s) at random in nodeset
 
-Output behaviour:
+Output behavior:
   -q, --quiet         be quiet, print essential output only
   -v, --verbose       be verbose, print informative messages
   -d, --debug         output more messages for debugging purpose
-  -G, --groupbase     do not display group source prefix
-  -L                  disable header block and order output by nodes; if -b/-B is not specified, ``clush`` will wait for all commands to finish and then display aggregated output of commands with same return codes, ordered by node name; alternatively, when used in conjunction with -b/-B (eg. -bL), ``clush`` will enable a "life gathering" of results by line, such as the next line is displayed as soon as possible (eg. when all nodes have sent the line)
-  -N                  disable labeling of command line
+  -G, --groupbase     do not display group source prefix (always ``@groupname``)
+  -L                  disable header block and order output by nodes; if -b/-B is not specified, ``clush`` will wait for all commands to finish and then display aggregated output of commands with same return codes, ordered by node name; alternatively, when used in conjunction with -b/-B (e.g. -bL), ``clush`` will enable a "live gathering" of results by line, so that the next line is displayed as soon as possible (e.g. when all nodes have sent the line)
+  -N                  disable labeling of command output
   -P, --progress      show progress during command execution; if writing is performed to standard input, the live progress indicator will display the global bandwidth of data written to the target nodes
   -b, --dshbak        display gathered results in a dshbak-like way (note: it will only try to aggregate the output of commands with same return codes)
   -B                  like -b but including standard error
   -r, --regroup       fold nodeset using node groups
-  --axis=RANGESET     for nD nodesets, fold the displayed nodeset (eg. in gathered output headers) along provided axis only. Axis are indexed from 1 to n and can be specified here either using the rangeset syntax, eg. '1', '1-2', '1,3', or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per-invocation equivalent of the ``fold_axis`` library default.
+  --axis=RANGESET     for nD nodesets, fold the displayed nodeset (e.g. in gathered output headers) along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. '1', '1-2', '1,3', or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per-invocation equivalent of the ``fold_axis`` library default.
   -S, --maxrc         return the largest of command return codes
-  --color=WHENCOLOR   ``clush`` can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR.  When ``--color`` option is used these environment variables are not taken into account. ``--color`` tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. *WHENCOLOR* is ``never``, ``always`` or ``auto`` (which use color if standard output/error refer to a terminal). Colors are set to [34m (blue foreground text) for stdout and [31m (red foreground text) for stderr, and cannot be modified.
+  --color=WHENCOLOR   ``clush`` can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR.  When ``--color`` option is used these environment variables are not taken into account. ``--color`` tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. *WHENCOLOR* is ``never``, ``always`` or ``auto`` (which uses color if standard output/error refer to a terminal). Colors are set to [34m (blue foreground text) for stdout and [31m (red foreground text) for stderr, and cannot be modified.
   --diff              show diff between common outputs (find the best reference output by focusing on largest nodeset and also smaller command return code)
   --outdir=OUTDIR     output directory for stdout files (OPTIONAL)
   --errdir=ERRDIR     output directory for stderr files (OPTIONAL)
@@ -183,7 +185,7 @@ Connection options:
   -l USER, --user=USER
                       execute remote command as user
   -o OPTIONS, --options=OPTIONS
-                      can be used to give ssh options, eg. ``-o "-p 2022 -i ~/.ssh/myidrsa"``; these options are added first to ssh and override default ones
+                      can be used to give ssh options, e.g. ``-o "-p 2022 -i ~/.ssh/myidrsa"``; these options are added first to ssh and override default ones
   -t CONNECT_TIMEOUT, --connect_timeout=CONNECT_TIMEOUT
                       limit time to connect to a node
   -u COMMAND_TIMEOUT, --command_timeout=COMMAND_TIMEOUT
@@ -192,7 +194,7 @@ Connection options:
                       run mode; define MODEs in ``<confdir>/*.conf``
   -R WORKER, --worker=WORKER
                       worker name to use for connection (``exec``, ``ssh``, ``rsh``, ``pdsh``, or the name of a Python worker module), default is ``ssh``
-  --remote=REMOTE     whether to enable remote execution: in tree mode, 'yes' forces connections to the leaf nodes for execution, 'no' establishes connections up to the leaf parent nodes for execution (default is 'yes') 
+  --remote=REMOTE     whether to enable remote execution: in tree mode, 'yes' forces connections to the leaf nodes for execution, 'no' establishes connections up to the leaf parent nodes for execution (default is 'yes')
 
 For a short explanation of these options, see ``-h, --help``.
 
@@ -244,13 +246,13 @@ Display features
     Run this Linux command to get BIOS version on nodes[3-5,62] and show version differences (if any).
 
 :# clush -w dc[1-2]n[1-2] --axis=1 -b uname -r:
-    Gather output and fold the displayed nodeset header along axis 1 only, eg. show ``dc[1-2]n1,dc[1-2]n2`` rather than ``dc[1-2]n[1-2]`` in the header block. See also ``fold_axis`` in the Library Defaults configuration to change it permanently.
+    Gather output and fold the displayed nodeset header along axis 1 only, e.g. show ``dc[1-2]n1,dc[1-2]n2`` rather than ``dc[1-2]n[1-2]`` in the header block. See also ``fold_axis`` in the Library Defaults configuration to change it permanently.
 
 All nodes
 ---------
 
 :# clush -a uname -r:
-    Run command `uname -r` on all cluster nodes, see ``groups.conf``\(5) to setup all cluster nodes (`all:` field).
+    Run command `uname -r` on all cluster nodes, see ``groups.conf``\(5) to set up all cluster nodes (`all:` field).
 
 :# clush -a -x node[5,7] uname -r:
     Run command `uname -r` on all cluster nodes except on nodes node5 and node7.
@@ -284,7 +286,7 @@ Copy files
     path on remote nodes node[3-5,62].
 
 :# clush -w node[3-5,62] --rcopy /etc/motd --dest /tmp:
-    Copy `/etc/motd` from remote nodes node[3-5,62] to local `/tmp` directory, each file having their remote hostname appended, eg. `/tmp/motd.node3`.
+    Copy `/etc/motd` from remote nodes node[3-5,62] to local `/tmp` directory, each file having their remote hostname appended, e.g. `/tmp/motd.node3`.
 
 FILES
 =====
@@ -297,11 +299,16 @@ FILES
   User configuration file for clush. If $XDG_CONFIG_HOME is not defined,
   *$HOME/.config/clustershell/clush.conf* is used instead.
 
+*{sys.prefix}/etc/clustershell/clush.conf*
+  Configuration file when ClusterShell is installed in a Python virtual
+  environment.
+
 *$HOME/.local/etc/clustershell/clush.conf*
   Local user configuration file for clush (default installation for pip --user)
 
 *~/.clush.conf*
-  Deprecated per-user clush configuration file.
+  Deprecated per-user clush configuration file (no longer read since
+  version 1.9).
 
 *~/.clush_history*
   File in which interactive ``clush`` command history is saved.

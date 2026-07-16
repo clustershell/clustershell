@@ -4,7 +4,7 @@ Installation
 ============
 
 ClusterShell is distributed in several packages. On RedHat-like OS, we
-recommend to use the RPM package (.rpm) distribution.
+recommend using the RPM package (.rpm) distribution.
 
 As system software for cluster, ClusterShell is primarily made for
 system-wide installation to be used by system administrators. However,
@@ -53,9 +53,9 @@ Distribution
 ------------
 
 ClusterShell is an open-source project distributed under the GNU Lesser General
-Public License version or later (`LGPL v2.1+`_), which means that many
+Public License version 2.1 or later (`LGPL v2.1+`_), which means that many
 possibilities are offered to the end user. Also, as a software library,
-ClusterShell should remain easily available to everyone. Hopefully, packages are
+ClusterShell should remain easily available to everyone. Fortunately, packages are
 currently available for Fedora Linux, RHEL (through EPEL repositories), Debian,
 Arch Linux and more.
 
@@ -71,8 +71,8 @@ EPEL 8, 9 and 10.
 Install ClusterShell from EPEL
 """"""""""""""""""""""""""""""
 
-First you have to enable the EPEL repository. We recommend to download and
-install the `EPEL`_ repository RPM package. On Alma Linux and Rocky Linux,
+First you have to enable the EPEL repository. We recommend downloading and
+installing the `EPEL`_ repository RPM package. On Alma Linux and Rocky Linux,
 this can be easily done using the following command::
 
     $ dnf install epel-release
@@ -122,8 +122,8 @@ Install ClusterShell from Fedora Updates Testing
 
 Recent releases of ClusterShell are first available through the
 `Test Updates`_ repository of Fedora, then it is later pushed to the stable
-*updates* repository. The following ``dnf`` command will also checks for
-packages availability in the *updates-testing* repository::
+*updates* repository. The following ``dnf`` command will also check for
+package availability in the *updates-testing* repository::
 
     $ dnf list \*clustershell --enablerepo=updates-testing
 
@@ -155,7 +155,7 @@ To install it on Debian, simply use::
 
     $ apt-get install clustershell
 
-You can get the latest version on::
+You can get the latest version on:
 
 * https://packages.debian.org/sid/clustershell
 
@@ -174,7 +174,7 @@ Installing ClusterShell the Python way
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. warning:: Installing ClusterShell as root using pip [#]_ is discouraged and
-   can result in conflicting behaviour with the system package manager.  Use
+   can result in conflicting behavior with the system package manager.  Use
    packages provided by your OS instead to install ClusterShell system-wide.
 
 .. _install-pip-user:
@@ -182,7 +182,7 @@ Installing ClusterShell the Python way
 Installing ClusterShell as user using pip
 """""""""""""""""""""""""""""""""""""""""
 
-To install ClusterShell as a standard Python package using pip as an user::
+To install ClusterShell as a standard Python package using pip as a user::
 
     $ pip install --user ClusterShell
 
@@ -191,13 +191,10 @@ Or alternatively, using the source tarball::
     $ pip install --user ClusterShell-1.x.tar.gz
 
 Then, you might need to update your ``PATH`` to easily use the :ref:`tools`,
-and possibly set the ``PYTHONPATH`` environment variable to be able to import
-the library, and finally ``MANPATH`` for the man pages::
+and ``MANPATH`` for the man pages (the library itself is installed in the
+user site-packages directory, which Python searches by default)::
 
     $ export PATH=$PATH:~/.local/bin
-    $
-    $ # Might also be needed:
-    $ export PYTHONPATH=$PYTHONPATH:~/.local/lib
     $ export MANPATH=$MANPATH:$HOME/.local/share/man
 
 .. note:: On macOS, ``pip install --user`` places the tools in
@@ -225,7 +222,7 @@ in an isolated environment::
    Python interpreter where ClusterShell is installed: use
    ``#!/usr/bin/python3`` with distribution packages or
    ``pip install --user``, or your virtual environment's interpreter
-   (eg. ``#!/usr/bin/env python3`` with the environment activated).
+   (e.g. ``#!/usr/bin/env python3`` with the environment activated).
 
 .. _install-source:
 

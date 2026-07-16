@@ -24,12 +24,12 @@ class (`Python sets`_), and thus provides methods like :meth:`.RangeSet.union`,
 :meth:`.RangeSet.difference_update()` and
 :meth:`.RangeSet.symmetric_difference_update`.
 
-In v1.9, the implementation of zero-based padding of indexes (e.g. `001`) has
+In v1.9, the implementation of zero-based padding of indexes (e.g. ``001``) has
 been improved. The inner set contains indexes as strings with the padding
-included, which allows the use of mixed length zero-padded indexes (eg. using
-both `01` and `001` is valid and supported in the same object). Prior to v1.9,
+included, which allows the use of mixed length zero-padded indexes (e.g. using
+both ``01`` and ``001`` is valid and supported in the same object). Prior to v1.9,
 zero-padding was a simple display feature of fixed length per
-:class:`.RangeSet` object, and indexes where stored as integers in the inner
+:class:`.RangeSet` object, and indexes were stored as integers in the inner
 set.
 
 To iterate over indexes as strings with zero-padding included, you can now
@@ -51,9 +51,9 @@ position of an element, the reverse of :meth:`.RangeSet.__getitem__()`
 RangeSetND class
 ----------------
 
-The :class:`.RangeSetND` class builds a N-dimensional RangeSet mutable object
+The :class:`.RangeSetND` class builds an N-dimensional RangeSet mutable object
 and provides the common set methods. This class is public and may be used
-directly, however we think it is less convenient to manipulate that
+directly, however we think it is less convenient to manipulate than
 :class:`.NodeSet` and does not necessarily provide the same one-dimension
 optimization (see :ref:`class-NodeSet-nD`). Several constructors are
 available, using RangeSet objects, strings or individual multidimensional
@@ -90,4 +90,4 @@ tuples, for instance::
     [('1', '4'), ('1', '5')]
 
 
-.. _Python sets: http://docs.python.org/library/sets.html
+.. _Python sets: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset
