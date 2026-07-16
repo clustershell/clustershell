@@ -13,6 +13,42 @@ new ``clush`` and ``clubak`` options, and refreshed project governance. We
 would like to thank everyone who contributed to this release in one way or
 another.
 
+Version 1.10.1
+^^^^^^^^^^^^^^
+
+This version contains bug fixes and packaging improvements over 1.10:
+
+* The :ref:`Ansible inventory group source example <group-ansible-bindings>`
+  file ``ansible.conf.example`` is now installed by ``setup.py``, making it
+  available in binary packages (pip, distributions). In 1.10, it was only
+  shipped in the source distribution.
+
+* Tree mode now works across mixed Python versions again: Python 3.14
+  changed the default pickle protocol, so the protocol used for gateway
+  messages is now pinned. Gateway error reporting was also improved.
+
+* Fixed error handling in the engine event loops, including a possible hang
+  when writing to a closed command stream (broken pipe).
+
+* Fixed stepped slices across multiple patterns in ``NodeSet`` and
+  unpickling of empty ``RangeSet`` objects.
+
+* The deprecated Cray ACE group source example was removed.
+
+* The unmaintained RPM spec file was removed from the source tree; RPM
+  packaging for Fedora and EPEL is maintained in Fedora dist-git. See the
+  Building section in the README.
+
+* Documentation: refreshed installation guide, library examples ported to
+  Python 3, an animated tree mode propagation diagram, and many accuracy
+  and coverage improvements across the man pages and this documentation.
+
+* Releases are now built and published to PyPI by a GitHub Actions workflow
+  using `Trusted Publishing`_, and the documentation is built with warnings
+  as errors on every change.
+
+For more details, please have a look at `GitHub Issues for 1.10.1 milestone`_.
+
 Main changes in 1.10
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -90,8 +126,8 @@ a round of reliability fixes:
   a worker can be cancelled cleanly and a failing gateway no longer blocks the
   whole command; gateway failover was fixed accordingly.
 
-* ``ev_pickup`` now fires only once a command can no longer be rerouted, with a
-  proper 1:1 pairing with ``ev_hup`` and clearer reroute event reporting (shown
+* ``ev_pickup`` now fires only once a command can no longer be rerouted, with
+  proper pairing with ``ev_hup`` and clearer reroute event reporting (shown
   in ``clush`` and quietable with ``-q``).
 
 * Fixed reverse copy (``--rcopy``) when a remote node closes, so extraction
@@ -908,6 +944,8 @@ Please see :ref:`install-pip-user`.
 .. _GitHub Issues for 1.9.2 milestone: https://github.com/cea-hpc/clustershell/issues?q=milestone%3A1.9.2
 .. _GitHub Issues for 1.9.3 milestone: https://github.com/cea-hpc/clustershell/issues?q=milestone%3A1.9.3
 .. _GitHub Issues for 1.10 milestone: https://github.com/clustershell/clustershell/issues?q=milestone%3A1.10
+.. _GitHub Issues for 1.10.1 milestone: https://github.com/clustershell/clustershell/issues?q=milestone%3A1.10.1
+.. _Trusted Publishing: https://docs.pypi.org/trusted-publishers/
 .. _High Performance Software Foundation (HPSF): https://hpsf.io/
 .. _LGPL v2.1+: https://www.gnu.org/licenses/old-licenses/lgpl-2.1.en.html
 .. _CeCILL-C V1: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
