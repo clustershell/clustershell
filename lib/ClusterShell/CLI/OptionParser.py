@@ -151,7 +151,7 @@ class OptionParser(optparse.OptionParser):
         optgrp.add_option("-L", action="store_true", dest="line_mode",
             help="disable header block and order output by nodes")
         optgrp.add_option("-N", action="store_false", dest="label",
-            default=True, help="disable labeling of command line")
+            default=True, help="disable labeling of command output")
         if dshbak_compat:
             optgrp.add_option("-b", "-c", "--dshbak", action="store_true",
                 dest="gather", help="gather nodes with same output")

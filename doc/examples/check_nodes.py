@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # check_nodes.py: ClusterShell simple example script.
 #
-# This script runs a simple command on remote nodes and report node
+# This script runs a simple command on remote nodes and reports node
 # availability (basic health check) and also min/max boot dates.
 # It shows an example of use of Task, NodeSet and EventHandler objects.
 # Feel free to copy and modify it to fit your needs.

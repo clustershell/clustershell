@@ -89,24 +89,26 @@ Task info keys and their default values:
 | fanout          | 64             | Ssh *fanout* window (integer)      |
 +-----------------+----------------+------------------------------------+
 | connect_timeout | 10             | Value passed to ssh or pdsh        |
-|                 |                | (integer)                          |
+|                 |                | (float)                            |
 +-----------------+----------------+------------------------------------+
 | command_timeout | 0 (no timeout) | Value passed to ssh or pdsh        |
-|                 |                | (integer)                          |
+|                 |                | (float)                            |
 +-----------------+----------------+------------------------------------+
 
-Below is an example of `print_debug` override. As you can see, we set the
-function `print_csdebug(task, s)` as the value. When debugging is enabled,
+Below is an example of ``print_debug`` override. As you can see, we set the
+function ``print_csdebug(task, s)`` as the value. When debugging is enabled,
 this function will be called for any debug text line. For example, this
-function searches for any known patterns and print a modified debug line to
+function searches for any known patterns and prints a modified debug line to
 stdout when found::
 
+    import re
+
     def print_csdebug(task, s):
-       m = re.search(r"(\w+): SHINE:\d:(\w+):", s)
-       if m:
-           print("%s<pickle>" % m.group(0))
-       else:
-           print(s)
+        m = re.search(r"(\w+): SHINE:\d:(\w+):", s)
+        if m:
+            print("%s<pickle>" % m.group(0))
+        else:
+            print(s)
 
     # Install the new debug printing function
     task_self().set_info("print_debug", print_csdebug)
@@ -129,15 +131,15 @@ Distant usage::
     task.shell(command, nodes=nodeset [, handler=handler] [, timeout=secs])
 
 This method makes use of the default local or distant worker. ClusterShell
-uses a default Worker based on the Python Popen2 standard module to execute
-local commands, and a Worker based on *ssh* (Secure SHell) for distant
+uses a default Worker based on the Python *subprocess* standard module to
+execute local commands, and a Worker based on *ssh* (Secure SHell) for distant
 commands.
 
 If the Task is not running, the command is scheduled for later execution. If
 the Task is currently running, the command is executed as soon as possible
 (depending on the current *fanout*).
 
-To set a per-worker (eg. per-command) timeout value, just use the timeout
+To set a per-worker (e.g. per-command) timeout value, just use the timeout
 parameter (in seconds), for example::
 
     task.shell("uname -r", nodes=remote_nodes, handler=ehandler, timeout=5)
@@ -177,12 +179,12 @@ Task thread. From a library user point of view, the task thread is blocked
 until the end of the command executions.
 
 Please note that the special method :meth:`.Task.run` does a
-:meth:`.Task.shell` and a :meth:`.Task.resume` in once.
+:meth:`.Task.shell` and a :meth:`.Task.resume` in one call.
 
 To set a Task execution timeout, use the optional *timeout* parameter to set
 the timeout value in seconds. Once this time is elapsed when the Task is still
-running, the running Task raises ``TimeoutError`` exception, cleaning by the
-way all scheduled workers and timers. Using such a timeout ensures that the
+running, the running Task raises ``TimeoutError`` exception, cleaning up all
+scheduled workers and timers in the process. Using such a timeout ensures that the
 Task will not exceed a given time for all its scheduled works. You can also
 configure per-worker timeout that generates an
 :meth:`.EventHandler.ev_close` event (with ``timedout`` set to ``True``) but
@@ -224,7 +226,7 @@ For example, it is safe to call this method from an event handler within the
 task itself. On abort, all scheduled workers (shell command, file copy) and
 timers are cleaned and :meth:`.Task.resume` returns, unblocking the Task
 thread from a library user point of view. Please note that commands being
-executed remotely are not necessary stopped (this is due to *ssh(1)*
+executed remotely are not necessarily stopped (this is due to *ssh(1)*
 behavior).
 
 
@@ -248,7 +250,7 @@ associated EventHandler is called.
 To configure a timer, use the following (secs in seconds with floating point
 precision)::
 
-    task.timer(self, fire=secs, handler=handler [, interval=secs])
+    task.timer(fire=secs, handler=handler [, interval=secs])
 
 
 .. _task-default-worker:
@@ -259,7 +261,7 @@ Changing default worker
 When calling :meth:`.Task.shell` or :meth:`.Task.copy` the Task object creates
 a worker instance for each call. When the *nodes* argument is defined, the
 worker used for these calls is based on Task default *distant_workername*
-(default: ``ssh``). Change this value to use another worker, by example
+(default: ``ssh``). Change this value to use another worker, for example
 **rsh**::
 
     from ClusterShell.Task import task_self
@@ -271,7 +273,7 @@ Thread safety and Task objects
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-ClusterShell is an event-based library and one of its advantage is to avoid
+ClusterShell is an event-based library and one of its advantages is to avoid
 the use of threads (and their safety issues), so it's mainly not thread-safe.
 When possible, avoid the use of threads with ClusterShell. However, it's
 sometimes not so easy, first because another library you want to use in some
@@ -302,7 +304,7 @@ example::
 
     from ClusterShell.Worker.Ssh import WorkerSsh
 
-    worker = WorkerSsh('node3', command="/bin/echo alright")
+    worker = WorkerSsh('node3', handler=None, command="/bin/echo alright")
 
 To be used in a Task, add the worker to it with::
 
@@ -313,4 +315,4 @@ worker, which should behave the same manner as the Ssh worker::
 
     from ClusterShell.Worker.Pdsh import WorkerPdsh
 
-    worker = WorkerPdsh('node3', command="/bin/echo alright")
+    worker = WorkerPdsh('node3', handler=None, command="/bin/echo alright")

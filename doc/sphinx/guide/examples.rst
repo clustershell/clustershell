@@ -38,7 +38,7 @@ Result::
 Remote command example with live output (event-based mode)
 ----------------------------------------------------------
 
-The following example shows how to use the event-based programmation model by
+The following example shows how to use the event-based programming model by
 installing an EventHandler and listening for :meth:`.EventHandler.ev_read`
 (we've got a line to read) and :meth:`.EventHandler.ev_hup` (one command has
 just completed) events. The goal here is to print standard outputs of ``uname
@@ -50,12 +50,12 @@ erroneous return codes::
 
     class MyHandler(EventHandler):
 
-       def ev_read(self, worker, node, sname, msg):
-           print("%s: %s" % (node, msg.decode()))
+        def ev_read(self, worker, node, sname, msg):
+            print("%s: %s" % (node, msg.decode()))
 
-       def ev_hup(self, worker, node, rc):
-           if rc != 0:
-               print("%s: returned with error code %s" % (node, rc))
+        def ev_hup(self, worker, node, rc):
+            if rc != 0:
+                print("%s: returned with error code %s" % (node, rc))
 
     task = task_self()
 
@@ -70,7 +70,7 @@ erroneous return codes::
 .. note:: The example scripts use ``#!/usr/bin/python3`` as ClusterShell is
    usually installed for the system Python interpreter (distribution packages
    or ``pip install --user``). If you installed ClusterShell in a virtual
-   environment, adjust the interpreter line accordingly (eg.
+   environment, adjust the interpreter line accordingly (e.g.
    ``#!/usr/bin/env python3``).
 
 The following script is available as an example in the source repository and
@@ -79,7 +79,7 @@ is usually packaged with ClusterShell::
     #!/usr/bin/python3
     # check_nodes.py: ClusterShell simple example script.
     #
-    # This script runs a simple command on remote nodes and report node
+    # This script runs a simple command on remote nodes and reports node
     # availability (basic health check) and also min/max boot dates.
     # It shows an example of use of Task, NodeSet and EventHandler objects.
     # Feel free to copy and modify it to fit your needs.

@@ -50,7 +50,7 @@ The following table describes available ``clush`` config file settings.
 +-----------------+----------------------------------------------------+
 | Key             | Value                                              |
 +=================+====================================================+
-| fanout          | Size of the sliding window of connectors (eg. max  |
+| fanout          | Size of the sliding window of connectors (e.g. max |
 |                 | number of *ssh(1)* allowed to run at the same      |
 |                 | time).                                             |
 +-----------------+----------------------------------------------------+
@@ -64,12 +64,12 @@ The following table describes available ``clush`` config file settings.
 |                 | identify a section defining a mode. Duplicate      |
 |                 | modes are not allowed in those files.              |
 |                 | Configuration files that are not readable by the   |
-|                 | current user are ignored. The variable `$CFGDIR`   |
+|                 | current user are ignored. The variable ``$CFGDIR`` |
 |                 | is replaced by the path of the highest priority    |
 |                 | configuration directory found (where *clush.conf*  |
 |                 | resides). The default *confdir* value enables both |
 |                 | system-wide and any installed user configuration   |
-|                 | (thanks to `$CFGDIR`). Duplicate directory paths   |
+|                 | (thanks to ``$CFGDIR``). Duplicate directory paths |
 |                 | are ignored.                                       |
 +-----------------+----------------------------------------------------+
 | connect_timeout | Timeout in seconds to allow a connection to        |
@@ -87,17 +87,17 @@ The following table describes available ``clush`` config file settings.
 |                 | complete in less than (connect_timeout \+          |
 |                 | command_timeout). If set to 0, no timeout occurs.  |
 +-----------------+----------------------------------------------------+
-| color           | Whether  to  use  ANSI  colors  to  surround node  |
+| color           | Whether to use ANSI colors to surround node        |
 |                 | or nodeset prefix/header with escape sequences to  |
 |                 | display them in color on the terminal. Valid       |
 |                 | arguments are *never*, *always* or *auto* (which   |
-|                 | use color if standard output/error refer to a      |
+|                 | uses color if standard output/error refer to a     |
 |                 | terminal).                                         |
 |                 | Colors are set to ``[34m`` (blue foreground text)  |
 |                 | for stdout and ``[31m`` (red foreground text) for  |
 |                 | stderr, and cannot be modified.                    |
 +-----------------+----------------------------------------------------+
-| fd_max          | Maximum  number  of  open  file descriptors        |
+| fd_max          | Maximum number of open file descriptors            |
 |                 | permitted per ``clush`` process (soft resource     |
 |                 | limit for open files). This limit can never exceed |
 |                 | the system (hard) limit. The *fd_max* (soft) and   |
@@ -174,7 +174,7 @@ configuration files ending in **.conf** are scanned. If the user running
 When ``--mode`` is specified, you can display all available run modes for
 the current user by enabling debug mode (``-d``).
 
-Example of a run mode configuration file (eg.
+Example of a run mode configuration file (e.g.
 ``/etc/clustershell/clush.conf.d/sudo.conf``) to add support for interactive
 sudo::
 
@@ -204,7 +204,7 @@ groups.conf
 ^^^^^^^^^^^
 
 ClusterShell loads *groups.conf* configuration files that define how to
-obtain node groups configuration, ie. the way the library should access
+obtain node groups configuration, i.e. the way the library should access
 file-based or external node group **sources**.
 
 The following configuration file defines system-wide default values for
@@ -279,11 +279,12 @@ table.
 |         | not allowed in those files. Configuration files that are   |
 |         | not readable by the current user are ignored (except the   |
 |         | one that defines the default group source). The variable   |
-|         | `$CFGDIR` is replaced by the path of the highest priority  |
-|         | configuration directory found (where *groups.conf*         |
-|         | resides). The default *confdir* value enables both         |
-|         | system-wide and any installed user configuration (thanks   |
-|         | to `$CFGDIR`). Duplicate directory paths are ignored. The  |
+|         | ``$CFGDIR`` is replaced by the path of the highest         |
+|         | priority configuration directory found (where              |
+|         | *groups.conf* resides). The default *confdir* value        |
+|         | enables both system-wide and any installed user            |
+|         | configuration (thanks to ``$CFGDIR``). Duplicate           |
+|         | directory paths are ignored. The                           |
 |         | key *groupsdir* is accepted as an alias for *confdir*; if  |
 |         | both are defined, *groupsdir* takes precedence.            |
 +---------+------------------------------------------------------------+
@@ -293,12 +294,12 @@ table.
 |         | for external commands, and are parsed by the ClusterShell  |
 |         | library itself, making them faster than upcall-based group |
 |         | sources (see :ref:`group-file-based`). A single file may   |
-|         | define multiple group sources. The variable `$CFGDIR` is   |
-|         | replaced by the path of the highest priority configuration |
-|         | directory found (where *groups.conf* resides). The default |
-|         | *autodir* value enables both system-wide and any installed |
-|         | user configuration (thanks to `$CFGDIR`). Duplicate        |
-|         | directory paths are ignored.                               |
+|         | define multiple group sources. The variable ``$CFGDIR``    |
+|         | is replaced by the path of the highest priority            |
+|         | configuration directory found (where *groups.conf*         |
+|         | resides). The default *autodir* value enables both         |
+|         | system-wide and any installed user configuration (thanks   |
+|         | to ``$CFGDIR``). Duplicate directory paths are ignored.    |
 +---------+------------------------------------------------------------+
 
 Each following section, like `genders` and `slurm` in the example above,
@@ -393,17 +394,18 @@ empty string ``''`` or any valid YAML null value (``null`` or ``~``).
 .. highlight:: console
 
 Testing the syntax of your group file can be quickly performed through the
-``-L`` or ``--list-all`` command of :ref:`nodeset-tool`::
+``-L`` or ``--list-all`` command of :ref:`nodeset-tool`, doubled here as
+``-LL`` to also display the nodes of each group::
 
     $ nodeset -LL
     @adm mgmt[1-2]
-    @all login[1-2],mds[1-4],node[0001-0288],oss[0-15],rbh[1-2]
+    @all login[1-2],mds[1-4],node[0001-0288],oss[0-15]
     @compute node[0001-0288]
     @cpu_only node[0009-0288]
     @gpu node[0001-0008]
     @login login[1-2]
-    @storage mds[1-4],oss[0-15],rbh[1-2]
-    @sysgrp sysgrp[1-4]
+    @servers server[001-006,101]
+    @storage mds[1-4],oss[0-15]
     @lustre:mds mds[1-4]
     @lustre:oss oss[0-15]
     @lustre:rbh rbh[1-2]
@@ -492,7 +494,7 @@ Example of a Slurm partition group source defined with a single **mapall**
 upcall, instead of separate **map** and **list** upcalls::
 
     [slurmpart,sp]
-    mapall: sinfo -h -o "%R: %N"
+    mapall: sinfo -h -o "%R:%N"
 
 In addition to the context-dependent *$GROUP* and *$NODE* variables
 described above, the following two variables are always available and also
@@ -529,7 +531,7 @@ Multiple sources section
 
 Use a comma-separated list of source names in the section header if you want
 to define multiple group sources with similar upcall commands. The special
-variable `$SOURCE` is always replaced by the source name before command
+variable ``$SOURCE`` is always replaced by the source name before command
 execution (here `cluster`, `racks` and `cpu`), for example::
 
     [cluster,racks,cpu]
@@ -569,12 +571,12 @@ Slurm group bindings
 
 Enable Slurm node group bindings by renaming the example configuration file
 usually installed as ``/etc/clustershell/groups.conf.d/slurm.conf.example`` to
-``slurm.conf``. Three group sources are defined in this file and are detailed
-below. Each section comes with a long and short names (for convenience), but
-actually defines a same group source.
+``slurm.conf``. Seven group sources are defined in this file and are detailed
+below. Each section comes with a long and a short name (for convenience), but
+both define the same group source.
 
 While examples below are based on the :ref:`nodeset-tool` tool, all Python
-tools using ClusterShell and the :class:`.NodeSet`  class will automatically
+tools using ClusterShell and the :class:`.NodeSet` class will automatically
 benefit from these additional node groups.
 
 .. highlight:: ini
@@ -688,7 +690,7 @@ processes, not one-shot commands).
 .. highlight:: ini
 
 The next section **slurmaccount,sa** defines a group source based on Slurm
-accounts. Each group is based on a account and contains the nodes where there
+accounts. Each group is based on an account and contains the nodes where there
 are running jobs under this account::
 
     [slurmaccount,sa]
@@ -741,7 +743,7 @@ below.
    In that case, simply use :ref:`cluset <cluset-tool>` instead.
 
 While examples below are based on the :ref:`cluset-tool` tool, all Python
-tools using ClusterShell and the :class:`.NodeSet`  class will automatically
+tools using ClusterShell and the :class:`.NodeSet` class will automatically
 benefit from these additional node groups.
 
 .. highlight:: ini
@@ -906,7 +908,7 @@ The ``[task.default]`` section defines Task worker defaults.
 |                    | read from stdin do not block (default: yes).       |
 +--------------------+----------------------------------------------------+
 | stdout_msgtree     | Whether to gather stdout in a message tree, as     |
-|                    | required to display gathered output, eg. with      |
+|                    | required to display gathered output, e.g. with     |
 |                    | ``clush -b`` (default: yes).                       |
 +--------------------+----------------------------------------------------+
 | stderr_msgtree     | Whether to gather stderr in a message tree         |
@@ -942,7 +944,7 @@ The ``[task.info]`` section defines Task runtime defaults.
 | debug              | Whether to enable library debugging output         |
 |                    | (default: no).                                     |
 +--------------------+----------------------------------------------------+
-| fanout             | Size of the sliding window of connectors (eg. max  |
+| fanout             | Size of the sliding window of connectors (e.g. max |
 |                    | number of *ssh(1)* processes allowed to run at the |
 |                    | same time) (default: 64).                          |
 +--------------------+----------------------------------------------------+
@@ -987,14 +989,14 @@ The ``[nodeset]`` section defines NodeSet defaults.
 Use case: rsh
 ^^^^^^^^^^^^^^
 
-If your cluster uses a rsh variant like ``mrsh`` or ``krsh``, you may want to
+If your cluster uses an rsh variant like ``mrsh`` or ``krsh``, you may want to
 change it in the library defaults.
 
 An example file is usually available in
 ``/usr/share/doc/clustershell-*/examples/defaults.conf-rsh`` and could be
 copied to ``/etc/clustershell/defaults.conf`` or to an alternate path
 described above. Basically, the change consists in defining an alternate
-distant worker by Python module name as follow::
+distant worker by Python module name as follows::
 
     [task.default]
     distant_workername: Rsh
@@ -1024,6 +1026,6 @@ along a single axis per invocation with the ``--axis`` option of
 :ref:`nodeset <nodeset-tool>`, :ref:`cluset <cluset-tool>` and
 :ref:`clush <clush-axis>`, instead of setting ``fold_axis`` here.
 
-.. _ConfigParser: http://docs.python.org/library/configparser.html
+.. _ConfigParser: https://docs.python.org/3/library/configparser.html
 .. _nodeset: https://xcat-docs.readthedocs.io/en/stable/guides/admin-guides/references/man8/nodeset.8.html
 .. _sys.prefix: https://docs.python.org/3/library/sys.html#sys.prefix

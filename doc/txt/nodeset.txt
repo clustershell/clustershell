@@ -6,7 +6,7 @@
 compute advanced nodeset operations
 -----------------------------------
 
-:Author: Stephane Thiell <sthiell@stanford.edu>
+:Author: Stephane Thiell
 :Date:   2026-07-04
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 :Version: 1.10
@@ -24,7 +24,7 @@ DESCRIPTION
 ===========
 Note: ``nodeset`` and ``cluset`` are the same command.
 
-``nodeset`` is an utility command provided with the ClusterShell library which
+``nodeset`` is a utility command provided with the ClusterShell library which
 implements some features of ClusterShell's NodeSet and RangeSet Python classes.
 It provides easy manipulation of 1D or nD-indexed cluster nodes and node
 groups.
@@ -41,14 +41,14 @@ OPTIONS
   -h, --help            show this help message and exit
   -s GROUPSOURCE, --groupsource=GROUPSOURCE
                         optional ``groups.conf``\(5) group source to use
-  --groupsconf=FILE     use alternate config file for groups.conf(5)
+  --groupsconf=FILE     use alternate config file for ``groups.conf``\(5)
 
   Commands:
     -c, --count         show number of nodes in nodeset(s)
     -e, --expand        expand nodeset(s) to separate nodes (see also -S *SEPARATOR*)
     -f, --fold          fold nodeset(s) (or separate nodes) into one nodeset
-    -l, --list          list node groups, list node groups and nodes (``-ll``) or list node groups, nodes and node count (``-lll``). When no argument is specified at all, this command will list all node group names found in selected group source (see also -s *GROUPSOURCE*). If any nodesets are specified as argument, this command will find node groups these nodes belongs to (individually). Optionally for each group, the fraction of these nodes being member of the group may be displayed (with ``-ll``), and also member count/total group node count (with ``-lll``). If a single hyphen-minus (-) is given as a nodeset, it will be read from standard input.
-    -L, --list-all      list node groups from all group sources (``-LL`` shows nodes and ``-LLL`` adds node count). Like ``-l``, if any nodesets are specified as argument, this command will find node groups these nodes belongs to (individually).
+    -l, --list          list node groups, list node groups and nodes (``-ll``) or list node groups, nodes and node count (``-lll``). When no argument is specified at all, this command will list all node group names found in selected group source (see also -s *GROUPSOURCE*). If any nodesets are specified as argument, this command will find node groups these nodes belong to (individually). Optionally for each group, the fraction of these nodes being member of the group may be displayed (with ``-ll``), and also member count/total group node count (with ``-lll``). If a single hyphen-minus (-) is given as a nodeset, it will be read from standard input.
+    -L, --list-all      list node groups from all group sources (``-LL`` shows nodes and ``-LLL`` adds node count). Like ``-l``, if any nodesets are specified as argument, this command will find node groups these nodes belong to (individually).
     -r, --regroup       fold nodes using node groups (see -s *GROUPSOURCE*)
     --index=NODE        output the index of NODE in the nodeset (reverse of -I/--slice)
     --list-sources, --groupsources
@@ -65,12 +65,12 @@ OPTIONS
   Options:
     -a, --all           call external node groups support to display all nodes
     --autostep=AUTOSTEP
-                        enable a-b/step style syntax when folding nodesets, value is min node count threshold (integer '4', percentage '50%' or 'auto'). If not specified, auto step is disabled (best for compatibility with other cluster tools. Example: autostep=4, "node2 node4 node6" folds in node[2,4,6] but autostep=3, "node2 node4 node6" folds in node[2-6/2].
+                        enable a-b/step style syntax when folding nodesets, value is min node count threshold (integer '4', percentage '50%' or 'auto'). If not specified, auto step is disabled (best for compatibility with other cluster tools). Example: autostep=4, "node2 node4 node6" folds in node[2,4,6] but autostep=3, "node2 node4 node6" folds in node[2-6/2].
     -d, --debug         output more messages for debugging purpose
     -q, --quiet         be quiet, print essential output only
     -R, --rangeset      switch to RangeSet instead of NodeSet. Useful when
-                        working on numerical cluster ranges, eg. 1,5,18-31
-    -G, --groupbase     hide group source prefix (always `@groupname`)
+                        working on numerical cluster ranges, e.g. 1,5,18-31
+    -G, --groupbase     do not display group source prefix (always `@groupname`)
     -S SEPARATOR, --separator=SEPARATOR
                         separator string to use when expanding nodesets
                         (default: ' ')
@@ -79,8 +79,8 @@ OPTIONS
     -I SLICE_RANGESET, --slice=SLICE_RANGESET
                         return sliced off result; examples of SLICE_RANGESET are "0" for simple index selection, or "1-9/2,16" for complex rangeset selection
     --split=MAXSPLIT    split result into a number of subsets
-    --contiguous        split result into contiguous subsets (ie. for nodeset, subsets will contain nodes with same pattern name and a contiguous range of indexes, like foobar[1-100]; for rangeset, subsets with consists in contiguous index ranges)"""
-    --axis=RANGESET     for nD nodesets, fold along provided axis only. Axis are indexed from 1 to n and can be specified here either using the rangeset syntax, eg. '1', '1-2', '1,3', or by a single negative number meaning that the indices is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range.
+    --contiguous        split result into contiguous subsets (i.e. for nodeset, subsets will contain nodes with same pattern name and a contiguous range of indexes, like foobar[1-100]; for rangeset, subsets consist of contiguous index ranges)
+    --axis=RANGESET     for nD nodesets, fold along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. '1', '1-2', '1,3', or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range.
     --pick=N            pick N node(s) at random in nodeset
 
 
@@ -95,7 +95,7 @@ EXTENDED PATTERNS
 The ``nodeset`` command benefits from ClusterShell NodeSet basic
 arithmetic addition. This feature extends recognized string patterns by
 supporting operators matching all Operations seen previously. String
-patterns are read from left to right, by proceeding any character
+patterns are read from left to right, by processing any character
 operators accordingly.
 
 Supported character operators
@@ -116,23 +116,23 @@ Examples of use of extended patterns
   :$ nodeset -f node[0-7],node[8-10]:
 
   | node[0-10]
-  
+
   :$ nodeset -f node[0-10]\!node[8-10]:
-  
+
   | node[0-7]
-  
+
   :$ nodeset -f node[0-10]\&node[5-13]:
-  
+
   | node[5-10]
-    
+
   :$ nodeset -f node[0-10]^node[5-13]:
-  
+
   | node[0-4,11-13]
 
 Example of advanced usage
   :$ nodeset -f @gpu^@slurm\:bigmem!@chassis[1-9/2]:
 
-  This computes a folded nodeset containing nodes found in group @gpu and @slurm:bigmem, but not in both, minus the nodes found in odd chassis groups from 1 to 9.
+  This computes a folded nodeset containing nodes found in groups @gpu and @slurm:bigmem, but not in both, minus the nodes found in odd chassis groups from 1 to 9.
 
 "All nodes" extension
   The ``@*`` and ``@SOURCE:*`` special notations may be used in extended patterns to represent all nodes (in SOURCE) according to the *all* external shell command (see ``groups.conf``\(5)) and are equivalent to:
@@ -140,10 +140,10 @@ Example of advanced usage
     :$ nodeset [-s SOURCE] -a -f:
 
 Group names in expressions
-  The ``@@SOURCE`` notation may be used to access all group names from the specified SOURCE (or from the default group source when just ``@@`` is used) in node set expressions; this works with either file-based group sources or with external group sources that have the *list* upcall defined (see ``groups.conf``\(5)):
+  The ``@@SOURCE`` notation may be used to access all group names from the specified SOURCE (or from the default group source when just ``@@`` is used) in node set expressions; this works with either file-based group sources or with external group sources that have the *list* or *mapall* upcall defined (see ``groups.conf``\(5)):
 
     :$ nodeset -f @@rack:
-    
+
     | J[1-3]
 
 
@@ -156,27 +156,27 @@ This can be especially useful for server farms, or when cluster node names diffe
 
 Say that your group configuration is set to return the following "all nodes":
   :$ nodeset -f -a:
-  
+
   | bckserv[1-2],dbserv[1-4],wwwserv[1-9]
 
 Then, you can use wildcards to select particular nodes, as shown below:
   :$ nodeset -f 'www\*':
-  
+
   | wwwserv[1-9]
 
   :$ nodeset -f 'www\*[1-4]':
-  
+
   | wwwserv[1-4]
 
   :$ nodeset -f '\*serv1':
-  
+
   | bckserv1,dbserv1,wwwserv1
 
 Wildcard masks are resolved prior to extended patterns, but each mask is evaluated as a whole node set operand.
 In the example below, we select all nodes matching ``*serv*`` before removing all nodes matching ``www*``:
 
   :$ nodeset  -f '\*serv\*\!www\*':
-  
+
   | bckserv[1-2],dbserv[1-4]
 
 EXIT STATUS
@@ -190,36 +190,36 @@ EXAMPLES
 
 Getting the node count
   :$ nodeset -c node[0-7,32-159]:
-  
+
   | 136
-  
+
   :$ nodeset -c node[0-7,32-159] node[160-163]:
-  
+
   | 140
-  
+
   :$ nodeset -c dc[1-2]n[100-199]:
-  
+
   | 200
-  
+
   :$ nodeset -c @login:
-  
+
   | 4
 
 Folding nodesets
   :$ nodeset -f node[0-7,32-159] node[160-163]:
-  
+
   | node[0-7,32-163]
 
   :$ echo node3 node6 node1 node2 node7 node5 | nodeset -f:
-  
+
   | node[1-3,5-7]
 
   :$ nodeset -f dc1n2 dc2n2 dc1n1 dc2n1:
-  
+
   | dc[1-2]n[1-2]
 
   :$ nodeset --axis=1 -f dc1n2 dc2n2 dc1n1 dc2n1:
-  
+
   | dc[1-2]n1,dc[1-2]n2
 
 

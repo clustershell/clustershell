@@ -25,6 +25,8 @@ introduced in version 1.7 (see :ref:`class-RangeSetND` for more info).
 This section will guide you through the basics and also more advanced features
 of *nodeset*.
 
+.. _nodeset-commands:
+
 Usage basics
 ^^^^^^^^^^^^
 
@@ -40,10 +42,12 @@ One exclusive command must be specified to *nodeset*, for example::
     node[1-3]-ipmi
 
 
+.. _nodeset-stdin:
+
 Commands with inputs
 """"""""""""""""""""
 
-Some *nodeset* commands require input (eg. node names, node sets or node
+Some *nodeset* commands require input (e.g. node names, node sets or node
 groups), and some only give output. The following table shows commands that
 require some input:
 
@@ -61,9 +65,9 @@ require some input:
 | ``-f, --fold``    | Fold (compact) node sets or/and node groups into one   |
 |                   | set of nodes (by previously resolving any groups). The |
 |                   | resulting node set is guaranteed to be free from node  |
-|                   | ``--regroup`` below if you want to resolve node groups |
-|                   | in result). Please note that folding may be time       |
-|                   | consuming for multidimensional node sets.              |
+|                   | groups (see ``--regroup`` below if you want to resolve |
+|                   | node groups in result). Please note that folding may   |
+|                   | be time consuming for multidimensional node sets.      |
 +-------------------+--------------------------------------------------------+
 | ``-r, --regroup`` | Fold (compact) node sets or/and node groups into one   |
 |                   | set of nodes using node groups whenever possible (by   |
@@ -105,8 +109,8 @@ simple use case::
 
 
 Other usage examples of *nodeset* below show how it can be useful to provide
-node sets from standard input (*sinfo* is a SLURM [#]_ command to view nodes
-and partitions information and *sacct* is a command to display SLURM
+node sets from standard input (*sinfo* is a Slurm [#]_ command to view nodes
+and partitions information and *sacct* is a command to display Slurm
 accounting data)::
 
     $ sinfo -p cuda -o '%N' -h
@@ -226,7 +230,7 @@ However, by default, *nodeset* never uses this stepping notation in output
 results, as other cluster tools seldom if ever support this feature. Thus, to
 enable such factorized output in *nodeset*, you must specify
 ``--autostep=AUTOSTEP`` to set an auto step threshold number when folding
-nodesets (ie. when using ``-f`` or ``-r``). This threshold number
+nodesets (i.e. when using ``-f`` or ``-r``). This threshold number
 (AUTOSTEP) is the minimum occurrence of equally-spaced integers needed to
 enable auto-stepping.
 
@@ -271,7 +275,7 @@ represented using the step syntax (57% of them)::
 Zero-padding
 ^^^^^^^^^^^^
 
-Sometimes, cluster node names are padded with zeros (eg. *node007*). With
+Sometimes, cluster node names are padded with zeros (e.g. *node007*). With
 *nodeset*, when leading zeros are used, resulting host names or node sets
 are automatically padded with zeros as well. For example::
 
@@ -418,7 +422,7 @@ Arithmetic operations usage examples::
 
 *nodeset* does also support arithmetic operations through its "extended
 patterns" (inherited from :class:`.NodeSet` extended pattern feature, see
-:ref:`class-NodeSet-extended-patterns`, there is an example of use::
+:ref:`class-NodeSet-extended-patterns`), here is an example of use::
 
     $ nodeset -f node[1-4],node[5-9]
     node[1-9]
@@ -448,12 +452,12 @@ Slicing
 """""""
 
 Slicing is a way to select elements from a node set by their index (or from a
-range set when using ``-R`` toggle option, see :ref:`nodeset-rangeset`. In
+range set when using ``-R`` toggle option, see :ref:`nodeset-rangeset`). In
 this case actually, and because *nodeset*'s underlying :class:`.NodeSet` class
 sorts elements as observed after folding (for example), the word *set* may
 sound like a stretch of language (a *set* isn't usually sorted). Indeed,
 :class:`.NodeSet` further guarantees that its iterator will traverse the set
-in order, so we should see it as a *ordered set*. The following simple example
+in order, so we should see it as an *ordered set*. The following simple example
 illustrates this sorting behavior::
 
     $ nodeset -f b2 b1 b0 b c a0 a
@@ -483,6 +487,8 @@ Some slicing examples are shown below::
     $ nodeset -f --slice=0-18/2 bnode[0-9] anode[0-9]
     anode[0,2,4,6,8],bnode[0,2,4,6,8]
 
+
+.. _nodeset-splitting-n:
 
 Splitting into *n* subsets
 """"""""""""""""""""""""""
@@ -520,24 +526,26 @@ Some node set splitting examples::
     node6
     
     $ nodeset -f --split=10000 node[0-4]
-    foo0
-    foo1
-    foo2
-    foo3
-    foo4
+    node0
+    node1
+    node2
+    node3
+    node4
     
     $ nodeset -f --autostep=3 --split=2 node[0-38/2]
     node[0-18/2]
     node[20-38/2]
 
 
+.. _nodeset-splitting-contiguous:
+
 Splitting off non-contiguous subsets
 """"""""""""""""""""""""""""""""""""
 
 It can be useful to split a node set into several contiguous subsets (with
-same pattern name and contiguous range indexes, eg. *node[1-100]* or
+same pattern name and contiguous range indexes, e.g. *node[1-100]* or
 *dc[1-4]node[1-100]*). The ``--contiguous`` option allows you to do that.  It
-is based on  :meth:`.NodeSet.contiguous` method, and should be specified with
+is based on :meth:`.NodeSet.contiguous` method, and should be specified with
 standard commands (fold, expand, count, regroup). The following example shows
 how to split off non-contiguous subsets of a specified node set, and to
 display each resulting contiguous node set in a folded manner to separated
@@ -561,14 +569,14 @@ Choosing fold axis (nD)
 """""""""""""""""""""""
 
 The default folding behavior for multidimensional node sets is to fold along
-all *nD* axis. However, other cluster tools barely support nD nodeset syntax,
-so it may be useful to fold along one (or a few) axis only. The ``--axis``
+all *nD* axes. However, other cluster tools barely support nD nodeset syntax,
+so it may be useful to fold along one axis (or a few axes) only. The ``--axis``
 option allows you to specify indexes of dimensions to fold. Using this
-option, rangesets of unspecified axis there won't be folded. Please note
+option, rangesets of unspecified axes won't be folded. Please note
 however that the obtained result may be suboptimal, this is because
-:class:`.NodeSet` algorithms are optimized for folding along all axis.
+:class:`.NodeSet` algorithms are optimized for folding along all axes.
 ``--axis`` value is a set of integers from 1 to n representing selected nD
-axis, in the form of a number or a rangeset. A common case is to restrict
+axes, in the form of a number or a rangeset. A common case is to restrict
 folding on a single axis, like in the following simple examples::
 
     $ nodeset --axis=1 -f node1-ib0 node2-ib0 node1-ib1 node2-ib1
@@ -638,7 +646,7 @@ numbers they contain::
     $ nodeset --index node1 node[1-4],bmc[10-20]
     11
 
-Second, for multidimensional node sets, the set is traversed as a cartesian
+Second, for multidimensional node sets, the set is traversed as a Cartesian
 product in which the last dimension varies fastest::
 
     $ nodeset -e rack[1-2]node[1-3]
@@ -668,7 +676,7 @@ Node groups
 
 This section tackles the node groups feature available more particularly
 through the *nodeset* command-line tool. The ClusterShell library defines a
-node groups syntax and allow you to bind these group sources to your
+node groups syntax and allows you to bind these group sources to your
 applications (cf. :ref:`node groups configuration <groups-config>`). Having
 those group sources, group provisioning is easily done through user-defined
 external shell commands.  Thus, node groups might be very dynamic and their
@@ -832,7 +840,7 @@ Finding node groups
 """""""""""""""""""
 
 As an extension to the **list** command, you can search node groups that a
-specified node set belongs to with ``nodeset -l[ll]`` as follow::
+specified node set belongs to with ``nodeset -l[ll]`` as follows::
 
     $ nodeset -l node40
     @all
@@ -902,7 +910,7 @@ Arithmetic operations on node groups
 """"""""""""""""""""""""""""""""""""
 
 Arithmetic and special operations (as explained for node sets in
-:ref:`nodeset-arithmetic` and :ref:`nodeset-special` are also supported with
+:ref:`nodeset-arithmetic` and :ref:`nodeset-special`) are also supported with
 node groups.
 Any group name can be used in lieu of a node set, where it will be substituted
 for all nodes in that group before processing requested operations. Some
@@ -948,8 +956,8 @@ time::
 
     $ nodeset -f @db:prod\&@compute
 
-The following fictive example computes a folded node set containing nodes
-found in node group ``@gpu``  and ``@slurm:bigmem``, but not in both, minus
+The following hypothetical example computes a folded node set containing nodes
+found in node group ``@gpu`` and ``@slurm:bigmem``, but not in both, minus
 the nodes found in odd ``@chassis`` groups from 1 to 9 (computed from left to
 right)::
 
@@ -1029,7 +1037,7 @@ Working with range sets
 """""""""""""""""""""""
 
 By default, the *nodeset* command works with node or group sets and its
-functionality match most :class:`.NodeSet` class methods. Similarly, *nodeset*
+functionality matches most :class:`.NodeSet` class methods. Similarly, *nodeset*
 will match :class:`.RangeSet` methods when you make use of the ``-R`` option
 switch. In that case, all operations are restricted to numerical ranges. For
 example, to expand the range "``1-10``", you should use::
@@ -1047,8 +1055,8 @@ with ``nodeset -R``:
 
 
 Using range sets instead of node sets doesn't change the general command
-usage, like the need of one command option presence (cf. nodeset-commands), or
-the way to give some input (cf. nodeset-stdin), for example::
+usage, like the need of one command option presence (cf. :ref:`nodeset-commands`),
+or the way to give some input (cf. :ref:`nodeset-stdin`), for example::
 
     $ echo 3 2 36 0 4 1 37 | nodeset -fR
     0-4,36-37
@@ -1059,8 +1067,8 @@ the way to give some input (cf. nodeset-stdin), for example::
     8
 
 Stepping and auto-stepping are supported (cf. :ref:`nodeset-stepping`) and
-also zero-padding (cf. nodeset-zpad), which are both :class:`.RangeSet` class
-features anyway.
+also zero-padding (cf. :ref:`nodeset-zeropadding`), which are both
+:class:`.RangeSet` class features anyway.
 
 The following examples illustrate these last points::
 
@@ -1074,7 +1082,7 @@ Arithmetic and special operations
 """""""""""""""""""""""""""""""""
 
 All arithmetic operations, as seen for node sets (cf.
-:ref:`cluset-arithmetic`), are available for range sets, for example::
+:ref:`nodeset-arithmetic`), are available for range sets, for example::
 
     $ nodeset -fR 1-14 -x 10-20
     1-9
@@ -1104,14 +1112,14 @@ range sets also. Below is an example with ``-I / --slice`` (cf.
     100-115
 
 There is another special operation example with ``--split`` (cf.
-nodeset-splitting-n)::
+:ref:`nodeset-splitting-n`)::
 
     $ nodeset -fR --split=2 100-131
     100-115
     116-131
 
 Finally, an example of the special operation ``--contiguous`` (cf.
-nodeset-splitting-contiguous)::
+:ref:`nodeset-splitting-contiguous`)::
 
     $ nodeset -f -R --contiguous 1-9,11,13-19
     1-9
@@ -1121,7 +1129,7 @@ nodeset-splitting-contiguous)::
 *rangeset* alias
 """"""""""""""""
 
-When using *nodeset* with range sets intensively (eg. for scripting), it may
+When using *nodeset* with range sets intensively (e.g. for scripting), it may
 be convenient to create a local command alias, as shown in the following
 example (Bourne shell), making it sort of a super `seq(1)`_ command::
 

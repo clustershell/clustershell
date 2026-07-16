@@ -40,7 +40,7 @@ nodeset \- compute advanced nodeset operations
 .sp
 Note: \fBnodeset\fP and \fBcluset\fP are the same command.
 .sp
-\fBnodeset\fP is an utility command provided with the ClusterShell library which
+\fBnodeset\fP is a utility command provided with the ClusterShell library which
 implements some features of ClusterShell\(aqs NodeSet and RangeSet Python classes.
 It provides easy manipulation of 1D or nD\-indexed cluster nodes and node
 groups.
@@ -63,7 +63,7 @@ show this help message and exit
 optional \fBgroups.conf\fP(5) group source to use
 .TP
 .BI \-\-groupsconf\fB= FILE
-use alternate config file for groups.conf(5)
+use alternate config file for \fBgroups.conf\fP(5)
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -80,10 +80,10 @@ expand nodeset(s) to separate nodes (see also \-S \fISEPARATOR\fP)
 fold nodeset(s) (or separate nodes) into one nodeset
 .TP
 .B  \-l\fP,\fB  \-\-list
-list node groups, list node groups and nodes (\fB\-ll\fP) or list node groups, nodes and node count (\fB\-lll\fP). When no argument is specified at all, this command will list all node group names found in selected group source (see also \-s \fIGROUPSOURCE\fP). If any nodesets are specified as argument, this command will find node groups these nodes belongs to (individually). Optionally for each group, the fraction of these nodes being member of the group may be displayed (with \fB\-ll\fP), and also member count/total group node count (with \fB\-lll\fP). If a single hyphen\-minus (\-) is given as a nodeset, it will be read from standard input.
+list node groups, list node groups and nodes (\fB\-ll\fP) or list node groups, nodes and node count (\fB\-lll\fP). When no argument is specified at all, this command will list all node group names found in selected group source (see also \-s \fIGROUPSOURCE\fP). If any nodesets are specified as argument, this command will find node groups these nodes belong to (individually). Optionally for each group, the fraction of these nodes being member of the group may be displayed (with \fB\-ll\fP), and also member count/total group node count (with \fB\-lll\fP). If a single hyphen\-minus (\-) is given as a nodeset, it will be read from standard input.
 .TP
 .B  \-L\fP,\fB  \-\-list\-all
-list node groups from all group sources (\fB\-LL\fP shows nodes and \fB\-LLL\fP adds node count). Like \fB\-l\fP, if any nodesets are specified as argument, this command will find node groups these nodes belongs to (individually).
+list node groups from all group sources (\fB\-LL\fP shows nodes and \fB\-LLL\fP adds node count). Like \fB\-l\fP, if any nodesets are specified as argument, this command will find node groups these nodes belong to (individually).
 .TP
 .B  \-r\fP,\fB  \-\-regroup
 fold nodes using node groups (see \-s \fIGROUPSOURCE\fP)
@@ -115,7 +115,7 @@ calculate symmetric difference between nodesets
 call external node groups support to display all nodes
 .TP
 .BI \-\-autostep\fB= AUTOSTEP
-enable a\-b/step style syntax when folding nodesets, value is min node count threshold (integer \(aq4\(aq, percentage \(aq50%\(aq or \(aqauto\(aq). If not specified, auto step is disabled (best for compatibility with other cluster tools. Example: autostep=4, \(dqnode2 node4 node6\(dq folds in node[2,4,6] but autostep=3, \(dqnode2 node4 node6\(dq folds in node[2\-6/2].
+enable a\-b/step style syntax when folding nodesets, value is min node count threshold (integer \(aq4\(aq, percentage \(aq50%\(aq or \(aqauto\(aq). If not specified, auto step is disabled (best for compatibility with other cluster tools). Example: autostep=4, \(dqnode2 node4 node6\(dq folds in node[2,4,6] but autostep=3, \(dqnode2 node4 node6\(dq folds in node[2\-6/2].
 .TP
 .B  \-d\fP,\fB  \-\-debug
 output more messages for debugging purpose
@@ -125,10 +125,10 @@ be quiet, print essential output only
 .TP
 .B  \-R\fP,\fB  \-\-rangeset
 switch to RangeSet instead of NodeSet. Useful when
-working on numerical cluster ranges, eg. 1,5,18\-31
+working on numerical cluster ranges, e.g. 1,5,18\-31
 .TP
 .B  \-G\fP,\fB  \-\-groupbase
-hide group source prefix (always \fI@groupname\fP)
+do not display group source prefix (always \fI@groupname\fP)
 .TP
 .BI \-S \ SEPARATOR\fR,\fB \ \-\-separator\fB= SEPARATOR
 separator string to use when expanding nodesets
@@ -144,10 +144,10 @@ return sliced off result; examples of SLICE_RANGESET are \(dq0\(dq for simple in
 split result into a number of subsets
 .TP
 .B  \-\-contiguous
-split result into contiguous subsets (ie. for nodeset, subsets will contain nodes with same pattern name and a contiguous range of indexes, like foobar[1\-100]; for rangeset, subsets with consists in contiguous index ranges)\(dq\(dq\(dq
+split result into contiguous subsets (i.e. for nodeset, subsets will contain nodes with same pattern name and a contiguous range of indexes, like foobar[1\-100]; for rangeset, subsets consist of contiguous index ranges)
 .TP
 .BI \-\-axis\fB= RANGESET
-for nD nodesets, fold along provided axis only. Axis are indexed from 1 to n and can be specified here either using the rangeset syntax, eg. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the indices is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range.
+for nD nodesets, fold along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range.
 .TP
 .BI \-\-pick\fB= N
 pick N node(s) at random in nodeset
@@ -165,7 +165,7 @@ standard input.
 The \fBnodeset\fP command benefits from ClusterShell NodeSet basic
 arithmetic addition. This feature extends recognized string patterns by
 supporting operators matching all Operations seen previously. String
-patterns are read from left to right, by proceeding any character
+patterns are read from left to right, by processing any character
 operators accordingly.
 .INDENT 0.0
 .TP
@@ -229,7 +229,7 @@ node[0\-4,11\-13]
 .B $ nodeset \-f @gpu^@slurm:bigmem!@chassis[1\-9/2]
 .UNINDENT
 .sp
-This computes a folded nodeset containing nodes found in group @gpu and @slurm:bigmem, but not in both, minus the nodes found in odd chassis groups from 1 to 9.
+This computes a folded nodeset containing nodes found in groups @gpu and @slurm:bigmem, but not in both, minus the nodes found in odd chassis groups from 1 to 9.
 .TP
 .B \(dqAll nodes\(dq extension
 The \fB@*\fP and \fB@SOURCE:*\fP special notations may be used in extended patterns to represent all nodes (in SOURCE) according to the \fIall\fP external shell command (see \fBgroups.conf\fP(5)) and are equivalent to:
@@ -243,7 +243,7 @@ The \fB@*\fP and \fB@SOURCE:*\fP special notations may be used in extended patte
 .UNINDENT
 .TP
 .B Group names in expressions
-The \fB@@SOURCE\fP notation may be used to access all group names from the specified SOURCE (or from the default group source when just \fB@@\fP is used) in node set expressions; this works with either file\-based group sources or with external group sources that have the \fIlist\fP upcall defined (see \fBgroups.conf\fP(5)):
+The \fB@@SOURCE\fP notation may be used to access all group names from the specified SOURCE (or from the default group source when just \fB@@\fP is used) in node set expressions; this works with either file\-based group sources or with external group sources that have the \fIlist\fP or \fImapall\fP upcall defined (see \fBgroups.conf\fP(5)):
 .INDENT 7.0
 .INDENT 3.5
 .INDENT 0.0
@@ -512,7 +512,7 @@ command and also to conform with ClusterShell\(aqs \(dqclu*\(dq command nomencla
 \fI\%https://github.com/clustershell/clustershell/issues\fP
 .UNINDENT
 .SH AUTHOR
-Stephane Thiell <sthiell@stanford.edu>
+Stephane Thiell
 .SH COPYRIGHT
 GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 .\" Generated by docutils manpage writer.

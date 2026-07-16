@@ -66,7 +66,7 @@ gathered output results.
 .sp
 The \fB\-w\fP option allows you to specify remote hosts by using ClusterShell
 NodeSet syntax, including the node groups \fB@group\fP special syntax and the
-\fBExtended Patterns\fP syntax to benefits from NodeSet basic arithmetic
+\fBExtended Patterns\fP syntax to benefit from NodeSet basic arithmetic
 (like \fB@Agroup\e&@Bgroup\fP). See EXTENDED PATTERNS in \fBnodeset\fP(1) and
 also \fBgroups.conf\fP(5) for more information.
 .sp
@@ -100,7 +100,7 @@ terminal, \fBclush\fP runs interactively. In this mode, \fBclush\fP uses the GNU
 searching through the command history for lines containing a specified
 string. For instance, type Control\-R to search in the history for the next
 entry matching the search string typed so far.  \fBclush\fP also recognizes
-special single\-character prefixes that allows the user to see and modify
+special single\-character prefixes that allow the user to see and modify
 the current nodeset (the nodes where the commands are executed).
 .INDENT 7.0
 .TP
@@ -134,7 +134,9 @@ Instead of running provided command on remote nodes, \fBclush\fP can use the
 dedicated \fIexec\fP worker to launch the command \fIlocally\fP, for each node.
 Some parameters could be used in the command line to make a different
 command for each node. \fB%h\fP or \fB%host\fP will be replaced by node name and
-\fB%n\fP or \fB%rank\fP by the remote rank [0\-N] (to get a literal % use %%)
+\fB%n\fP or \fB%rank\fP by the remote rank [0\-N] (to get a literal % use %%).
+\fB%hosts\fP will be replaced by the full target nodeset, in which case the
+command is executed only once.
 .TP
 .B File copying mode ( \fB\-\-copy\fP )
 When \fBclush\fP is started with the \fB\-c\fP or \fB\-\-copy\fP option, it will
@@ -166,10 +168,10 @@ optional \fBgroups.conf\fP(5) group source to use
 do not watch for possible input from stdin; this should be used when \fBclush\fP is run in the background (or in scripts).
 .TP
 .BI \-\-groupsconf\fB= FILE
-use alternate config file for groups.conf(5)
+use alternate config file for \fBgroups.conf\fP(5)
 .TP
 .BI \-\-conf\fB= FILE
-use alternate config file for clush.conf(5)
+use alternate config file for \fBclush.conf\fP(5)
 .TP
 .BI \-O \ <KEY=VALUE>\fR,\fB \ \-\-option\fB= <KEY=VALUE>
 override any key=value \fBclush.conf\fP(5) options (repeat as needed)
@@ -204,7 +206,7 @@ topology configuration file to use for tree mode
 pick N node(s) at random in nodeset
 .UNINDENT
 .TP
-.B Output behaviour:
+.B Output behavior:
 .INDENT 7.0
 .TP
 .B  \-q\fP,\fB  \-\-quiet
@@ -217,13 +219,13 @@ be verbose, print informative messages
 output more messages for debugging purpose
 .TP
 .B  \-G\fP,\fB  \-\-groupbase
-do not display group source prefix
+do not display group source prefix (always \fB@groupname\fP)
 .TP
 .B  \-L
-disable header block and order output by nodes; if \-b/\-B is not specified, \fBclush\fP will wait for all commands to finish and then display aggregated output of commands with same return codes, ordered by node name; alternatively, when used in conjunction with \-b/\-B (eg. \-bL), \fBclush\fP will enable a \(dqlife gathering\(dq of results by line, such as the next line is displayed as soon as possible (eg. when all nodes have sent the line)
+disable header block and order output by nodes; if \-b/\-B is not specified, \fBclush\fP will wait for all commands to finish and then display aggregated output of commands with same return codes, ordered by node name; alternatively, when used in conjunction with \-b/\-B (e.g. \-bL), \fBclush\fP will enable a \(dqlive gathering\(dq of results by line, so that the next line is displayed as soon as possible (e.g. when all nodes have sent the line)
 .TP
 .B  \-N
-disable labeling of command line
+disable labeling of command output
 .TP
 .B  \-P\fP,\fB  \-\-progress
 show progress during command execution; if writing is performed to standard input, the live progress indicator will display the global bandwidth of data written to the target nodes
@@ -238,13 +240,13 @@ like \-b but including standard error
 fold nodeset using node groups
 .TP
 .BI \-\-axis\fB= RANGESET
-for nD nodesets, fold the displayed nodeset (eg. in gathered output headers) along provided axis only. Axis are indexed from 1 to n and can be specified here either using the rangeset syntax, eg. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per\-invocation equivalent of the \fBfold_axis\fP library default.
+for nD nodesets, fold the displayed nodeset (e.g. in gathered output headers) along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. \(aq1\(aq, \(aq1\-2\(aq, \(aq1,3\(aq, or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per\-invocation equivalent of the \fBfold_axis\fP library default.
 .TP
 .B  \-S\fP,\fB  \-\-maxrc
 return the largest of command return codes
 .TP
 .BI \-\-color\fB= WHENCOLOR
-\fBclush\fP can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR.  When \fB\-\-color\fP option is used these environment variables are not taken into account. \fB\-\-color\fP tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. \fIWHENCOLOR\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (which use color if standard output/error refer to a terminal). Colors are set to [34m (blue foreground text) for stdout and [31m (red foreground text) for stderr, and cannot be modified.
+\fBclush\fP can use NO_COLOR, CLICOLOR and CLICOLOR_FORCE environment variables. NO_COLOR takes precedence over CLICOLOR_FORCE which takes precedence over CLICOLOR.  When \fB\-\-color\fP option is used these environment variables are not taken into account. \fB\-\-color\fP tells whether to use ANSI colors to surround node or nodeset prefix/header with escape sequences to display them in color on the terminal. \fIWHENCOLOR\fP is \fBnever\fP, \fBalways\fP or \fBauto\fP (which uses color if standard output/error refer to a terminal). Colors are set to [34m (blue foreground text) for stdout and [31m (red foreground text) for stderr, and cannot be modified.
 .TP
 .B  \-\-diff
 show diff between common outputs (find the best reference output by focusing on largest nodeset and also smaller command return code)
@@ -284,7 +286,7 @@ do not execute more than FANOUT commands at the same time, useful to limit resou
 execute remote command as user
 .TP
 .BI \-o \ OPTIONS\fR,\fB \ \-\-options\fB= OPTIONS
-can be used to give ssh options, eg. \fB\-o \(dq\-p 2022 \-i ~/.ssh/myidrsa\(dq\fP; these options are added first to ssh and override default ones
+can be used to give ssh options, e.g. \fB\-o \(dq\-p 2022 \-i ~/.ssh/myidrsa\(dq\fP; these options are added first to ssh and override default ones
 .TP
 .BI \-t \ CONNECT_TIMEOUT\fR,\fB \ \-\-connect_timeout\fB= CONNECT_TIMEOUT
 limit time to connect to a node
@@ -348,13 +350,13 @@ Search some files on node32 in /etc/yum.repos.d and use clush to list the matchi
 Run this Linux command to get BIOS version on nodes[3\-5,62] and show version differences (if any).
 .TP
 .B # clush \-w dc[1\-2]n[1\-2] \-\-axis=1 \-b uname \-r
-Gather output and fold the displayed nodeset header along axis 1 only, eg. show \fBdc[1\-2]n1,dc[1\-2]n2\fP rather than \fBdc[1\-2]n[1\-2]\fP in the header block. See also \fBfold_axis\fP in the Library Defaults configuration to change it permanently.
+Gather output and fold the displayed nodeset header along axis 1 only, e.g. show \fBdc[1\-2]n1,dc[1\-2]n2\fP rather than \fBdc[1\-2]n[1\-2]\fP in the header block. See also \fBfold_axis\fP in the Library Defaults configuration to change it permanently.
 .UNINDENT
 .SS All nodes
 .INDENT 0.0
 .TP
 .B # clush \-a uname \-r
-Run command \fIuname \-r\fP on all cluster nodes, see \fBgroups.conf\fP(5) to setup all cluster nodes (\fIall:\fP field).
+Run command \fIuname \-r\fP on all cluster nodes, see \fBgroups.conf\fP(5) to set up all cluster nodes (\fIall:\fP field).
 .TP
 .B # clush \-a \-x node[5,7] uname \-r
 Run command \fIuname \-r\fP on all cluster nodes except on nodes node5 and node7.
@@ -388,7 +390,7 @@ Recursively copy local directory \fI/usr/share/doc/clustershell\fP to the same
 path on remote nodes node[3\-5,62].
 .TP
 .B # clush \-w node[3\-5,62] \-\-rcopy /etc/motd \-\-dest /tmp
-Copy \fI/etc/motd\fP from remote nodes node[3\-5,62] to local \fI/tmp\fP directory, each file having their remote hostname appended, eg. \fI/tmp/motd.node3\fP\&.
+Copy \fI/etc/motd\fP from remote nodes node[3\-5,62] to local \fI/tmp\fP directory, each file having their remote hostname appended, e.g. \fI/tmp/motd.node3\fP\&.
 .UNINDENT
 .SH FILES
 .INDENT 0.0
@@ -401,11 +403,16 @@ Global clush configuration file. If $CLUSTERSHELL_CFGDIR is not defined,
 User configuration file for clush. If $XDG_CONFIG_HOME is not defined,
 \fI$HOME/.config/clustershell/clush.conf\fP is used instead.
 .TP
+.B \fI{sys.prefix}/etc/clustershell/clush.conf\fP
+Configuration file when ClusterShell is installed in a Python virtual
+environment.
+.TP
 .B \fI$HOME/.local/etc/clustershell/clush.conf\fP
 Local user configuration file for clush (default installation for pip \-\-user)
 .TP
 .B \fI~/.clush.conf\fP
-Deprecated per\-user clush configuration file.
+Deprecated per\-user clush configuration file (no longer read since
+version 1.9).
 .TP
 .B \fI~/.clush_history\fP
 File in which interactive \fBclush\fP command history is saved.
@@ -422,7 +429,7 @@ File in which interactive \fBclush\fP command history is saved.
 \fI\%https://github.com/clustershell/clustershell/issues\fP
 .UNINDENT
 .SH AUTHOR
-Stephane Thiell <sthiell@stanford.edu>
+Stephane Thiell
 .SH COPYRIGHT
 GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 .\" Generated by docutils manpage writer.

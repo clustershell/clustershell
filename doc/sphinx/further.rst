@@ -25,10 +25,10 @@ Some tests use *bc(1)*. And some tests need *pdsh(1)* installed.
 Bug reports
 -----------
 
-We use `Github Issues`_ as issue tracking system for the ClusterShell
-development project. There, you can report bugs or suggestions after logged in
-with your Github account.
+We use `GitHub Issues`_ as issue tracking system for the ClusterShell
+development project. There, you can report bugs or suggestions after logging in
+with your GitHub account.
 
 
 .. _Wikipedia: https://en.wikipedia.org/wiki/Non-regression_testing
-.. _Github Issues: https://github.com/clustershell/clustershell/issues
+.. _GitHub Issues: https://github.com/clustershell/clustershell/issues
