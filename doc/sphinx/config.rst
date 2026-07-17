@@ -842,12 +842,18 @@ the other ClusterShell configuration files, the system-wide default being::
 
 .. highlight:: ini
 
-Routes are declared under a ``[routes]`` section, for example::
+Routes are declared under a ``[routes]`` section, and an optional
+``[weights]`` section may define relative route weights for gateway nodes
+(weight 0 defines a standby gateway), for example::
 
     [routes]
     rio0: rio[10-13]
     rio[10-11]: rio[100-240]
     rio[12-13]: rio[300-440]
+
+    [weights]
+    rio10: 2
+    rio13: 0
 
 .. highlight:: text
 

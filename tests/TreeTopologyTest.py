@@ -3,6 +3,7 @@
 
 """Unit test for Topology"""
 
+import pickle
 import unittest
 import warnings
 from tempfile import NamedTemporaryFile
@@ -13,6 +14,7 @@ from textwrap import dedent
 #from guppy import hpy
 # ---
 
+from ClusterShell.Communication import GW_PICKLE_PROTOCOL
 from ClusterShell.Topology import *
 from ClusterShell.NodeSet import NodeSet, set_std_group_resolver
 from ClusterShell.NodeSet import set_std_group_resolver_config
@@ -368,6 +370,134 @@ class TopologyTest(unittest.TestCase):
             parser = TopologyParser()
             self.assertRaises(TopologyError, parser.load, tmpfile.name)
 
+    def testConfigurationParserWeights(self):
+        """test weights section parsing"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2],gwb\n')
+            tmpfile.write(b'gw[1-2],gwb: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw1: 2\n')
+            tmpfile.write(b'gwb: 0\n')
+            tmpfile.flush()
+            parser = TopologyParser(tmpfile.name)
+            tree = parser.tree('admin')
+            self.assertEqual(tree.weights, {'gw1': 2, 'gwb': 0})
+
+    def testConfigurationParserNoWeights(self):
+        """test missing weights section"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.flush()
+            parser = TopologyParser(tmpfile.name)
+            tree = parser.tree('admin')
+            self.assertEqual(tree.weights, {})
+
+    def testConfigurationParserWeightsInvalid(self):
+        """test invalid weights"""
+        for weightline in (b'gw1: two\n', b'gw1: -1\n', b'gw1: 1.5\n'):
+            with NamedTemporaryFile() as tmpfile:
+                tmpfile.write(b'[routes]\n')
+                tmpfile.write(b'admin: gw[1-2]\n')
+                tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+                tmpfile.write(b'[weights]\n')
+                tmpfile.write(weightline)
+                tmpfile.flush()
+                parser = TopologyParser()
+                self.assertRaises(TopologyError, parser.load, tmpfile.name)
+
+    def testConfigurationParserWeightsNonRouter(self):
+        """test weights for non-router nodes are ignored"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            # gw3 is not part of any route
+            tmpfile.write(b'gw[2-3]: 4\n')
+            # leaf nodes cannot be next hops
+            tmpfile.write(b'nodes[0-9]: 2\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            # a weight entry with no effect at all generates a warning
+            with self.assertLogs('ClusterShell.Topology',
+                                 level='WARNING') as cm:
+                parser.load(tmpfile.name)
+            self.assertEqual(len(cm.records), 1)
+            self.assertIn('nodes[0-9]', cm.output[0])
+            tree = parser.tree('admin')
+            self.assertEqual(tree.weights, {'gw2': 4})
+
+    def testConfigurationParserWeightsDuplicateKey(self):
+        """test duplicate weight keys are rejected (strict ini parsing)"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw1: 2\n')
+            tmpfile.write(b'gw1: 0\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            self.assertRaises(TopologyError, parser.load, tmpfile.name)
+
+    def testConfigurationParserWeightsOverlap(self):
+        """test overlapping weights (last wins)"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-4]\n')
+            tmpfile.write(b'gw[1-4]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw[1-4]: 2\n')
+            tmpfile.write(b'gw4: 0\n')
+            tmpfile.flush()
+            parser = TopologyParser(tmpfile.name)
+            tree = parser.tree('admin')
+            self.assertEqual(tree.weights,
+                             {'gw1': 2, 'gw2': 2, 'gw3': 2, 'gw4': 0})
+
+    def testConfigurationParserWeightsReload(self):
+        """test previously built tree keeps its weights after reload"""
+        parser = TopologyParser()
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw1: 2\n')
+            tmpfile.flush()
+            parser.load(tmpfile.name)
+            tree1 = parser.tree('admin')
+            self.assertEqual(tree1.weights, {'gw1': 2})
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw1: 5\n')
+            tmpfile.flush()
+            parser.load(tmpfile.name)
+            tree2 = parser.tree('admin', force_rebuild=True)
+            self.assertEqual(tree2.weights, {'gw1': 5})
+            # tree1 keeps the weights it was built with
+            self.assertEqual(tree1.weights, {'gw1': 2})
+
+    def testConfigurationParserWeightsPickle(self):
+        """test weights across pickling (gateway transport)"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: gw[1-2]\n')
+            tmpfile.write(b'gw[1-2]: nodes[0-9]\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'gw2: 3\n')
+            tmpfile.flush()
+            parser = TopologyParser(tmpfile.name)
+            tree = parser.tree('admin')
+            tree2 = pickle.loads(pickle.dumps(tree, GW_PICKLE_PROTOCOL))
+            self.assertEqual(tree2.weights, {'gw2': 3})
+
     def testPrintingTree(self):
         """test printing tree"""
         with NamedTemporaryFile() as tmpfile:
@@ -561,3 +691,32 @@ class TopologyWithGroupsTest(unittest.TestCase):
             tmpfile.flush()
             parser = TopologyParser()
             self.assertRaises(TopologyError, parser.load, tmpfile.name)
+
+    def testGroupsWeights(self):
+        """test topology weights with node groups"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'Controller-vm1:Controller-vm30\n')
+            tmpfile.write(b'Controller-vm30:Computer101\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'@gw: 2\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            parser.load(tmpfile.name)
+            tree = parser.tree('Controller-vm1')
+            self.assertEqual(tree.weights,
+                             {'Controller-vm1': 2, 'Controller-vm30': 2})
+
+    def testGroupsWeightsUnresolved(self):
+        """test topology weights with unresolved node set"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'Controller-vm1:Controller-vm30\n')
+            tmpfile.write(b'Controller-vm30:Computer101\n')
+            tmpfile.write(b'[weights]\n')
+            tmpfile.write(b'Un*resolved3: 2\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            parser.load(tmpfile.name)
+            tree = parser.tree('Controller-vm1')
+            self.assertEqual(tree.weights, {})

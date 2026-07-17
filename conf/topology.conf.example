@@ -10,3 +10,11 @@
 rio0: rio[10-13]
 rio[10-11]: rio[100-240]
 rio[12-13]: rio[300-440]
+
+# Optional relative weights for gateway nodes (default weight: 1).
+# A gateway with weight 2 is selected for twice as many target nodes as a
+# gateway with weight 1. A weight of 0 defines a standby gateway, only used
+# when no other gateway is available for a route.
+#[weights]
+#rio10: 2
+#rio13: 0

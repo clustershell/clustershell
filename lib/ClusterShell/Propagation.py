@@ -58,6 +58,8 @@ class PropagationTreeRouter(object):
         self.fanout = fanout
         self.nodes_fanin = {}
         self.table = None
+        # route weights (getattr: tree may come from an older version)
+        self.weights = getattr(topology, 'weights', None) or {}
 
         self.table_generate(root, topology)
         self._unreachable_hosts = NodeSet()
@@ -113,7 +115,7 @@ class PropagationTreeRouter(object):
     def next_hop(self, dst):
         """perform the next hop resolution. If several hops are
         available, then, the one with the least number of current jobs
-        will be returned
+        relative to its route weight will be returned
         """
         if dst in self._unreachable_hosts:
             raise RouteResolvingError(
@@ -160,9 +162,11 @@ class PropagationTreeRouter(object):
         self._unreachable_hosts.add(dst)
 
     def _best_next_hop(self, candidates):
-        """find out a good next hop gateway"""
+        """find out a good next hop gateway according to route weights"""
         backup = None
         backup_connections = 1e400 # infinity
+        standby = None
+        standby_connections = 1e400
 
         candidates = candidates.difference(self._unreachable_hosts)
 
@@ -174,10 +178,23 @@ class PropagationTreeRouter(object):
             #if connections < self.fanout:
             #    # currently, the first one is the best
             #    return host
+            weight = self.weights.get(host, 1)
+            if weight == 0:
+                # zero weight: standby gateway, used as a last resort only
+                if standby_connections > connections:
+                    standby = host
+                    standby_connections = connections
+                continue
+
+            # weighted least-connections (Python 2: force true division)
+            connections /= float(weight)
             if backup_connections > connections:
                 backup = host
                 backup_connections = connections
-        return backup
+
+        if backup is not None:
+            return backup
+        return standby
 
 
 class PropagationChannel(Channel):

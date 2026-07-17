@@ -28,12 +28,15 @@ according to the configuration file.
 
 This file must be written using the following syntax:
 
-# for now only [routes] tree is taken in account:
 [routes]
 admin: first_level_gateways[0-10]
 first_level_gateways[0-10]: second_level_gateways[0-100]
 second_level_gateways[0-100]: nodes[0-2000]
 ...
+
+# optional relative weights for gateway nodes (default: 1, 0 = standby)
+[weights]
+second_level_gateways[0-50]: 2
 """
 
 try:
@@ -193,6 +196,8 @@ class TopologyTree(object):
         """initialize a new TopologyTree instance."""
         self.root = None
         self.groups = []
+        # optional route weights for gateway nodes ([weights] section)
+        self.weights = {}
 
     def load(self, rootnode):
         """load topology tree"""
@@ -434,6 +439,7 @@ class TopologyParser(configparser.ConfigParser):
         self.optionxform = str  # case sensitive parser
 
         self._topology = {}
+        self._weights = {}
         self.graph = None
         self._tree = None
 
@@ -453,10 +459,14 @@ class TopologyParser(configparser.ConfigParser):
                 warnings.warn("topology: [Main] section is deprecated since "
                               "v1.7, use [routes] instead", DeprecationWarning)
                 self._topology = self.items("Main")
+            weights_conf = []
+            if self.has_section("weights"):
+                weights_conf = self.items("weights")
         except configparser.Error:
             raise TopologyError(
                 'Invalid configuration file: %s' % filename)
         self._build_graph()
+        self._build_weights(weights_conf)
 
     def _build_graph(self):
         """build a network topology graph according to the information we got
@@ -476,6 +486,39 @@ class TopologyParser(configparser.ConfigParser):
             if src_ns and dst_ns:
                 self.graph.add_route(src_ns, dst_ns)
 
+    def _build_weights(self, weights_conf):
+        """build the route weights map from the [weights] config section"""
+        # new dict on each load; trees built before keep their own weights
+        self._weights = {}
+        for nodes, weightstr in weights_conf:
+            # like routes, weight node sets may use NodeSet groups and any
+            # empty sets are ignored
+            node_ns = NodeSet(nodes)
+            if not node_ns:
+                LOGGER.debug('Failed to resolve weight node set: %s', nodes)
+                continue
+            try:
+                weight = int(weightstr)
+                if weight < 0:
+                    raise ValueError()
+            except ValueError:
+                raise TopologyError('Invalid weight "%s" for %s'
+                                    % (weightstr, node_ns))
+
+            # only router nodes may be used as next hops
+            other_ns = node_ns - self.graph._routing.aggregated_src
+            if other_ns:
+                node_ns.difference_update(other_ns)
+                if node_ns:
+                    LOGGER.debug('Ignoring weight for non-router node set: %s',
+                                 other_ns)
+                else:
+                    # raise exposure of a weight entry with no effect at all
+                    LOGGER.warning('Ignoring weight for non-router node set: '
+                                   '%s', other_ns)
+            for node in node_ns:
+                self._weights[node] = weight
+
     def tree(self, root, force_rebuild=False):
         """Return a previously generated propagation tree or build it if
         required. As rebuilding tree can be quite expensive, once built,
@@ -484,4 +527,5 @@ class TopologyParser(configparser.ConfigParser):
         """
         if self._tree is None or force_rebuild:
             self._tree = self.graph.to_tree(root)
+            self._tree.weights = self._weights
         return self._tree

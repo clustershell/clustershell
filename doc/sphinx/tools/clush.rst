@@ -220,6 +220,31 @@ The example above defines the following topology graph::
 **topology.conf**, but any route definition with an empty node set
 is ignored (a message is printed in debug mode in that case).
 
+.. highlight:: ini
+
+Since version 1.11, an optional ``[weights]`` section may define relative
+route weights for gateway nodes (the default weight is 1). When several
+gateways are available for a route, each target node is dispatched to the
+gateway with the least number of current connections relative to its
+weight: a gateway with weight 2 is selected for about twice as many target
+nodes as a gateway with weight 1. A weight of 0 defines a standby gateway,
+only used when no other gateway is available for the route::
+
+  [weights]
+  rio10: 2
+  rio13: 0
+
+.. highlight:: text
+
+In the example above, ``rio10`` handles about twice as many target nodes as
+``rio11``, and ``rio13`` is only used if ``rio12`` becomes unreachable.
+Weights may be defined using any valid node set (including node groups), in
+which case the weight applies to each node of the set individually.
+Entries are applied in file order: when node sets overlap, the last entry
+wins for the nodes in common (repeating the exact same key is an error).
+Entries that do not match any gateway node are ignored, with a warning
+when a weight entry has no effect at all.
+
 At runtime, ClusterShell will pick an initial propagation tree from this
 topology graph definition and the current root node. Multiple admin/root
 nodes may be defined in the file.
