@@ -108,15 +108,19 @@ class TaskThreadJoinTest(unittest.TestCase):
         class TestUnhandledException(Exception):
             """test exception"""
         class RaiseOnRead(EventHandler):
+            def __init__(self):
+                self.msg = None
             def ev_read(self, worker, node, sname, msg):
+                self.msg = msg
                 raise TestUnhandledException("you should see this exception")
 
         task = Task()
-        # test data access from main thread
-        task.shell("echo raisefoobar", key=1, handler=RaiseOnRead())
+        eh = RaiseOnRead()
+        task.shell("echo raisefoobar", key=1, handler=eh)
         task.resume()
         task.join()
-        self.assertEqual(task.key_buffer(1), b"raisefoobar")
+        # task buffers are reset at thread termination, check captured msg
+        self.assertEqual(eh.msg, b"raisefoobar")
         time.sleep(1) # for pretty display, because unhandled exception
                       # traceback may be sent to stderr after the join()
         self.assertFalse(task.running())
