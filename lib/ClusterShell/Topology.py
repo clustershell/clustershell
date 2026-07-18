@@ -55,6 +55,9 @@ except ImportError:
 import logging
 import warnings
 
+from itertools import groupby
+from operator import itemgetter
+
 from ClusterShell.NodeSet import NodeSet
 
 # compat with python 2.7, use str directly in 3.x
@@ -209,6 +212,8 @@ class TopologyTree(object):
         """initialize a new TopologyTree instance."""
         self.root = None
         self.groups = []
+        # gateway priorities per route
+        self.priority_routes = []
 
     def load(self, rootnode):
         """load topology tree"""
@@ -458,6 +463,8 @@ class TopologyParser(object):
     def __init__(self, filename=None):
         """instance wide variables initialization"""
         self._routes = []
+        self._priority_routes = []
+        self._filename = None
         self.graph = None
         self._tree = None
 
@@ -472,6 +479,7 @@ class TopologyParser(object):
         *.yaml or *.yml, INI otherwise.
         """
         LOGGER.debug('topology: loading %s', filename)
+        self._filename = filename
         if filename.lower().endswith(('.yaml', '.yml')):
             self._routes = self._load_yaml(filename)
         else:
@@ -561,22 +569,87 @@ class TopologyParser(object):
                 fmt = "%s: missing %s"
                 raise TopologyError(fmt % (where, exc))
 
-            for key, value in (('gateways', src), ('targets', dst)):
-                if value is None:
-                    raise TopologyError("%s: empty '%s' value" % (where, key))
-                if not isinstance(value, basestring):
-                    fmt = "%s: '%s' value %r not a string (add quotes?)"
-                    raise TopologyError(fmt % (where, key, value))
+            if dst is None:
+                raise TopologyError("%s: empty 'targets' value" % where)
+            if not isinstance(dst, basestring):
+                fmt = "%s: 'targets' value %r not a string (add quotes?)"
+                raise TopologyError(fmt % (where, dst))
 
-            routes.append((src, dst, {}))
+            src, priorities = self._parse_gateways(where, src)
+            routes.append((src, dst,
+                           {'priorities': priorities, 'where': where}
+                           if priorities else {}))
         return routes
+
+    def _parse_gateways(self, where, src):
+        """parse the gateways of a route, either a node set string or a
+        list of gateway entries; return (source, priorities)
+        """
+        if isinstance(src, basestring):
+            return src, []
+        if src is None:
+            raise TopologyError("%s: empty 'gateways' value" % where)
+        if not isinstance(src, list) or not src:
+            fmt = "%s: 'gateways' value %r not a string or a non-empty list"
+            raise TopologyError(fmt % (where, src))
+
+        entries = [self._parse_gw_entry(where, entry) for entry in src]
+        entries.sort(key=itemgetter(0))  # stable: file order kept per priority
+
+        priorities = [[(nodes, weight) for _, nodes, weight in group]
+                      for _, group in groupby(entries, itemgetter(0))]
+        src = ','.join(nodes for grp in priorities for nodes, _ in grp)
+
+        # a single priority with default weights is just a gateway pool
+        if len(priorities) == 1 and all(weight == 1
+                                        for _, weight in priorities[0]):
+            priorities = []
+        return src, priorities
+
+    def _parse_gw_entry(self, where, entry):
+        """parse a gateway entry and return a (priority, nodes, weight)
+        tuple"""
+        if isinstance(entry, basestring):
+            # plain node set: an entry with default weight and priority
+            entry = {'nodes': entry}
+        if not isinstance(entry, dict):
+            fmt = "%s: invalid gateway entry %r"
+            raise TopologyError(fmt % (where, entry))
+
+        unknown = set(entry) - set(['nodes', 'weight', 'priority'])
+        if unknown:
+            fmt = ("%s: unsupported gateway entry key(s): %s "
+                   "(expected: nodes, priority, weight)")
+            raise TopologyError(fmt % (where, ', '.join(sorted(unknown))))
+
+        nodes = entry.get('nodes')
+        if nodes is None:
+            raise TopologyError("%s: missing 'nodes' in gateway entry" % where)
+        if not isinstance(nodes, basestring):
+            fmt = "%s: gateway 'nodes' value %r not a string (add quotes?)"
+            raise TopologyError(fmt % (where, nodes))
+
+        return (self._parse_gw_posint(where, entry, 'priority'), nodes,
+                self._parse_gw_posint(where, entry, 'weight'))
+
+    @staticmethod
+    def _parse_gw_posint(where, entry, key):
+        """validate an optional positive integer gateway entry value"""
+        value = entry.get(key, 1)
+        # bool is an int subclass, filter it out explicitly
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            fmt = ("%s: invalid %s %r in gateway entry %s "
+                   "(expected integer >= 1)")
+            raise TopologyError(fmt % (where, key, value, entry['nodes']))
+        return value
 
     def _build_graph(self):
         """build a network topology graph according to the information we got
         from the configuration file.
         """
         self.graph = TopologyGraph()
-        for src, dst, _attrs in self._routes:
+        self._priority_routes = []
+        for src, dst, attrs in self._routes:
             # GH#527: router and destination node sets may use NodeSet groups
             # but we ignore any empty sets
             src_ns = NodeSet(src)
@@ -589,6 +662,36 @@ class TopologyParser(object):
             if src_ns and dst_ns:
                 self.graph.add_route(src_ns, dst_ns)
 
+                priorities = self._resolve_priorities(
+                    attrs.get('priorities', ()),
+                    attrs.get('where', self._filename))
+                if priorities:
+                    self._priority_routes.append((str(src_ns), str(dst_ns),
+                                                  priorities))
+
+    def _resolve_priorities(self, priorities, where):
+        """resolve gateway node sets per priority, ignoring any empty
+        sets (GH#527)"""
+        resolved = []
+        seen = NodeSet()
+        for grp in priorities:
+            rgrp = []
+            for nodes, weight in grp:
+                node_ns = NodeSet(nodes)
+                if not node_ns:
+                    LOGGER.debug('Failed to resolve gateway node set: %s',
+                                 nodes)
+                    continue
+                if node_ns & seen:
+                    raise TopologyError(
+                        "%s: duplicate gateway %s in 'gateways'"
+                        % (where, node_ns & seen))
+                seen.add(node_ns)
+                rgrp.append((str(node_ns), weight))
+            if rgrp:
+                resolved.append(rgrp)
+        return resolved
+
     def tree(self, root, force_rebuild=False):
         """Return a previously generated propagation tree or build it if
         required. As rebuilding tree can be quite expensive, once built,
@@ -597,4 +700,5 @@ class TopologyParser(object):
         """
         if self._tree is None or force_rebuild:
             self._tree = self.graph.to_tree(root)
+            self._tree.priority_routes = self._priority_routes
         return self._tree

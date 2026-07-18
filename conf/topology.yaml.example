@@ -13,3 +13,33 @@ routes:
     targets:  rio[100-240]
   - gateways: rio[12-13]
     targets:  rio[300-440]
+
+# The gateways of a route may also be a list of entries with attributes:
+# nodes (node set, required), weight (load share among gateways of equal
+# priority, default 1) and priority (failover rank, default 1; a lower
+# number means a higher priority). Gateways of a given priority are used
+# only when all gateways with a lower priority number are unreachable;
+# gateways of equal priority share the load according to their weights.
+#
+# The routes below illustrate that syntax. As a file has a single routes:
+# key, add such entries to the list above: a second routes: block would
+# silently replace the first one.
+#
+#routes:
+#  - gateways:
+#      - nodes: rio1
+#      - nodes: rio2
+#        priority: 2             # rio1 default, rio2 failover
+#    targets:  rio[100-199]
+#  - gateways:
+#      - nodes: rio2
+#      - nodes: rio1
+#        priority: 2             # rio2 default, rio1 failover
+#    targets:  rio[200-299]
+#  - gateways:
+#      - nodes: rio[10-11]
+#        weight: 2               # twice the load of rio12
+#      - nodes: rio12
+#      - nodes: rio13
+#        priority: 2             # used as failover only
+#    targets:  rio[300-440]

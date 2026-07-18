@@ -58,6 +58,8 @@ class PropagationTreeRouter(object):
         self.fanout = fanout
         self.nodes_fanin = {}
         self.table = None
+        # gateway priorities (getattr: tree may come from an older version)
+        self.priority_routes = getattr(topology, 'priority_routes', None) or []
 
         self.table_generate(root, topology)
         self._unreachable_hosts = NodeSet()
@@ -81,7 +83,31 @@ class PropagationTreeRouter(object):
                 curr = stack.pop()
                 dest.update(curr.children_ns())
                 stack += curr.children()
-            self.table.append((dest, group.nodeset))
+            self.table.append((dest, group.nodeset,
+                               self._group_priorities(group)))
+
+    def _group_priorities(self, group):
+        """resolve gateway priorities for routes via a nodegroup"""
+        entries = []
+        pool = str(group.nodeset)
+        for route_pool, targets, priorities in self.priority_routes:
+            if route_pool != pool:
+                continue
+            # priorities apply to the route targets and their whole subtree
+            dst_ns = NodeSet(targets)
+            expanded = NodeSet()
+            for child in group.children():
+                if len(child.nodeset & dst_ns) == 0:
+                    continue
+                stack = [child]
+                while len(stack) > 0:
+                    curr = stack.pop()
+                    expanded.update(curr.nodeset)
+                    stack += curr.children()
+            rprios = [[(NodeSet(nodes), weight) for nodes, weight in grp]
+                      for grp in priorities]
+            entries.append((expanded, rprios))
+        return entries
 
     def dispatch(self, dst):
         """dispatch nodes from a target nodeset to the directly
@@ -100,7 +126,7 @@ class PropagationTreeRouter(object):
         #    yield nexthop, nexthop
 
         # Check for remote targets, that require a gateway to be reached
-        for network, _ in self.table:
+        for network, _, _ in self.table:
             dst_inter = network & dst
             dst.difference_update(dst_inter)
             for host in dst_inter.nsiter():
@@ -113,7 +139,7 @@ class PropagationTreeRouter(object):
     def next_hop(self, dst):
         """perform the next hop resolution. If several hops are
         available, then, the one with the least number of current jobs
-        will be returned
+        will be returned, honoring gateway priorities if defined
         """
         if dst in self._unreachable_hosts:
             raise RouteResolvingError(
@@ -133,10 +159,10 @@ class PropagationTreeRouter(object):
         # node[10-19] | gateway[1-2]
         #            ...
         # ---------
-        for network, nexthops in self.table:
+        for network, nexthops, prio_entries in self.table:
             # destination contained in current network
             if dst in network:
-                res = self._best_next_hop(nexthops)
+                res = self._best_next_hop(nexthops, dst, prio_entries)
                 if res is None:
                     raise RouteResolvingError('No route available to %s' % \
                         str(dst))
@@ -159,12 +185,36 @@ class PropagationTreeRouter(object):
         # list will be consulted by the resolution method
         self._unreachable_hosts.add(dst)
 
-    def _best_next_hop(self, candidates):
-        """find out a good next hop gateway"""
+    def _best_next_hop(self, candidates, dst=None, prio_entries=None):
+        """find out a good next hop gateway; when gateway priorities
+        apply to dst, use the best priority (lowest number) with a
+        reachable gateway and the least number of connections relative
+        to weight within it
+        """
+        candidates = candidates.difference(self._unreachable_hosts)
+
+        for dst_ns, priorities in prio_entries or ():
+            if dst is None or dst not in dst_ns:
+                continue
+            # a priority is used only when all gateways of better
+            # (lower-numbered) priorities are unreachable
+            for grp in priorities:
+                backup = None
+                backup_connections = 1e400 # infinity
+                for grp_ns, weight in grp:
+                    for host in grp_ns.intersection(candidates):
+                        connections = self.nodes_fanin.setdefault(host, 0)
+                        # weighted least-connections (force true division)
+                        connections /= float(weight)
+                        if backup_connections > connections:
+                            backup = host
+                            backup_connections = connections
+                if backup is not None:
+                    return backup
+            return None
+
         backup = None
         backup_connections = 1e400 # infinity
-
-        candidates = candidates.difference(self._unreachable_hosts)
 
         for host in candidates:
             # the router tracks established connections in the
