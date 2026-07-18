@@ -601,6 +601,27 @@ class TopologyWithGroupsTest(unittest.TestCase):
                            '- Computer101,Controller-vm2\n'
             self.assertEqual(str(tree), display_ref1)
 
+    def testYamlGroupsPriority(self):
+        """test YAML topology with quoted node group in gateway entries"""
+        with NamedTemporaryFile(suffix='.yaml') as tmpfile:
+            tmpfile.write(b'routes:\n')
+            tmpfile.write(b'  - gateways:\n')
+            tmpfile.write(b'      - nodes: "@gw"\n')
+            tmpfile.write(b'      - nodes: Controller-vm2\n')
+            tmpfile.write(b'        priority: 2\n')
+            tmpfile.write(b'    targets: Computer[101-102]\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            parser.load(tmpfile.name)
+
+            tree = parser.tree('Controller-vm1')
+
+            # @gw expands to Controller-vm[1,30] in resolved priority routes
+            self.assertEqual(tree.priority_routes,
+                             [('Controller-vm[1-2,30]', 'Computer[101-102]',
+                               [[('Controller-vm[1,30]', 1)],
+                                [('Controller-vm2', 1)]])])
+
 
 class TopologyYamlTest(unittest.TestCase):
     """Test cases for the YAML topology file syntax"""
@@ -777,6 +798,186 @@ class TopologyYamlTest(unittest.TestCase):
         # null value
         self.assertRaises(TopologyError, self._parser,
                           b'routes:\n  - gateways: admin\n    targets:\n')
+
+    def testYamlPriorities(self):
+        """test YAML topology gateway priorities parsing"""
+        parser = self._parser(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-4]
+              - gateways:
+                  - nodes: gw[1-2]
+                    weight: 2
+                  - nodes: gw3
+                  - nodes: gw4
+                    priority: 2
+                targets:  nodes[0-9]
+            """).encode())
+        tree = parser.tree('admin')
+        self.assertEqual(tree.priority_routes,
+                         [('gw[1-4]', 'nodes[0-9]',
+                           [[('gw[1-2]', 2), ('gw3', 1)], [('gw4', 1)]])])
+        # scalar gateways do not generate priority routes
+        parser = self._parser(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways: gw[1-2]
+                targets:  nodes[0-9]
+            """).encode())
+        self.assertEqual(parser.tree('admin').priority_routes, [])
+        # neither does a plain list of node sets (load-shared pool)
+        parser = self._parser(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways: [gw1, gw2]
+                targets:  nodes[0-9]
+            """).encode())
+        self.assertEqual(parser.tree('admin').priority_routes, [])
+
+    def testYamlPriorityNumbers(self):
+        """test YAML topology priority numbering order and gaps"""
+        parser = self._parser(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-3]
+              - gateways:
+                  - nodes: gw3
+                    priority: 5
+                  - nodes: gw[1-2]
+                targets:  nodes[0-9]
+            """).encode())
+        self.assertEqual(parser.tree('admin').priority_routes,
+                         [('gw[1-3]', 'nodes[0-9]',
+                           [[('gw[1-2]', 1)], [('gw3', 1)]])])
+
+    def testYamlOverlappingTargets(self):
+        """test YAML topology with overlapping route targets"""
+        # same gateway pool, opposite priorities: which one applies to
+        # rio[150-199] would depend on the order of the routes
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways:
+                  - nodes: gw1
+                  - nodes: gw2
+                    priority: 2
+                targets:  rio[100-199]
+              - gateways:
+                  - nodes: gw2
+                  - nodes: gw1
+                    priority: 2
+                targets:  rio[150-249]
+            """).encode())
+
+        # same gateway pool, same targets, contradictory priorities
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways:
+                  - nodes: gw1
+                  - nodes: gw2
+                    priority: 2
+                targets:  rio[100-199]
+              - gateways:
+                  - nodes: gw2
+                  - nodes: gw1
+                    priority: 2
+                targets:  rio[100-199]
+            """).encode())
+
+    def testYamlDuplicateGateways(self):
+        """test YAML topology with a gateway defined twice in a route"""
+        # gw2 would be both a default and a failover gateway
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways:
+                  - nodes: "gw[1-2]"
+                  - nodes: gw2
+                    priority: 2
+                targets:  rio[100-199]
+            """).encode())
+
+        # gw2 would have two weights
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways:
+                  - nodes: "gw[1-2]"
+                    weight: 3
+                  - nodes: gw2
+                    weight: 5
+                targets:  rio[100-199]
+            """).encode())
+
+    def testYamlInvalidGatewayEntries(self):
+        """test YAML topology with invalid gateway entries"""
+        # empty gateway list
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: []\n    targets: n[0-9]\n')
+        # invalid gateway entry type
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [123]\n'
+                          b'    targets: n[0-9]\n')
+        # empty gateway entry (missing nodes)
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{}]\n'
+                          b'    targets: n[0-9]\n')
+        # bare mapping (gateway entries must be in a list)
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: {nodes: gw1}\n'
+                          b'    targets: n[0-9]\n')
+        # unsupported entry key (e.g. old nodeset-as-key syntax)
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{gw1: 3}]\n'
+                          b'    targets: n[0-9]\n')
+        # missing nodes key
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{weight: 2}]\n'
+                          b'    targets: n[0-9]\n')
+        # non-string nodes
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: 123}]\n'
+                          b'    targets: n[0-9]\n')
+        # non-integer weight
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: gw1, weight: 1.5}]'
+                          b'\n    targets: n[0-9]\n')
+        # boolean weight
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: gw1, weight: true}]'
+                          b'\n    targets: n[0-9]\n')
+        # zero weight (standby is expressed as a higher priority number)
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: gw1, weight: 0}]\n'
+                          b'    targets: n[0-9]\n')
+        # negative weight
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: gw1, weight: -1}]\n'
+                          b'    targets: n[0-9]\n')
+        # zero priority
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [{nodes: gw1, priority: 0}]'
+                          b'\n    targets: n[0-9]\n')
+        # non-integer priority
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: '
+                          b'[{nodes: gw1, priority: "1"}]\n'
+                          b'    targets: n[0-9]\n')
+        # nested list
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: [[gw1]]\n'
+                          b'    targets: n[0-9]\n')
+        # targets cannot be a list
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: gw1\n'
+                          b'    targets: [a, b]\n')
 
     def testYamlMissingFile(self):
         """test YAML topology with a missing file"""
