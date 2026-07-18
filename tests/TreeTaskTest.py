@@ -8,7 +8,7 @@ from textwrap import dedent
 import unittest
 
 from ClusterShell.Propagation import RouteResolvingError
-from ClusterShell.Task import task_self
+from ClusterShell.Task import Task, task_self
 from ClusterShell.Topology import TopologyError
 
 from .TLib import HOSTNAME, make_temp_file
@@ -61,3 +61,34 @@ class TreeTaskTest(unittest.TestCase):
         task.TOPOLOGY_CONFIGS = [topofile.name]
         self.assertRaises(TopologyError, task.run, "/bin/hostname",
                           nodes="dummy-node")
+
+    def test_topology_configs_defaults(self):
+        """test default TOPOLOGY_CONFIGS with YAML precedence"""
+        # scanned in reverse order: topology.yaml preferred at each location
+        scan = Task.TOPOLOGY_CONFIGS[::-1]
+        self.assertEqual(len(scan) % 2, 0)
+        for conf_path, yaml_path in zip(scan[1::2], scan[0::2]):
+            self.assertTrue(yaml_path.endswith('topology.yaml'))
+            self.assertTrue(conf_path.endswith('topology.conf'))
+            self.assertEqual(os.path.dirname(yaml_path),
+                             os.path.dirname(conf_path))
+
+    def test_auto_tree_yaml_precedence(self):
+        """test auto tree prefers topology.yaml over topology.conf"""
+        conffile = make_temp_file(dedent("""
+                        [routes]
+                        %s: ini-gw
+                        ini-gw: ini-node""" % HOSTNAME).encode())
+        yamlfile = make_temp_file(dedent("""
+                        routes:
+                          - gateways: %s
+                            targets: yaml-gw
+                          - gateways: yaml-gw
+                            targets: yaml-node""" % HOSTNAME).encode(),
+                                  suffix='.yaml')
+        task = task_self()
+        task.set_default("auto_tree", True)
+        # mimic default TOPOLOGY_CONFIGS order: YAML after INI at a location
+        task.TOPOLOGY_CONFIGS = [conffile.name, yamlfile.name]
+        self.assertTrue(task._default_tree_is_enabled())
+        self.assertTrue('yaml-gw' in str(task.topology))

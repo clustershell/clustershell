@@ -3,6 +3,8 @@
 
 """Unit test for Topology"""
 
+import pickle
+import sys
 import unittest
 import warnings
 from tempfile import NamedTemporaryFile
@@ -13,6 +15,7 @@ from textwrap import dedent
 #from guppy import hpy
 # ---
 
+from ClusterShell.Communication import GW_PICKLE_PROTOCOL
 from ClusterShell.Topology import *
 from ClusterShell.NodeSet import NodeSet, set_std_group_resolver
 from ClusterShell.NodeSet import set_std_group_resolver_config
@@ -51,8 +54,8 @@ class TopologyTest(unittest.TestCase):
         # Connect a new dst nodeset to an existing src
         ns2 = NodeSet('nodes[20-29]')
         g.add_route(ns0, ns2)
-        # Add the same dst nodeset twice (no error)
-        g.add_route(ns0, ns2)
+        # A dst nodeset cannot be reached through two routes
+        self.assertRaises(TopologyError, g.add_route, ns0, ns2)
 
         self.assertEqual(g.dest(admin), ns0)
         self.assertEqual(g.dest(ns0), ns1 | ns2)
@@ -80,6 +83,15 @@ class TopologyTest(unittest.TestCase):
         self.assertRaises(TopologyError, g.add_route, ns0, ns0)
         g.add_route(ns0, ns1)
         self.assertRaises(TopologyError, g.add_route, ns0, ns1_overlap)
+
+        # targets of two routes cannot overlap, whatever their gateways
+        g = TopologyGraph()
+        g.add_route(admin, ns0)
+        g.add_route(ns0, ns1)
+        self.assertRaises(TopologyError, g.add_route, ns0,
+                          NodeSet('nodes[15-24]'))
+        self.assertRaises(TopologyError, g.add_route, NodeSet('nodes[30-39]'),
+                          NodeSet('nodes[15-24]'))
 
     def testBadTopologies(self):
         """test detecting invalid topologies"""
@@ -281,6 +293,14 @@ class TopologyTest(unittest.TestCase):
             for nodegroup in parser.tree('admin'):
                 ns_tree.add(nodegroup.nodeset)
             self.assertEqual(str(ns_all), str(ns_tree))
+
+    def testConfigurationParserNoSectionHeader(self):
+        """test INI topology parsing of a file without section header"""
+        with NamedTemporaryFile() as tmpfile:
+            # eg. YAML syntax in a .conf file
+            tmpfile.write(b'routes:\n  - gateways: admin\n')
+            tmpfile.flush()
+            self.assertRaises(TopologyError, TopologyParser, tmpfile.name)
 
     def testConfigurationLongSyntax(self):
         """test detailed topology description syntax"""
@@ -561,3 +581,235 @@ class TopologyWithGroupsTest(unittest.TestCase):
             tmpfile.flush()
             parser = TopologyParser()
             self.assertRaises(TopologyError, parser.load, tmpfile.name)
+
+    def testYamlGroups(self):
+        """test YAML topology with quoted node groups"""
+        with NamedTemporaryFile(suffix='.yaml') as tmpfile:
+            tmpfile.write(b'routes:\n')
+            tmpfile.write(b'  - gateways: "@gw"\n')
+            tmpfile.write(b'    targets: Controller-vm2,Computer101\n')
+            tmpfile.flush()
+            parser = TopologyParser()
+            parser.load(tmpfile.name)
+
+            tree = parser.tree('Controller-vm1')
+
+            # Controller-vm[1,30]
+            # `- Computer101,Controller-vm2
+
+            display_ref1 = 'Controller-vm[1,30]\n`' \
+                           '- Computer101,Controller-vm2\n'
+            self.assertEqual(str(tree), display_ref1)
+
+
+class TopologyYamlTest(unittest.TestCase):
+    """Test cases for the YAML topology file syntax"""
+
+    def _parser(self, text, suffix='.yaml'):
+        """helper to create a TopologyParser from file content"""
+        tmpfile = make_temp_file(text, suffix=suffix)
+        try:
+            return TopologyParser(tmpfile.name)
+        finally:
+            tmpfile.close()
+
+    def _tree(self, text, suffix='.yaml', root='admin'):
+        """helper to build a topology tree from file content"""
+        return self._parser(text, suffix=suffix).tree(root)
+
+    def testYamlBasic(self):
+        """test loading a basic YAML topology file"""
+        tree = self._tree(dedent("""
+            # this is a comment
+            routes:
+              - gateways: admin
+                targets:  nodes[0-1]
+              - gateways: nodes[0-1]
+                targets:  nodes[2-5]
+              - gateways: nodes[4-5]
+                targets:  nodes[6-9]
+            """).encode())
+        ns_all = NodeSet('admin,nodes[0-9]')
+        ns_tree = NodeSet()
+        for nodegroup in tree:
+            ns_tree.add(nodegroup.nodeset)
+        self.assertEqual(str(ns_all), str(ns_tree))
+
+    def testYamlIniEquivalence(self):
+        """test YAML topology tree equivalence with INI"""
+        ini_tree = self._tree(dedent("""
+            [routes]
+            admin: proxy
+            proxy: STA[0-1]
+            STA0: STB[0-1]
+            STB0: nodes[0-2]
+            STB1: nodes[3-5]
+            STA1: STB[2-3]
+            STB2: nodes[6-7]
+            STB3: nodes[8-10]
+            """).encode(), suffix='.conf')
+        yaml_tree = self._tree(dedent("""
+            routes:
+              - gateways: admin
+                targets:  proxy
+              - gateways: proxy
+                targets:  STA[0-1]
+              - gateways: STA0
+                targets:  STB[0-1]
+              - gateways: STB0
+                targets:  nodes[0-2]
+              - gateways: STB1
+                targets:  nodes[3-5]
+              - gateways: STA1
+                targets:  STB[2-3]
+              - gateways: STB2
+                targets:  nodes[6-7]
+              - gateways: STB3
+                targets:  nodes[8-10]
+            """).encode())
+        self.assertEqual(str(ini_tree), str(yaml_tree))
+        self.assertEqual(yaml_tree.inner_node_count(), 8)
+        self.assertEqual(yaml_tree.leaf_node_count(), 11)
+
+    def testYamlYmlExtension(self):
+        """test loading a YAML topology file with .yml extension"""
+        tree = self._tree(dedent("""
+            routes:
+              - gateways: admin
+                targets:  nodes[0-9]
+            """).encode(), suffix='.yml')
+        self.assertEqual(tree.leaf_node_count(), 10)
+
+    def testYamlSameGateways(self):
+        """test YAML topology with same gateways used in several routes"""
+        tree = self._tree(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways: gw[1-2]
+                targets:  rio[100-199]
+              - gateways: gw[1-2]
+                targets:  rio[200-299]
+            """).encode())
+        self.assertEqual(tree.inner_node_count(), 3)
+        self.assertEqual(tree.leaf_node_count(), 200)
+        gwgrp = tree.find_nodegroup('gw1')
+        self.assertEqual(sorted(str(c.nodeset) for c in gwgrp.children()),
+                         ['rio[100-199]', 'rio[200-299]'])
+
+        # not expressible in INI syntax (duplicate option error)
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            [routes]
+            admin: gw[1-2]
+            gw[1-2]: rio[100-199]
+            gw[1-2]: rio[200-299]
+            """).encode(), '.conf')
+
+        # but their targets may not overlap
+        self.assertRaises(TopologyError, self._parser, dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways: gw[1-2]
+                targets:  rio[100-199]
+              - gateways: gw[1-2]
+                targets:  rio[150-249]
+            """).encode())
+
+    def testYamlFlowStyle(self):
+        """test YAML topology in flow style with quoted node sets"""
+        tree = self._tree(b'routes: [{gateways: admin, targets: "nodes[0-9]"},'
+                          b' {gateways: "nodes[0-9]", targets: "nodes[10-19]"}'
+                          b']\n')
+        self.assertEqual(tree.inner_node_count(), 11)
+        self.assertEqual(tree.leaf_node_count(), 10)
+
+    def testYamlInvalidSyntax(self):
+        """test YAML topology with invalid YAML syntax"""
+        self.assertRaises(TopologyError, self._parser, b'routes: [what\n')
+
+    def testYamlInvalidContent(self):
+        """test YAML topology with invalid content"""
+        # base is not a dict
+        self.assertRaises(TopologyError, self._parser, b'- gateways: foo\n')
+        # empty file
+        self.assertRaises(TopologyError, self._parser, b'')
+        # unsupported top-level key
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes: []\nweights: []\n')
+        # missing routes section
+        self.assertRaises(TopologyError, self._parser, b'{}\n')
+        # routes is not a list
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes: {gateways: a, targets: b}\n')
+
+    def testYamlAnchors(self):
+        """test YAML topology with anchors and merge keys"""
+        tree = self._tree(dedent("""
+            routes:
+              - &route
+                gateways: admin
+                targets:  nodes[0-9]
+              - <<: *route
+                gateways: nodes[0-9]
+                targets:  nodes[10-19]
+            """).encode())
+        self.assertEqual(tree.inner_node_count(), 11)
+        self.assertEqual(tree.leaf_node_count(), 10)
+
+    def testYamlInvalidRoutes(self):
+        """test YAML topology with invalid routes"""
+        # route is not a dict
+        self.assertRaises(TopologyError, self._parser, b'routes:\n  - foo\n')
+        # missing targets key
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: admin\n')
+        # missing gateways key
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - targets: nodes[0-9]\n')
+        # unsupported route key
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: a\n    targets: b\n'
+                          b'    weight: 3\n')
+        # non-string value (missing quotes)
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: admin\n    targets: 123\n')
+        # null value
+        self.assertRaises(TopologyError, self._parser,
+                          b'routes:\n  - gateways: admin\n    targets:\n')
+
+    def testYamlMissingFile(self):
+        """test YAML topology with a missing file"""
+        self.assertRaises(TopologyError, TopologyParser,
+                          '/invalid/path/for/testing.yaml')
+
+    def testYamlEmptyRoutesList(self):
+        """test YAML topology with an empty routes list"""
+        parser = self._parser(b'routes: []\n')
+        self.assertRaises(TopologyError, parser.tree, 'admin')
+
+    def testYamlMissingPyYAML(self):
+        """test YAML topology with missing PyYAML"""
+        sys_path_saved = sys.path
+        try:
+            sys.path = [] # make import yaml failed
+            if 'yaml' in sys.modules:
+                # forget about previous yaml import
+                del sys.modules['yaml']
+            self.assertRaises(TopologyError, self._parser, b'routes: []\n')
+        finally:
+            sys.path = sys_path_saved
+
+    def testYamlTreePickle(self):
+        """test pickling a YAML-built topology tree at gateway protocol"""
+        tree = self._tree(dedent("""
+            routes:
+              - gateways: admin
+                targets:  gw[1-2]
+              - gateways: gw[1-2]
+                targets:  rio[100-199]
+              - gateways: gw[1-2]
+                targets:  rio[200-299]
+            """).encode())
+        tree2 = pickle.loads(pickle.dumps(tree, GW_PICKLE_PROTOCOL))
+        self.assertEqual(str(tree), str(tree2))
