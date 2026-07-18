@@ -189,11 +189,13 @@ to use the tree mode with the **clush** command only.
 Configuration
 """""""""""""
 
-The system-wide library configuration file **/etc/clustershell/topology.conf**
-defines available/preferred routes for the command propagation tree. It is
-recommended that all connections between parent and children nodes are carefully
-pre-configured, for example, to avoid any SSH warnings when connecting (if
-using the default SSH remote worker, of course).
+The system-wide library topology configuration file, either
+**/etc/clustershell/topology.yaml** (preferred since version 1.11) or
+**/etc/clustershell/topology.conf**, defines available/preferred routes for
+the command propagation tree. It is recommended that all connections between
+parent and children nodes are carefully pre-configured, for example, to avoid
+any SSH warnings when connecting (if using the default SSH remote worker, of
+course).
 
 .. highlight:: ini
 
@@ -216,8 +218,26 @@ The example above defines the following topology graph::
     `- rio[12-13]
        `- rio[300-440]
 
-:ref:`nodeset-groups` and :ref:`node-wildcards` are supported in
-**topology.conf**, but any route definition with an empty node set
+.. highlight:: yaml
+
+The same routes in the YAML syntax of **topology.yaml**::
+
+    routes:
+      - gateways: rio0
+        targets:  rio[10-13]
+      - gateways: rio[10-11]
+        targets:  rio[100-240]
+      - gateways: rio[12-13]
+        targets:  rio[300-440]
+
+.. highlight:: text
+
+The YAML syntax also supports repeating the same gateways in several routes
+and :ref:`gateway priorities <topology-priorities>` for automatic failover,
+optionally weighted; see :ref:`topology-config` for the full syntax.
+
+:ref:`nodeset-groups` and :ref:`node-wildcards` are supported in topology
+configuration files, but any route definition with an empty node set
 is ignored (a message is printed in debug mode in that case).
 
 At runtime, ClusterShell will pick an initial propagation tree from this
@@ -234,10 +254,11 @@ Enabling tree mode
 """"""""""""""""""
 
 Since version 1.7, the tree mode is enabled by default when a configuration
-file is present. When the configuration file
-**/etc/clustershell/topology.conf** exists, *clush* will use it by default for
-target nodes that are defined there. The topology file path can be changed
-using the ``--topology`` command line option.
+file is present. When **/etc/clustershell/topology.yaml** or
+**/etc/clustershell/topology.conf** exists, *clush* will use it by default
+for target nodes that are defined there. The topology file path can be
+changed using the ``--topology`` command line option (the file syntax is
+selected by its extension: YAML for *.yaml* or *.yml*, INI otherwise).
 
 .. note:: If using ``clush -d`` (debug option), clush will display an ASCII
    representation of the initial propagation tree used. This is useful when
