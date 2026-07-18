@@ -582,6 +582,12 @@ In the absence of ``--dest``, *clush* will attempt to copy each file or
 directory found in the command line to their same location on the target
 nodes.
 
+.. warning:: When copying a file into an existing directory, always append a
+   trailing slash (``/``) to the destination path. Tree mode cannot check the
+   remote path type and otherwise treats the destination as a file path: the
+   copy then fails, or silently replaces the remote directory when it is
+   empty.
+
 Here are some examples of file copying with *clush*::
 
     $ clush -v -w node[11-12] --copy /tmp/foo

@@ -115,6 +115,10 @@ File copying mode ( ``--copy`` )
   attempt to copy specified *files* and/or *directories* to the provided
   cluster nodes.  The ``--dest`` option can be used to specify a single
   path where all the file(s) should be copied to on the target nodes.
+  When copying a file into an existing directory, always append a trailing
+  slash (``/``) to the destination path. Tree mode cannot check the remote
+  path type and otherwise treats the destination as a file path: the copy
+  then fails, or silently replaces the remote directory when it is empty.
   In the absence of ``--dest``, ``clush`` will attempt to copy each file or
   directory found in the command line to their same location on the
   target nodes.

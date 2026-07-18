@@ -143,6 +143,10 @@ When \fBclush\fP is started with the \fB\-c\fP or \fB\-\-copy\fP option, it will
 attempt to copy specified \fIfiles\fP and/or \fIdirectories\fP to the provided
 cluster nodes.  The \fB\-\-dest\fP option can be used to specify a single
 path where all the file(s) should be copied to on the target nodes.
+When copying a file into an existing directory, always append a trailing
+slash (\fB/\fP) to the destination path. Tree mode cannot check the remote
+path type and otherwise treats the destination as a file path: the copy
+then fails, or silently replaces the remote directory when it is empty.
 In the absence of \fB\-\-dest\fP, \fBclush\fP will attempt to copy each file or
 directory found in the command line to their same location on the
 target nodes.

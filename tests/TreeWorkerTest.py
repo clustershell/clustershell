@@ -262,6 +262,97 @@ class TreeWorkerTestBase(unittest.TestCase):
             srcdir.cleanup()
             destdir.cleanup()
 
+    def _tree_copy_file_dest_dir(self, target):
+        """helper to copy file to an existing dir dest with trailing slash"""
+        teh = TEventHandler()
+        srcf = make_temp_file(b'Lorem Ipsum', 'test_tree_copy_file_src')
+        destdir = make_temp_dir()
+        try:
+            # trailing slash on dest: supported way to copy a file into a dir
+            worker = self.task.copy(srcf.name, destdir.name + '/',
+                                    nodes=target, handler=teh)
+            self.task.run()
+            target_cnt = len(NodeSet(target))
+            self.assertEqual(teh.ev_start_cnt, 1)
+            self.assertEqual(teh.ev_pickup_cnt, target_cnt)
+            self.assertEqual(teh.ev_read_cnt, 0)
+            #self.assertEqual(teh.ev_written_cnt, 0)  # FIXME
+            self.assertEqual(teh.ev_hup_cnt, target_cnt)
+            self.assertEqual(teh.ev_timedout_cnt, 0)
+            self.assertEqual(teh.ev_close_cnt, 1)
+            with open(join(destdir.name, basename(srcf.name)), 'r') as destf:
+                self.assertEqual(destf.read(), 'Lorem Ipsum')
+        finally:
+            srcf.close()
+            destdir.cleanup()
+
+    def _tree_copy_file_dest_dir_noslash(self, target):
+        """helper to copy file to an existing dir dest without trailing slash
+        (not supported over a gateway: untar error -> stderr, GH #549)"""
+        teh = TEventHandler()
+        srcf = make_temp_file(b'Lorem Ipsum', 'test_tree_copy_file_src')
+        destdir = make_temp_dir()
+        # non-empty dest dir: an empty one is silently replaced by the file
+        canary = make_temp_file(b'canary', dir=destdir.name)
+        try:
+            worker = self.task.copy(srcf.name, destdir.name, nodes=target,
+                                    handler=teh)
+            self.task.run()
+            target_cnt = len(NodeSet(target))
+            self.assertEqual(teh.ev_start_cnt, 1)
+            self.assertEqual(teh.ev_pickup_cnt, target_cnt)
+            self.assertEqual(teh.ev_hup_cnt, target_cnt)
+            self.assertEqual(teh.ev_timedout_cnt, 0)
+            self.assertEqual(teh.ev_close_cnt, 1)
+            # the copy failed cleanly: untar error on stderr only
+            self.assertTrue(teh.ev_read_cnt > 0)
+            self.assertEqual(teh.read_snames, set([worker.SNAME_STDERR]))
+            # the existing dest dir was not replaced or modified
+            self.assertTrue(os.path.isdir(destdir.name))
+            with open(canary.name, 'rb') as cfile:
+                self.assertEqual(cfile.read(), b'canary')
+        finally:
+            canary.close()
+            srcf.close()
+            destdir.cleanup()
+
+    def _tree_copy_dir_rename(self, target):
+        """helper to copy directory to a new dest name (no trailing slash)"""
+        teh = TEventHandler()
+
+        srcdir = make_temp_dir()
+        destdir = make_temp_dir()
+        dest = join(destdir.name, 'newname')
+        file1 = make_temp_file(b'Lorem Ipsum Unum', suffix=".txt",
+                               dir=srcdir.name)
+        file2 = make_temp_file(b'Lorem Ipsum Duo', suffix=".txt",
+                               dir=srcdir.name)
+
+        try:
+            # no trailing slash on dest: source dir is copied as dest (rename)
+            worker = self.task.copy(srcdir.name, dest, nodes=target,
+                                    handler=teh)
+            self.task.run()
+            target_cnt = len(NodeSet(target))
+            self.assertEqual(teh.ev_start_cnt, 1)
+            self.assertEqual(teh.ev_pickup_cnt, target_cnt)
+            self.assertEqual(teh.ev_read_cnt, 0)
+            #self.assertEqual(teh.ev_written_cnt, 0)  # FIXME
+            self.assertEqual(teh.ev_hup_cnt, target_cnt)
+            self.assertEqual(teh.ev_timedout_cnt, 0)
+            self.assertEqual(teh.ev_close_cnt, 1)
+
+            # copy successful?
+            with open(join(dest, basename(file1.name)), 'rb') as rfile1:
+                self.assertEqual(rfile1.read(), b'Lorem Ipsum Unum')
+            with open(join(dest, basename(file2.name)), 'rb') as rfile2:
+                self.assertEqual(rfile2.read(), b'Lorem Ipsum Duo')
+        finally:
+            file1.close()
+            file2.close()
+            srcdir.cleanup()
+            destdir.cleanup()
+
     def _tree_rcopy_file(self, target):
         """helper to rcopy file"""
         teh = TEventHandler()
@@ -625,6 +716,26 @@ class TreeWorkerTest(TreeWorkerTestBase):
     def test_tree_copy_dir_gateway(self):
         """test tree copy: directory, gateway is target"""
         self._tree_copy_dir(NODE_GATEWAY)
+
+    def test_tree_copy_file_dest_dir_distant(self):
+        """test tree copy: file to dir dest with trailing slash, distant target"""
+        self._tree_copy_file_dest_dir(NODE_DISTANT)
+
+    def test_tree_copy_file_dest_dir_direct(self):
+        """test tree copy: file to dir dest with trailing slash, direct target"""
+        self._tree_copy_file_dest_dir(NODE_DIRECT)
+
+    def test_tree_copy_file_dest_dir_noslash_distant(self):
+        """test tree copy: file to dir dest without trailing slash -> stderr (#549)"""
+        self._tree_copy_file_dest_dir_noslash(NODE_DISTANT)
+
+    def test_tree_copy_dir_rename_distant(self):
+        """test tree copy: directory to new dest name, distant target"""
+        self._tree_copy_dir_rename(NODE_DISTANT)
+
+    def test_tree_copy_dir_rename_direct(self):
+        """test tree copy: directory to new dest name, direct target"""
+        self._tree_copy_dir_rename(NODE_DIRECT)
 
     ### rcopy ###
 
