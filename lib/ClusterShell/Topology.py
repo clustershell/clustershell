@@ -26,13 +26,23 @@ This module contains the network topology parser and its related
 classes. These classes are used to build a topology tree of nodegroups
 according to the configuration file.
 
-This file must be written using the following syntax:
+The topology configuration file may be written in INI syntax:
 
-# for now only [routes] tree is taken in account:
 [routes]
 admin: first_level_gateways[0-10]
 first_level_gateways[0-10]: second_level_gateways[0-100]
 second_level_gateways[0-100]: nodes[0-2000]
+...
+
+or in YAML syntax (*.yaml or *.yml file extension, requires PyYAML):
+
+routes:
+  - gateways: admin
+    targets: first_level_gateways[0-10]
+  - gateways: first_level_gateways[0-10]
+    targets: second_level_gateways[0-100]
+  - gateways: second_level_gateways[0-100]
+    targets: nodes[0-2000]
 ...
 """
 
@@ -46,6 +56,12 @@ import logging
 import warnings
 
 from ClusterShell.NodeSet import NodeSet
+
+# compat with python 2.7, use str directly in 3.x
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
 LOGGER = logging.getLogger(__name__)
@@ -280,6 +296,11 @@ class TopologyRoutingTable(object):
         if self._introduce_convergent_paths(route):
             raise TopologyError(
                 'Convergent path detected! Cannot add route %s' % str(route))
+        overlap = self.aggregated_dst & route.dst
+        if overlap:
+            raise TopologyError(
+                'Overlapping targets detected (%s)! Cannot add route %s'
+                % (overlap, route))
 
         self._routes.append(route)
 
@@ -422,11 +443,17 @@ class TopologyGraph(object):
 
 
 class TopologyParser(object):
-    """This class offers a way to interpret network topologies supplied under
-    the form :
+    """This class offers a way to interpret network topology configuration
+    files, either in INI syntax:
 
     # Comment
     <these machines> : <can reach these ones>
+
+    or in YAML syntax (*.yaml or *.yml file extension):
+
+    routes:
+      - gateways: <these machines>
+        targets: <can reach these ones>
     """
     def __init__(self, filename=None):
         """instance wide variables initialization"""
@@ -440,9 +467,15 @@ class TopologyParser(object):
     def load(self, filename):
         """read a given topology configuration file and store the results in
         self._routes. Then build a propagation tree.
+
+        The file syntax is selected based on the file extension: YAML for
+        *.yaml or *.yml, INI otherwise.
         """
         LOGGER.debug('topology: loading %s', filename)
-        self._routes = self._load_ini(filename)
+        if filename.lower().endswith(('.yaml', '.yml')):
+            self._routes = self._load_yaml(filename)
+        else:
+            self._routes = self._load_ini(filename)
         self._build_graph()
 
     def _load_ini(self, filename):
@@ -460,10 +493,83 @@ class TopologyParser(object):
                 warnings.warn("topology: [Main] section is deprecated since "
                               "v1.7, use [routes] instead", DeprecationWarning)
                 topology = parser.items("Main")
+        except configparser.MissingSectionHeaderError:
+            raise TopologyError('Invalid configuration file: %s (no section '
+                                'header found; use a .yaml or .yml extension '
+                                'for YAML syntax)' % filename)
         except configparser.Error:
             raise TopologyError(
                 'Invalid configuration file: %s' % filename)
         return [(src, dst, {}) for src, dst in topology]
+
+    def _load_yaml(self, filename):
+        """parse a YAML topology file and return a route list made of
+        (source, destination, attributes) tuples
+        """
+        try:
+            with open(filename) as yamlfile:
+                try:
+                    import yaml
+                    content = yaml.safe_load(yamlfile)
+                except ImportError as exc:
+                    msg = "Use INI topology syntax or install PyYAML!"
+                    raise TopologyError("%s (%s)" % (str(exc), msg))
+                except yaml.YAMLError as exc:
+                    raise TopologyError("%s: %s" % (filename, exc))
+        except (IOError, OSError) as exc:
+            # Python 2 compat: IOError (py3 open() raises OSError only)
+            raise TopologyError("%s: %s" % (filename, exc))
+
+        if content is None:
+            raise TopologyError("%s: empty topology file" % filename)
+
+        if not isinstance(content, dict):
+            raise TopologyError("%s: invalid content (top level is not a "
+                                "mapping)" % filename)
+
+        unknown = set(content) - set(['routes'])
+        if unknown:
+            fmt = "%s: unsupported key(s): %s (expected: routes)"
+            raise TopologyError(fmt % (filename, ', '.join(sorted(unknown))))
+
+        if 'routes' not in content:
+            raise TopologyError("%s: missing 'routes'" % filename)
+
+        route_list = content['routes']
+        if not isinstance(route_list, list):
+            raise TopologyError("%s: invalid content ('routes' is not a list)"
+                                % filename)
+
+        routes = []
+        for num, route in enumerate(route_list, 1):
+            # error location: YAML marks are lost once the file is loaded
+            where = "%s: route #%d" % (filename, num)
+
+            if not isinstance(route, dict):
+                fmt = "%s: invalid route (not a mapping): %r"
+                raise TopologyError(fmt % (where, route))
+
+            unknown = set(route) - set(['gateways', 'targets'])
+            if unknown:
+                fmt = ("%s: unsupported key(s): %s "
+                       "(expected: gateways, targets)")
+                raise TopologyError(fmt % (where, ', '.join(sorted(unknown))))
+            try:
+                src = route['gateways']
+                dst = route['targets']
+            except KeyError as exc:
+                fmt = "%s: missing %s"
+                raise TopologyError(fmt % (where, exc))
+
+            for key, value in (('gateways', src), ('targets', dst)):
+                if value is None:
+                    raise TopologyError("%s: empty '%s' value" % (where, key))
+                if not isinstance(value, basestring):
+                    fmt = "%s: '%s' value %r not a string (add quotes?)"
+                    raise TopologyError(fmt % (where, key, value))
+
+            routes.append((src, dst, {}))
+        return routes
 
     def _build_graph(self):
         """build a network topology graph according to the information we got

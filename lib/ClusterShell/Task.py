@@ -43,6 +43,7 @@ Simple example of use:
 """
 
 from __future__ import print_function
+from itertools import chain
 import logging
 from operator import itemgetter
 import os
@@ -176,8 +177,9 @@ class Task(object):
     listen for ev_hup() events in your event handler.
     """
 
-    # topology.conf file path list
-    TOPOLOGY_CONFIGS = config_paths('topology.conf')
+    # topology config path list (YAML preferred over INI at each location)
+    TOPOLOGY_CONFIGS = list(chain.from_iterable(
+        zip(config_paths('topology.conf'), config_paths('topology.yaml'))))
 
     _tasks = {}
     _taskid_max = 0
