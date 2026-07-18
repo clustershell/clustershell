@@ -833,16 +833,120 @@ Example of use with :ref:`nodeset-tool` on a cluster managed with Ansible::
 Tree topology
 -------------
 
-The optional *topology.conf* file defines the propagation routes used by
-ClusterShell's :ref:`tree execution mode <clush-tree>` to reach target nodes
-through gateway nodes. It is loaded from the same configuration directories as
-the other ClusterShell configuration files, the system-wide default being::
+The optional topology configuration file defines the propagation routes used
+by ClusterShell's :ref:`tree execution mode <clush-tree>` to reach target
+nodes through gateway nodes. It is loaded from the same configuration
+directories as the other ClusterShell configuration files, the system-wide
+defaults being::
 
+    /etc/clustershell/topology.yaml
     /etc/clustershell/topology.conf
+
+Two file syntaxes are supported: YAML (*topology.yaml*, preferred since
+version 1.11, requires the PyYAML module) and INI (*topology.conf*). When
+both files are present at the same location, *topology.yaml* is used.
+
+.. highlight:: yaml
+
+In YAML, routes are declared as a list of route objects, each made of
+``gateways`` and ``targets`` node sets::
+
+    routes:
+      - gateways: rio0
+        targets:  rio[10-13]
+      - gateways: rio[10-11]
+        targets:  rio[100-240]
+      - gateways: rio[12-13]
+        targets:  rio[300-440]
+
+The same ``gateways`` may be used in several routes, for example to reach
+several distinct target groups through one gateway pool. Each target node
+must however be reachable through a single route: two routes whose
+``targets`` overlap are rejected, even when they share the same gateways.
+:ref:`nodeset-groups` are supported as values but must be quoted, as a
+leading ``@`` is a reserved YAML character (e.g. ``gateways: "@gw"``).
+
+.. _topology-priorities:
+
+Gateway priorities
+^^^^^^^^^^^^^^^^^^
+
+Since version 1.11, the ``gateways`` of a route may also be written as a
+list of gateway entries with the following attributes:
+
+- ``nodes``: gateway node set (required)
+- ``weight``: relative share of the load among gateways of equal priority
+  (integer >= 1, default 1)
+- ``priority``: failover rank (integer >= 1, default 1); **a lower number
+  means a higher priority**
+
+Gateways of a given priority are used only when all gateways with a lower
+priority number are unreachable: priority 1 gateways are the default,
+priority 2 gateways are used when all priority 1 gateways are down, and
+so on. Gateways of equal priority share the load using weighted
+least-connections. For example, two gateways backing each other up, each
+being the default for its own target group::
+
+    routes:
+      - gateways:
+          - nodes: gw1
+          - nodes: gw2
+            priority: 2         # gw1 default, gw2 failover
+        targets:  rio[100-199]
+      - gateways:
+          - nodes: gw2
+          - nodes: gw1
+            priority: 2         # gw2 default, gw1 failover
+        targets:  rio[200-299]
+
+``nodes`` may be any node set or node group, so a balanced gateway pair
+with a spare used only when both are down is written::
+
+    routes:
+      - gateways:
+          - nodes: gw[1-2]      # priority 1: load-balanced pair
+          - nodes: gw3
+            priority: 2         # priority 2: failover only
+        targets:  rio[100-299]
+
+Use ``weight`` to distribute the load proportionally between gateways of
+equal priority::
+
+    routes:
+      - gateways:
+          - nodes: gw[1-2]
+            weight: 2           # twice the load of gw3
+          - nodes: gw3
+          - nodes: gw4
+            priority: 2         # failover only
+        targets:  rio[100-299]
+
+A plain list of node sets, as in ``gateways: [gw1, gw2]``, is shorthand
+for entries with default weight and priority: a load-shared pool
+equivalent to ``gateways: gw[1-2]``. Failover is always explicit with
+``priority``.
+
+The ``nodes`` of the gateway entries of a route must not overlap: a gateway
+cannot be both a default and a failover, nor carry two different weights.
+
+.. note:: All gateways of a route must be able to reach the whole ``targets``
+   node set of that route. Priorities select which gateway is preferred; they
+   do not allow gateways with disjoint reach to back each other up.
+
+.. note:: Failover is triggered at connection time: a gateway is considered
+   unreachable when its channel cannot be established (there is no periodic
+   health check). In a multi-level tree, gateways must also run ClusterShell
+   1.11 or later for priorities to be applied at their own level.
+
+INI syntax
+^^^^^^^^^^
 
 .. highlight:: ini
 
-Routes are declared under a ``[routes]`` section, for example::
+In INI, routes are declared under a ``[routes]`` section, one route per
+line. This is the historical syntax and remains fully supported; unlike
+YAML, a source node set may not be repeated and gateway priorities are
+not available::
 
     [routes]
     rio0: rio[10-13]
@@ -851,10 +955,10 @@ Routes are declared under a ``[routes]`` section, for example::
 
 .. highlight:: text
 
-An example file is provided with ClusterShell as *topology.conf.example*. See
-:ref:`clush-tree` for a full description of tree mode, including how routes are
-turned into a propagation tree and the related command line options (such as
-``--topology``).
+Example files are provided with ClusterShell as *topology.yaml.example* and
+*topology.conf.example*. See :ref:`clush-tree` for a full description of tree
+mode, including how routes are turned into a propagation tree and the related
+command line options (such as ``--topology``).
 
 .. _defaults-config:
 
@@ -926,7 +1030,8 @@ The ``[task.default]`` section defines Task worker defaults.
 +--------------------+----------------------------------------------------+
 | auto_tree          | Whether to automatically enable                    |
 |                    | :ref:`tree mode <clush-tree>` when a               |
-|                    | *topology.conf* file is found (default: yes).      |
+|                    | :ref:`topology file <topology-config>` is found    |
+|                    | (default: yes).                                    |
 +--------------------+----------------------------------------------------+
 | local_workername   | Name of the worker module used for local           |
 |                    | execution (default: *exec*).                       |
