@@ -421,7 +421,7 @@ class TopologyGraph(object):
         self._root = root
 
 
-class TopologyParser(configparser.ConfigParser):
+class TopologyParser(object):
     """This class offers a way to interpret network topologies supplied under
     the form :
 
@@ -430,10 +430,7 @@ class TopologyParser(configparser.ConfigParser):
     """
     def __init__(self, filename=None):
         """instance wide variables initialization"""
-        configparser.ConfigParser.__init__(self)
-        self.optionxform = str  # case sensitive parser
-
-        self._topology = {}
+        self._routes = []
         self.graph = None
         self._tree = None
 
@@ -444,26 +441,36 @@ class TopologyParser(configparser.ConfigParser):
         """read a given topology configuration file and store the results in
         self._routes. Then build a propagation tree.
         """
+        LOGGER.debug('topology: loading %s', filename)
+        self._routes = self._load_ini(filename)
+        self._build_graph()
+
+    def _load_ini(self, filename):
+        """parse an INI topology file and return a route list made of
+        (source, destination, attributes) tuples
+        """
+        parser = configparser.ConfigParser()
+        parser.optionxform = str  # case sensitive parser
         try:
-            self.read(filename)
-            if self.has_section("routes"):
-                self._topology = self.items("routes")
+            parser.read(filename)
+            if parser.has_section("routes"):
+                topology = parser.items("routes")
             else:
                 # compat routes section [deprecated since v1.7]
                 warnings.warn("topology: [Main] section is deprecated since "
                               "v1.7, use [routes] instead", DeprecationWarning)
-                self._topology = self.items("Main")
+                topology = parser.items("Main")
         except configparser.Error:
             raise TopologyError(
                 'Invalid configuration file: %s' % filename)
-        self._build_graph()
+        return [(src, dst, {}) for src, dst in topology]
 
     def _build_graph(self):
         """build a network topology graph according to the information we got
         from the configuration file.
         """
         self.graph = TopologyGraph()
-        for src, dst in self._topology:
+        for src, dst, _attrs in self._routes:
             # GH#527: router and destination node sets may use NodeSet groups
             # but we ignore any empty sets
             src_ns = NodeSet(src)
