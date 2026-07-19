@@ -335,18 +335,18 @@ class TreeWorker(DistantWorker):
         if self.source and not self.reverse:
             try:
                 # create temporary tar file with all source files
-                tmptar = tempfile.TemporaryFile()
-                tar = tarfile.open(fileobj=tmptar, mode='w:')
-                tar.add(self.source, arcname=arcname)
-                tar.close()
-                tmptar.flush()
-                # read generated tar file
-                tmptar.seek(0)
-                rbuf = tmptar.read(32768)
-                # send tar data to remote targets only
-                while len(rbuf) > 0:
-                    self._write_remote(rbuf)
+                with tempfile.TemporaryFile() as tmptar:
+                    tar = tarfile.open(fileobj=tmptar, mode='w:')
+                    tar.add(self.source, arcname=arcname)
+                    tar.close()
+                    tmptar.flush()
+                    # read generated tar file
+                    tmptar.seek(0)
                     rbuf = tmptar.read(32768)
+                    # send tar data to remote targets only
+                    while len(rbuf) > 0:
+                        self._write_remote(rbuf)
+                        rbuf = tmptar.read(32768)
             except OSError as exc:
                 raise WorkerError(exc)
 
@@ -435,6 +435,12 @@ class TreeWorker(DistantWorker):
             DistantWorker._on_node_msgline(self, node, msg, sname)
             return
 
+        # drop late data after node terminal event (eg. gateway timeout flush)
+        if node not in self.gwtargets.get(str(gateway), ()):
+            self.logger.debug("dropping late %d bytes from %s via gw %s",
+                              len(msg), node, gateway)
+            return
+
         # rcopy only: we expect base64 encoded tar content on stdout
         encoded = self._rcopy_bufs.setdefault(node, b'') + msg
         if node not in self._rcopy_tars:
@@ -481,6 +487,8 @@ class TreeWorker(DistantWorker):
                 finally:
                     if tmptar is not None:
                         tmptar.close()
+                    # TarFile does not close a caller-provided fileobj
+                    tarfileobj.close()
                 del self._rcopy_bufs[node]
                 del self._rcopy_tars[node]
             else:
@@ -496,6 +504,13 @@ class TreeWorker(DistantWorker):
         self._close_count += 1
         self._has_timeout = True
         self.gwtargets[str(gateway)].remove(node)
+
+        # discard rcopy data: the tar file of a timed-out node is incomplete
+        if self.source and self.reverse and node in self._rcopy_bufs:
+            self._rcopy_tars[node].close()
+            del self._rcopy_bufs[node]
+            del self._rcopy_tars[node]
+
         self._check_fini(gateway)
 
     def _on_node_close(self, node, rc):
@@ -559,6 +574,12 @@ class TreeWorker(DistantWorker):
         self.logger.debug("check_fini %s %s", self._close_count,
                           self._target_count)
         if self._close_count >= self._target_count:
+            # safety net: close any leftover rcopy temporary tar file
+            for tarfileobj in self._rcopy_tars.values():
+                tarfileobj.close()
+            self._rcopy_tars.clear()
+            self._rcopy_bufs.clear()
+
             handler = self.eh
             if handler:
                 # also use hasattr check because ev_timeout was missing in 1.8.0

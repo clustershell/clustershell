@@ -14,9 +14,11 @@ The hostname mock command available in tests/bin needs to be
 used on the remote nodes (tests/bin added to PATH in .bashrc).
 """
 
+import gc
 import logging
 import os
 from os.path import basename, join
+import tempfile
 import unittest
 import warnings
 
@@ -594,6 +596,18 @@ class TreeWorkerTest(TreeWorkerTestBase):
         """test tree copy: file, gateway is target"""
         self._tree_copy_file(NODE_GATEWAY)
 
+    def test_tree_copy_no_unclosed_file_warning(self):
+        """test tree copy: temporary tar file is closed (no fd leak)"""
+        gc.collect()  # drain pre-existing garbage before the watch window
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            self._tree_copy_file(NODE_DISTANT)
+            task_terminate()
+            gc.collect()
+        self.assertEqual([str(x.message) for x in w
+                          if issubclass(x.category, ResourceWarning)
+                          and 'unclosed file' in str(x.message)], [])
+
     def test_tree_copy_file_error_direct(self):
         """test tree copy: bad dest, direct target -> stderr (#622)"""
         self._tree_copy_file_error(NODE_DIRECT)
@@ -684,6 +698,77 @@ class TreeWorkerTest(TreeWorkerTestBase):
             warnings.simplefilter('always')
             self._tree_rcopy_file(NODE_DISTANT)
         self.assertEqual([x for x in w if 'tarfile' in x.filename], [])
+
+    def test_tree_rcopy_no_unclosed_file_warning(self):
+        """test tree rcopy: temporary tar files are closed (no fd leak)"""
+        gc.collect()  # drain pre-existing garbage before the watch window
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always')
+            self._tree_rcopy_file(NODE_DISTANT)
+            task_terminate()
+            gc.collect()
+        self.assertEqual([str(x.message) for x in w
+                          if issubclass(x.category, ResourceWarning)
+                          and 'unclosed file' in str(x.message)], [])
+
+    def test_tree_rcopy_timeout_closes_node_tar(self):
+        """test tree rcopy: temporary tar file closed at node timeout"""
+        teh = TEventHandler()
+        worker = TreeWorker(NODE_DISTANT2, teh, 10, source='/dummy-src',
+                            dest='/dummy-dest', reverse=True)
+        worker.task = self.task
+        try:
+            # a timed-out rcopy node leaves an incomplete tar file behind
+            tmpf = tempfile.TemporaryFile()
+            worker._rcopy_bufs[NODE_DISTANT] = b''
+            worker._rcopy_tars[NODE_DISTANT] = tmpf
+            # second target still active: worker completion is not reached
+            worker.gwtargets[NODE_GATEWAY] = set(NodeSet(NODE_DISTANT2))
+            worker._target_count = 2
+            worker._on_remote_node_timeout(NODE_DISTANT, NODE_GATEWAY)
+            self.assertTrue(tmpf.closed)
+            self.assertEqual(worker._rcopy_tars, {})
+            self.assertEqual(worker._rcopy_bufs, {})
+            self.assertEqual(teh.ev_close_cnt, 0)
+        finally:
+            # close the never-scheduled worker's internal port pipe
+            worker._port.streams.clear()
+
+    def test_tree_rcopy_timeout_closes_leftover_tars(self):
+        """test tree rcopy: leftover temporary tar files closed at completion"""
+        teh = TEventHandler()
+        worker = TreeWorker(NODE_DISTANT, teh, 10, source='/dummy-src',
+                            dest='/dummy-dest', reverse=True)
+        try:
+            # a timed-out rcopy node leaves its temporary tar file behind
+            tmpf = tempfile.TemporaryFile()
+            worker._rcopy_tars[NODE_DISTANT] = tmpf
+            worker._target_count = 1
+            worker._close_count = 1
+            worker._has_timeout = True
+            worker._check_fini()
+            self.assertTrue(tmpf.closed)
+            self.assertEqual(worker._rcopy_tars, {})
+            self.assertEqual(teh.ev_timedout_cnt, 1)
+            self.assertEqual(teh.ev_close_cnt, 1)
+        finally:
+            # close the never-scheduled worker's internal port pipe
+            worker._port.streams.clear()
+
+    def test_tree_rcopy_late_msgline_dropped(self):
+        """test tree rcopy: data received after node terminal event is dropped"""
+        teh = TEventHandler()
+        worker = TreeWorker(NODE_DISTANT, teh, 10, source='/dummy-src',
+                            dest='/dummy-dest', reverse=True)
+        try:
+            # gateway grooming flush may follow its TimeoutMessage
+            worker._on_remote_node_msgline(NODE_DISTANT, b'QUJDRA==', 'stdout',
+                                           'gateway-node')
+            self.assertEqual(worker._rcopy_tars, {})
+            self.assertEqual(worker._rcopy_bufs, {})
+        finally:
+            # close the never-scheduled worker's internal port pipe
+            worker._port.streams.clear()
 
     def test_tree_rcopy_preserves_mode(self):
         """test tree rcopy: preserves file mode bits (PEP 706 regression)"""
