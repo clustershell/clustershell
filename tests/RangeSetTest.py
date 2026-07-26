@@ -1422,3 +1422,81 @@ class RangeSetTest(unittest.TestCase):
         self.assertRaises(RangeSetParseError, RangeSet, "-009")
         self.assertRaises(RangeSetParseError, RangeSet, "-01-00")
         self.assertRaises(RangeSetParseError, RangeSet, "-003--001")
+
+    def test_sorted_view_after_mutation(self):
+        """test that each mutator refreshes the cached sorted view"""
+        # each read primes the sorted view cache, each mutation must drop it
+        rset = RangeSet("5-7")
+        self.assertEqual(str(rset), "5-7")
+        rset.add(9)
+        self.assertEqual(str(rset), "5-7,9")
+        rset.remove(9)
+        self.assertEqual(str(rset), "5-7")
+        rset.discard(7)
+        self.assertEqual(str(rset), "5-6")
+        rset.update(RangeSet("8-10"))
+        self.assertEqual(str(rset), "5-6,8-10")
+        rset.updaten([RangeSet("7"), RangeSet("11")])
+        self.assertEqual(str(rset), "5-11")
+        rset.add_range(20, 23)
+        self.assertEqual(str(rset), "5-11,20-22")
+        rset.difference_update(RangeSet("20-22"))
+        self.assertEqual(str(rset), "5-11")
+        rset.intersection_update(RangeSet("6-99"))
+        self.assertEqual(str(rset), "6-11")
+        rset.symmetric_difference_update(RangeSet("11-13"))
+        self.assertEqual(str(rset), "6-10,12-13")
+        rset |= RangeSet("14")
+        self.assertEqual(str(rset), "6-10,12-14")
+        rset -= RangeSet("14")
+        self.assertEqual(str(rset), "6-10,12-13")
+        rset &= RangeSet("6-12")
+        self.assertEqual(str(rset), "6-10,12")
+        rset ^= RangeSet("12-13")
+        self.assertEqual(str(rset), "6-10,13")
+        rset.clear()
+        self.assertEqual(str(rset), "")
+        rset = RangeSet("1-3")
+        self.assertEqual(str(rset), "1-3")
+        rset.padding = 3
+        self.assertEqual(str(rset), "001-003")
+        rset.__init__()
+        self.assertEqual(str(rset), "")
+
+    def test_sorted_view_after_mutation_indexing(self):
+        """test indexing and iteration after mutation"""
+        rset = RangeSet("1-3")
+        self.assertEqual(rset[0], "1")
+        rset.add(0)
+        self.assertEqual(rset[0], "0")
+        self.assertEqual(list(rset), ["0", "1", "2", "3"])
+        rset.discard(0)
+        self.assertEqual(list(rset), ["1", "2", "3"])
+        self.assertEqual(str(rset[0:2]), "1-2")
+
+    def test_set_mutators_are_overridden(self):
+        """test that RangeSet overrides all in-place set mutators"""
+        # the methods of set that frozenset does not have are the in-place
+        # mutators: each one must drop the cached sorted view, a behavior
+        # checked by test_sorted_view_after_mutation()
+        mutators = set(vars(set)) - set(vars(frozenset))
+        mutators.discard('__getattribute__')  # not a mutator
+        self.assertIn('add', mutators)  # sanity check of the above
+        missing = mutators - set(vars(RangeSet))
+        self.assertEqual(missing, set(),
+                         "set mutators not overridden: %s" % sorted(missing))
+
+    def test_pop(self):
+        """test RangeSet.pop()"""
+        rset = RangeSet("1-3")
+        self.assertEqual(str(rset), "1-3")
+        elem = rset.pop()
+        self.assertTrue(elem in ["1", "2", "3"])
+        self.assertEqual(len(rset), 2)
+        self.assertTrue(elem not in rset)
+        remaining = sorted({"1", "2", "3"} - {elem}, key=int)
+        self.assertEqual(list(rset), remaining)
+        rset = RangeSet("05")
+        self.assertEqual(rset.pop(), "05")
+        self.assertEqual(len(rset), 0)
+        self.assertRaises(KeyError, rset.pop)

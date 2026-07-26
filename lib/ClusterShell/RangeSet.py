@@ -121,12 +121,15 @@ class RangeSet(set):
     """
     _VERSION = 4    # serial version number
 
+    _sorted_cache = None    # built by _sorted(), reset by every mutator
+
     def __init__(self, pattern=None, autostep=None):
         """Initialize RangeSet object.
 
         :param pattern: optional string pattern
         :param autostep: optional autostep threshold
         """
+        self._sorted_cache = None
         set.__init__(self)
 
         if pattern is not None and not isinstance(pattern, basestring):
@@ -307,9 +310,11 @@ class RangeSet(set):
         return (len(elem), elem)
 
     def _sorted(self):
-        """Get sorted list from inner set."""
-        # For mixed padding support, sort by both string length and index
-        return sorted(set.__iter__(self), key=self._sortkey)
+        """Get sorted list from inner set (cached; callers must not mutate)."""
+        if self._sorted_cache is None:
+            # For mixed padding support, sort by both string length and index
+            self._sorted_cache = sorted(set.__iter__(self), key=self._sortkey)
+        return self._sorted_cache
 
     def __iter__(self):
         """Iterate over each element in RangeSet, currently as integers, with
@@ -594,6 +599,7 @@ class RangeSet(set):
         Like the Python built-in function *range()*, the last element
         is the largest start + i * step less than stop.
         """
+        self._sorted_cache = None
         assert start < stop, "please provide ordered node index ranges"
         assert step > 0
         assert pad >= 0
@@ -760,6 +766,7 @@ class RangeSet(set):
 
     def __ior__(self, other):
         """Update a RangeSet with the union of itself and another."""
+        self._sorted_cache = None
         self._binary_sanity_check(other)
         set.__ior__(self, other)
         return self
@@ -770,17 +777,20 @@ class RangeSet(set):
 
     def __iand__(self, other):
         """Update a RangeSet with the intersection of itself and another."""
+        self._sorted_cache = None
         self._binary_sanity_check(other)
         set.__iand__(self, other)
         return self
 
     def intersection_update(self, other):
         """Update a RangeSet with the intersection of itself and another."""
+        self._sorted_cache = None
         set.intersection_update(self, other)
 
     def __ixor__(self, other):
         """Update a RangeSet with the symmetric difference of itself and
         another."""
+        self._sorted_cache = None
         self._binary_sanity_check(other)
         set.symmetric_difference_update(self, other)
         return self
@@ -788,10 +798,12 @@ class RangeSet(set):
     def symmetric_difference_update(self, other):
         """Update a RangeSet with the symmetric difference of itself and
         another."""
+        self._sorted_cache = None
         set.symmetric_difference_update(self, other)
 
     def __isub__(self, other):
         """Remove all elements of another set from this RangeSet."""
+        self._sorted_cache = None
         self._binary_sanity_check(other)
         set.difference_update(self, other)
         return self
@@ -801,6 +813,7 @@ class RangeSet(set):
 
         If strict is True, raise KeyError if an element cannot be removed.
         (strict is a RangeSet addition)"""
+        self._sorted_cache = None
         if strict and other not in self:
             raise KeyError(set.difference(other, self).pop())
         set.difference_update(self, other)
@@ -809,6 +822,7 @@ class RangeSet(set):
 
     def update(self, iterable):
         """Add all indexes (as strings) from an iterable (such as a list)."""
+        self._sorted_cache = None
         assert not isinstance(iterable, basestring)
         set.update(self, iterable)
 
@@ -824,9 +838,10 @@ class RangeSet(set):
 
     def clear(self):
         """Remove all elements from this RangeSet."""
+        self._sorted_cache = None
         set.clear(self)
 
-    # Single-element mutations: add, remove, discard
+    # Single-element mutations: add, remove, discard, pop
 
     def add(self, element, pad=0):
         """Add an element to a RangeSet.
@@ -839,6 +854,7 @@ class RangeSet(set):
         :param element: the element to add (integer or string)
         :param pad: zero padding length (integer); ignored if element is string
         """
+        self._sorted_cache = None
         if isinstance(element, basestring):
             set.add(self, element)
         else:
@@ -856,6 +872,7 @@ class RangeSet(set):
         :raises KeyError: element is not contained in RangeSet
         :raises ValueError: element is not castable to integer
         """
+        self._sorted_cache = None
         if isinstance(element, basestring):
             set.remove(self, element)
         else:
@@ -873,6 +890,7 @@ class RangeSet(set):
         :param element: the element to remove (integer or string)
         :param pad: zero padding length (integer); ignored if element is string
         """
+        self._sorted_cache = None
         try:
             if isinstance(element, basestring):
                 set.discard(self, element)
@@ -880,6 +898,14 @@ class RangeSet(set):
                 set.discard(self, "%0*d" % (pad, int(element)))
         except ValueError:
             pass # ignore other object types
+
+    def pop(self):
+        """Remove and return an arbitrary RangeSet element.
+
+        :raises KeyError: the RangeSet is empty
+        """
+        self._sorted_cache = None
+        return set.pop(self)
 
 
 class RangeSetND(object):

@@ -557,3 +557,21 @@ class RangeSetNDTest(unittest.TestCase):
         rs3.add(4)
         self.assertEqual(str(rs3), "2-4")
         self.assertEqual(str(rn0), "2-5; 0-1\n6-7; 2-3\n")
+
+    def test_fold_update_fold(self):
+        """test folding interleaved with updates (sorted view cache)"""
+        def rebuilt(rgnd):
+            # re-parse the string representation into a new object
+            vecs = [line.split('; ') for line in str(rgnd).splitlines()]
+            return RangeSetND(vecs)
+
+        rn = RangeSetND([["0-10", "1-2"], ["5-15", "0-1"]])
+        self.assertEqual(len(rn), 38)
+        self.assertEqual(rn, rebuilt(rn))
+        rn.update(RangeSetND([["11-16", "1-2"]]))
+        self.assertEqual(len(rn), 45)
+        self.assertEqual(rn, rebuilt(rn))
+        self.assertTrue(RangeSetND([["16", "1"]]) in rn)
+        rn.update(RangeSetND([["0-4,16", "0"]]))
+        self.assertEqual(len(rn), 51)
+        self.assertEqual(str(rn), "0-16; 0-2\n")
