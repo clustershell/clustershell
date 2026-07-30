@@ -34,8 +34,13 @@ Please see first:
   - ClusterShell.Task
 """
 
+import logging
+
 __version__ = '1.10.1'
 __version_info__ = tuple([ int(_n) for _n in __version__.split('.')])
 __date__    = '2026/07/16'
 __author__  = 'Stephane Thiell'
 __url__     = 'https://clustershell.readthedocs.io/'
+
+# stay quiet by default as a library, per the Python Logging HOWTO
+logging.getLogger(__name__).addHandler(logging.NullHandler())
