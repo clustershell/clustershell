@@ -34,7 +34,10 @@ except ImportError:
     from ConfigParser import ConfigParser, NoOptionError, NoSectionError
 
 import os
+import shlex
 import sys
+
+from string import Template
 
 
 #
@@ -107,6 +110,22 @@ def config_paths(config_name):
         paths.append(os.path.join(os.environ['CLUSTERSHELL_CFGDIR'],
                                   config_name))
     return paths
+
+def _expand_dirs(dirstr, cfgdir, owner, loaded_dirs):
+    """
+    Yield the directories of a confdir or autodir value with $CFGDIR set to
+    cfgdir, the config directory being scanned, once each thanks to
+    loaded_dirs. Entries without $CFGDIR are yielded only when scanning
+    owner, the config directory of the file defining the option.
+    """
+    for dir_tpl in shlex.split(dirstr):
+        dirpath = Template(dir_tpl).safe_substitute(CFGDIR=cfgdir)
+        if dirpath == dir_tpl and cfgdir != owner:
+            continue
+        dirpath = os.path.normpath(dirpath)
+        if dirpath not in loaded_dirs:
+            loaded_dirs.add(dirpath)
+            yield dirpath
 
 def _converter_integer_tuple(value):
     """ConfigParser converter for tuple of integers"""

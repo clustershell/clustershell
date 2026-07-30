@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "GROUPS.CONF" 5 "2026-07-16" "1.10.1" "ClusterShell User Manual"
+.TH "GROUPS.CONF" 5 "2026-09-01" "1.10.1" "ClusterShell User Manual"
 .SH NAME
 groups.conf \- Configuration file for ClusterShell node groups
 .SH DESCRIPTION
@@ -57,8 +57,9 @@ For each parameter, the first obtained value will be used. If no \fIgroups.conf\
 is found, group support will be disabled.
 .sp
 Additional configuration files are also read from the directories set by the
-confdir option, if present.  See the \fBconfdir\fP option below for further
-details.
+confdir option, if present.  The directories of the files listed above form the
+configuration file search path, whether they actually contain a \fIgroups.conf\fP
+file or not.  See the \fBconfdir\fP option below for further details.
 .sp
 Configuration files have a format in the style of RFC 822 potentially composed
 of several sections which may be present in any order. There are two types of
@@ -89,26 +90,41 @@ Optional list of directories where the ClusterShell library should look for
 \fB\&.conf\fP files which define group sources to use. Each file in these
 directories with the .conf suffix should contain one or more \fIGroup_source\fP
 sections as documented in [\fIGroup_source\fP] options below. These will be merged
-with the group sources defined in \fI/etc/clustershell/groups.conf\fP to form the
-complete set of group sources that ClusterShell will use. Duplicate
-\fIGroup_source\fP sections are not allowed.  Note: .conf files that are not
-readable by the current user are ignored (except the one that defines the
-default group source). The variable \fI$CFGDIR\fP is replaced by the path of the
-highest priority configuration directory found (where groups.conf resides).
-The default confdir value enables both system\-wide and any installed user
-configuration (thanks to \fI$CFGDIR\fP). Duplicate directory paths are ignored.
-\fBgroupsdir\fP is accepted as an alias for \fBconfdir\fP and takes precedence
-when both are defined.
+with the group sources defined in \fIgroups.conf\fP to form the complete set of
+group sources that ClusterShell will use. Entries containing the variable
+\fI$CFGDIR\fP are expanded once for each directory of the configuration file
+search path (see DESCRIPTION above), so a user configuration directory is
+scanned even when it does not contain a \fIgroups.conf\fP file (since version
+1.11). Configuration directories are scanned from the lowest to the highest
+priority and, for each of them, group sources are loaded from its
+\fIgroups.conf\fP sections first, then from its confdir entries and finally from
+its autodir entries. When the same group source name is defined several
+times, the definition loaded last is used: a user drop\-in file thus overrides
+a system\-wide group source of the same name, and drop\-in files override the
+\fIgroups.conf\fP sections of the same directory (a \fIGroup_source\fP section found
+in several \fIgroups.conf\fP files belongs to the highest priority one).
+Duplicate \fIGroup_source\fP sections within the same directory are not allowed.
+Entries without \fI$CFGDIR\fP are scanned along with the configuration directory
+of the file defining the option, and each directory is scanned only once, the
+first time it appears.  Note: .conf files that are not readable by the
+current user are ignored (except the one that defines the default group
+source). The default confdir value enables both system\-wide and any installed
+user configuration (thanks to \fI$CFGDIR\fP). \fBgroupsdir\fP is accepted as an
+alias for \fBconfdir\fP and takes precedence when both are defined.
 .TP
 .B autodir
 Optional list of directories where the ClusterShell library should look for
 \fB\&.yaml\fP files that define in\-file group dictionaries. No need to call
 external commands for these files, they are parsed by the ClusterShell library
-itself.  Multiple group source definitions in the same file are supported. The
-variable \fI$CFGDIR\fP is replaced by the path of the highest priority
-configuration directory found (where groups.conf resides). The default
-autodir value enables both system\-wide and any installed user configuration
-(thanks to \fI$CFGDIR\fP). Duplicate directory paths are ignored.
+itself.  Multiple group source definitions in the same file are supported.
+Entries containing the variable \fI$CFGDIR\fP are expanded once for each directory
+of the configuration file search path, and group sources are loaded in the
+order described for \fBconfdir\fP above: within a configuration directory,
+group sources found in autodir take precedence over those found in confdir
+and over the \fIgroups.conf\fP sections, while any group source found in a higher
+priority configuration directory takes precedence over all of them (since
+version 1.11). The default autodir value enables both system\-wide and any
+installed user configuration (thanks to \fI$CFGDIR\fP).
 .UNINDENT
 .SS [\fIGroup_source\fP] OPTIONS
 .sp
@@ -171,7 +187,10 @@ two following variables are always available and also replaced before executing
 shell commands:
 .INDENT 0.0
 .IP \(bu 2
-\fI$CFGDIR\fP is replaced by groups.conf highest priority base directory path
+\fI$CFGDIR\fP is replaced by the directory of the configuration file the group
+source is defined in: a \fBconfdir\fP directory for a group source defined in a
+\fB\&.conf\fP file, or the base directory of the (highest priority) \fIgroups.conf\fP
+file defining its section otherwise
 .IP \(bu 2
 \fI$SOURCE\fP is replaced by current source name
 .UNINDENT
@@ -192,8 +211,8 @@ Simple configuration file for local groups and Slurm partitions binding.
 .nf
 [Main]
 default: local
-confdir: /etc/clustershell/groups.conf.d $CFGDIR/groups.conf.d
-autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
+confdir: $CFGDIR/groups.conf.d
+autodir: $CFGDIR/groups.d
 
 [local]
 map: sed \-n \(aqs/^$GROUP:\e(.*\e)/\e1/p\(aq /etc/clustershell/groups
@@ -222,6 +241,15 @@ Recommended directory for \fIautodir\fP, where native group definition files
 .B \fI$XDG_CONFIG_HOME/clustershell/groups.conf\fP
 Main user groups.conf configuration file. If $XDG_CONFIG_HOME is not defined,
 \fI$HOME/.config/clustershell/groups.conf\fP is used instead.
+.TP
+.B \fI$XDG_CONFIG_HOME/clustershell/groups.conf.d/\fP
+User directory for additional configuration files. Since version 1.11, it is
+scanned even when there is no user \fIgroups.conf\fP file.
+.TP
+.B \fI$XDG_CONFIG_HOME/clustershell/groups.d/\fP
+User directory for \fIautodir\fP, where native group definition files (.yaml
+files) are found. Since version 1.11, it is scanned even when there is no
+user \fIgroups.conf\fP file.
 .TP
 .B \fI{sys.prefix}/etc/clustershell/groups.conf\fP
 Configuration file when ClusterShell is installed in a Python virtual

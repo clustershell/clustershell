@@ -242,8 +242,8 @@ groups are bound to the source named *genders* by default::
 
     [Main]
     default: genders
-    confdir: /etc/clustershell/groups.conf.d $CFGDIR/groups.conf.d
-    autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
+    confdir: $CFGDIR/groups.conf.d
+    autodir: $CFGDIR/groups.d
 
     [genders]
     map: nodeattr -n $GROUP
@@ -275,18 +275,17 @@ table.
 |         | Each ``.conf`` file in these directories may define one or |
 |         | more group source sections, as documented below. These     |
 |         | sources are merged with the group sources defined in the   |
-|         | main *groups.conf*. Duplicate group source sections are    |
-|         | not allowed in those files. Configuration files that are   |
-|         | not readable by the current user are ignored (except the   |
-|         | one that defines the default group source). The variable   |
-|         | ``$CFGDIR`` is replaced by the path of the highest         |
-|         | priority configuration directory found (where              |
-|         | *groups.conf* resides). The default *confdir* value        |
-|         | enables both system-wide and any installed user            |
-|         | configuration (thanks to ``$CFGDIR``). Duplicate           |
-|         | directory paths are ignored. The                           |
-|         | key *groupsdir* is accepted as an alias for *confdir*; if  |
-|         | both are defined, *groupsdir* takes precedence.            |
+|         | main *groups.conf*. Duplicate group source sections within |
+|         | the same directory are not allowed. Configuration files    |
+|         | that are not readable by the current user are ignored      |
+|         | (except the one that defines the default group source).    |
+|         | Entries containing the variable ``$CFGDIR`` are expanded   |
+|         | once for each configuration directory of the search path   |
+|         | listed above (since version 1.11). The default *confdir*   |
+|         | value enables both system-wide and any installed user      |
+|         | configuration (thanks to ``$CFGDIR``). The key *groupsdir* |
+|         | is accepted as an alias for *confdir*; if both are         |
+|         | defined, *groupsdir* takes precedence.                     |
 +---------+------------------------------------------------------------+
 | autodir | **Directories to search for YAML group files.**            |
 |         |                                                            |
@@ -294,13 +293,30 @@ table.
 |         | for external commands, and are parsed by the ClusterShell  |
 |         | library itself, making them faster than upcall-based group |
 |         | sources (see :ref:`group-file-based`). A single file may   |
-|         | define multiple group sources. The variable ``$CFGDIR``    |
-|         | is replaced by the path of the highest priority            |
-|         | configuration directory found (where *groups.conf*         |
-|         | resides). The default *autodir* value enables both         |
-|         | system-wide and any installed user configuration (thanks   |
-|         | to ``$CFGDIR``). Duplicate directory paths are ignored.    |
+|         | define multiple group sources. Entries containing the      |
+|         | variable ``$CFGDIR`` are expanded once for each            |
+|         | configuration directory of the search path listed above    |
+|         | (since version 1.11). The default *autodir* value enables  |
+|         | both system-wide and any installed user configuration      |
+|         | (thanks to ``$CFGDIR``).                                   |
 +---------+------------------------------------------------------------+
+
+.. note:: Since version 1.11, ``$CFGDIR`` entries in *confdir* and *autodir*
+   are expanded for **every** directory of the configuration file search path.
+   Dropping a ``.conf`` file into
+   ``$XDG_CONFIG_HOME/clustershell/groups.conf.d/`` (or a ``.yaml`` file into
+   ``$XDG_CONFIG_HOME/clustershell/groups.d/``) is thus enough to add, or
+   override, a group source without creating a user *groups.conf*.
+   Configuration directories are scanned from the lowest to the highest
+   priority and, within each directory, group sources are loaded from
+   *groups.conf* sections first, then from *confdir*, then from *autodir*.
+   When the same group source name is defined several times, the definition
+   loaded last wins: a user drop-in file overrides a system-wide group source
+   of the same name, and drop-in files override the *groups.conf* sections of
+   the same directory (``nodeset -d`` or ``cluset -d`` shows such overrides).
+   Entries of *confdir* and *autodir* without ``$CFGDIR`` are scanned along
+   with the configuration directory of the file defining the option, and each
+   directory is scanned only once.
 
 Each following section, like `genders` and `slurm` in the example above,
 defines a group source. The **map**, **mapall**, **all**, **list** and
@@ -338,7 +354,7 @@ to a file having the **.yaml** extension, for example::
 
 Ensure that *autodir* is set in :ref:`groups_config_conf`::
 
-  autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
+  autodir: $CFGDIR/groups.d
 
 In the following example, we also changed the default group source
 to **roles** in :ref:`groups_config_conf` (the first dictionary defined in
@@ -500,7 +516,10 @@ In addition to the context-dependent *$GROUP* and *$NODE* variables
 described above, the following two variables are always available and also
 replaced before executing shell commands:
 
-* *$CFGDIR* is replaced by the *groups.conf* base directory path
+* *$CFGDIR* is replaced by the directory of the configuration file the group
+  source is defined in: a *confdir* directory for a group source defined in a
+  ``.conf`` file, or the base directory of the (highest priority) *groups.conf*
+  file defining its section otherwise
 * *$SOURCE* is replaced by the current source name (see a usage example just
   below)
 
