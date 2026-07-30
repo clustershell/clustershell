@@ -125,6 +125,11 @@ def makeTestG4():
         """).encode('ascii'))
     return f4
 
+def _illegal_warning(group, source, chars):
+    """Expected log record when a group name is ignored"""
+    return ('WARNING:ClusterShell.NodeUtils:ignoring group "%s" from source '
+            '"%s": illegal character(s) "%s"' % (group, source, chars))
+
 class NodeSetGroupTest(unittest.TestCase):
 
     def setUp(self):
@@ -655,7 +660,14 @@ class NodeSetGroupTest(unittest.TestCase):
             """).encode('ascii'))
         res = GroupResolverConfig(f.name, illegal_chars=ILLEGAL_GROUP_CHARS)
         nodeset = NodeSet("rack3z40", resolver=res)
-        self.assertRaises(GroupResolverIllegalCharError, res.grouplist)
+        self.assertEqual(res.ignored_groups(), {})
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(res.grouplist(), ['x1y1', 'x1y2', 'x1y[3-4]'])
+            # the same group name is not reported twice by the same source
+            self.assertEqual(res.grouplist(), ['x1y1', 'x1y2', 'x1y[3-4]'])
+        self.assertEqual(cml.output,
+                         [_illegal_warning('@illegal', 'local', '@')])
+        self.assertEqual(res.ignored_groups(), {'local': {'@illegal': '@'}})
 
     def testConfigResolverSources(self):
         """test sources() with groups config of 2 sources"""
@@ -910,8 +922,79 @@ class NodeSetGroupTest(unittest.TestCase):
             """).encode('ascii'))
         res = GroupResolverConfig(f.name, illegal_chars=set("@,&!&^*"))
         nodeset = NodeSet("example[1-100]", resolver=res)
-        self.assertRaises(GroupResolverIllegalCharError, nodeset.groups)
-        self.assertRaises(GroupResolverIllegalCharError, nodeset.regroup)
+        # "foo" is still resolved; the reverse upcall is not used here as the
+        # source lists fewer groups than the number of nodes
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(list(nodeset.groups()), ['@foo'])
+            self.assertEqual(nodeset.regroup(), '@foo')
+        self.assertEqual(cml.output, [_illegal_warning('*', 'local', '*')])
+        self.assertEqual(res.ignored_groups(), {'local': {'*': '*'}})
+
+    def testConfigIllegalCharsReverse(self):
+        """test groups with illegal characters from reverse upcall"""
+        f = make_temp_file(dedent("""
+            # A comment
+
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-10]
+            #all:
+            #list:
+            reverse: echo f^oo
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name, illegal_chars=ILLEGAL_GROUP_CHARS)
+        nodeset = NodeSet("example[1-10]", resolver=res)
+        # without list upcall, the reverse upcall is called for each node, but
+        # the illegal group name is only reported once
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(nodeset.groups(), {})
+            self.assertEqual(nodeset.regroup(), 'example[1-10]')
+        self.assertEqual(cml.output,
+                         [_illegal_warning('f^oo', 'local', '^')])
+        self.assertEqual(res.ignored_groups(), {'local': {'f^oo': '^'}})
+
+    def testConfigIllegalCharsWildcard(self):
+        """test @* with a group list containing illegal characters"""
+        f = make_temp_file(dedent("""
+            # A comment
+
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-10]
+            #all:
+            list: echo good1 'bad&name' good2
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name, illegal_chars=ILLEGAL_GROUP_CHARS)
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(str(NodeSet("@*", resolver=res)), 'example[1-10]')
+            self.assertEqual(str(NodeSet("@local:*", resolver=res)),
+                             'example[1-10]')
+        self.assertEqual(cml.output,
+                         [_illegal_warning('bad&name', 'local', '&')])
+        self.assertEqual(res.ignored_groups(), {'local': {'bad&name': '&'}})
+
+    def testConfigIllegalCharsBounded(self):
+        """test that recorded ignored group names are bounded"""
+        f = make_temp_file(dedent("""
+            # A comment
+
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-10]
+            list: seq 1 200 | sed 's/.*/b^&/'
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name, illegal_chars=ILLEGAL_GROUP_CHARS)
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(res.grouplist(), [])
+        # only the first 100 group names are recorded and reported
+        self.assertEqual(len(cml.output), 100)
+        self.assertEqual(len(res.ignored_groups()['local']), 100)
 
     def testConfigMaxRecursionError(self):
         """test groups maximum recursion depth exceeded error"""
@@ -1411,6 +1494,27 @@ class GroupSourceCacheTest(unittest.TestCase):
         # Clear cache
         source.clear_cache()
         self.assertEqual(len(source._cache['map']), 0)
+
+    def test_clear_cache_illegal_ignored(self):
+        """test clear_cache() clears recorded ignored group names"""
+        source = StaticGroupSource('cache', {'map': {'a': 'foo1'},
+                                             'list': 'a bad&grp'})
+        res = GroupResolver(source, illegal_chars=ILLEGAL_GROUP_CHARS)
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(res.grouplist(), ['a'])
+            self.assertEqual(res.grouplist(), ['a'])
+        self.assertEqual(cml.output,
+                         [_illegal_warning('bad&grp', 'cache', '&')])
+        self.assertEqual(res.ignored_groups(), {'cache': {'bad&grp': '&'}})
+
+        # clear_cache() clears the record and re-arms the warning
+        source.clear_cache()
+        self.assertEqual(res.ignored_groups(), {})
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(res.grouplist(), ['a'])
+        self.assertEqual(cml.output,
+                         [_illegal_warning('bad&grp', 'cache', '&')])
+        self.assertEqual(res.ignored_groups(), {'cache': {'bad&grp': '&'}})
 
     def test_expired_cache(self):
         """test UpcallGroupSource expired cache entries"""
@@ -1949,6 +2053,33 @@ class GroupResolverYAMLTest(unittest.TestCase):
             # regroup no matching
             nodeset = NodeSet("example[102-200]", resolver=res)
             self.assertEqual(nodeset.regroup(), "example[102-200]")
+        finally:
+            yamlfile.close()
+            tdir.cleanup()
+
+    def test_yaml_illegal_chars(self):
+        """test YAML group name with illegal characters is ignored"""
+        tdir = make_temp_dir()
+        f = make_temp_file(dedent("""
+            [Main]
+            default: yaml
+            autodir: %s
+            """ % tdir.name).encode('ascii'))
+        yamlfile = make_temp_file(dedent("""
+            yaml:
+                foo: example[1-10]
+                bad&grp: example[11-20]
+            """).encode('ascii'), suffix=".yaml", dir=tdir.name)
+        try:
+            res = GroupResolverConfig(f.name,
+                                      illegal_chars=ILLEGAL_GROUP_CHARS)
+            with self.assertLogs('ClusterShell.NodeUtils',
+                                 level='WARNING') as cml:
+                self.assertEqual(res.grouplist(), ['foo'])
+            self.assertEqual(cml.output,
+                             [_illegal_warning('bad&grp', 'yaml', '&')])
+            self.assertEqual(res.ignored_groups(),
+                             {'yaml': {'bad&grp': '&'}})
         finally:
             yamlfile.close()
             tdir.cleanup()

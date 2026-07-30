@@ -26,13 +26,17 @@ def _outfmt_verb(*args):
     return res.encode()
 
 
-class CLIClubakTest(unittest.TestCase):
-    """Unit test class for testing CLI/Clubak.py"""
+class CLIClubakTestBase(unittest.TestCase):
+    """Base unit test class for testing CLI/Clubak.py"""
 
     def _clubak_t(self, args, stdin, expected_stdout, expected_rc=0,
                   expected_stderr=None):
         CLI_main(self, main, ['clubak'] + args, stdin, expected_stdout,
                  expected_rc, expected_stderr)
+
+
+class CLIClubakTest(CLIClubakTestBase):
+    """Unit test class for testing CLI/Clubak.py"""
 
     def test_000_noargs(self):
         """test clubak (no argument)"""
@@ -250,3 +254,28 @@ class CLIClubakTestGroupsConf(CLIClubakTest):
         self._clubak_t(["-r"], b"foo1: bar\nfoo2: bar", _outfmt("@foo (2)"))
         self._clubak_t(["--groupsconf", self.custf.name, "-r"],
                        b"foo1: bar\nfoo2: bar", _outfmt("@bar (2)"))
+
+
+class CLIClubakTestIllegalChars(CLIClubakTestBase):
+    """Unit test class for testing a group source with illegal characters"""
+
+    def setUp(self):
+        self.gconff = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo foo[1-2]
+            list: echo good 'bad&name'
+            """).encode())
+        set_std_group_resolver_config(self.gconff.name)
+
+    def tearDown(self):
+        set_std_group_resolver(None)
+        self.gconff = None
+
+    def test_regroup(self):
+        """test clubak -r with illegal group characters"""
+        self._clubak_t(["-r"], b"foo1: bar\nfoo2: bar", _outfmt("@good (2)"), 0,
+                       b'Warning: ignoring group names with illegal '
+                       b'characters from source "local": "bad&name"\n')

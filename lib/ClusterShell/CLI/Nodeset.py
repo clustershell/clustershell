@@ -35,7 +35,7 @@ import sys
 
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.OptionParser import OptionParser
-from ClusterShell.CLI.Utils import parse_fold_axis
+from ClusterShell.CLI.Utils import ignored_group_warnings, parse_fold_axis
 
 from ClusterShell.NodeSet import NodeSet, RangeSet, std_group_resolver
 from ClusterShell.NodeSet import grouplist, set_std_group_resolver_config
@@ -154,20 +154,9 @@ def command_list(options, xset, group_resolver):
             msgfmt = "Warning: No %s upcall defined for group source %s"
             print(msgfmt % (exc, source), file=sys.stderr)
 
-def nodeset():
-    """script subroutine"""
+def run_nodeset(parser, options, args, group_resolver):
+    """Run nodeset command with parsed options."""
     class_set = NodeSet
-    usage = "%prog [COMMAND] [OPTIONS] [ns1 [-ixX] ns2|...]"
-
-    parser = OptionParser(usage)
-    parser.install_groupsconf_option()
-    parser.install_nodeset_commands()
-    parser.install_nodeset_operations()
-    parser.install_nodeset_options()
-    (options, args) = parser.parse_args()
-
-    set_std_group_resolver_config(options.groupsconf)
-    group_resolver = std_group_resolver()
 
     if options.debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -270,7 +259,8 @@ def nodeset():
 
     # The list command has a special handling
     if options.list > 0 or options.listall > 0:
-        return command_list(options, xset, group_resolver)
+        command_list(options, xset, group_resolver)
+        return
     elif options.completion:  # --completion is used for bash completion
         # list group source prefixes unless source is already specified
         if not options.groupsource:
@@ -348,6 +338,29 @@ def nodeset():
             xiterator = xset.split(options.maxsplit)
         for xsubset in xiterator:
             print(xsubres(xsubset))
+
+def nodeset():
+    """script subroutine"""
+    usage = "%prog [COMMAND] [OPTIONS] [ns1 [-ixX] ns2|...]"
+
+    parser = OptionParser(usage)
+    parser.install_groupsconf_option()
+    parser.install_nodeset_commands()
+    parser.install_nodeset_operations()
+    parser.install_nodeset_options()
+    (options, args) = parser.parse_args()
+
+    if options.completion:
+        options.quiet = True
+
+    set_std_group_resolver_config(options.groupsconf)
+    group_resolver = std_group_resolver()
+
+    run_nodeset(parser, options, args, group_resolver)
+
+    if not options.quiet:
+        for msg in ignored_group_warnings(group_resolver):
+            print(msg, file=sys.stderr)
 
 def main():
     """main script function"""

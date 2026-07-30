@@ -24,6 +24,23 @@ CLI utility functions
 
 from ClusterShell.RangeSet import RangeSet
 
+# cap on ignored group names shown in a warning message
+IGNORED_GROUPS_SHOWN = 5
+
+
+def ignored_group_warnings(resolver):
+    """Build one warning message per group source about ignored group
+    names."""
+    msgs = []
+    for source, ignored in sorted(resolver.ignored_groups().items()):
+        names = ', '.join('"%s"' % grp
+                          for grp in sorted(ignored)[:IGNORED_GROUPS_SHOWN])
+        if len(ignored) > IGNORED_GROUPS_SHOWN:
+            names += ', ...'
+        msgs.append('Warning: ignoring group names with illegal characters '
+                    'from source "%s": %s' % (source, names))
+    return msgs
+
 
 def parse_fold_axis(axis):
     """Translate a 1-indexed command-line --axis value to a 0-indexed

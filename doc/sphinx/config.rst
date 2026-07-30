@@ -507,6 +507,13 @@ replaced before executing shell commands:
 Upcall commands are executed with their standard input connected to
 ``/dev/null``, so they must not expect any input on stdin.
 
+Group names must not contain any of the following characters: ``@,!&^*``.
+Since version 1.11, a group name returned by a group source that contains such
+a character is ignored (previous versions reported a fatal error). The command
+line tools print a warning about ignored group names on standard error, unless
+``-q`` is used; applications may retrieve them with
+``GroupResolver.ignored_groups()``.
+
 .. _group-external-caching:
 
 Caching considerations

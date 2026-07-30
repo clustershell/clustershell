@@ -5,6 +5,7 @@
 
 import os
 import random
+import re
 from textwrap import dedent
 import unittest
 
@@ -906,6 +907,83 @@ class CLINodesetGroupResolverTest3(CLINodesetTestBase):
         """test nodeset --list -s source w/ missing list upcall"""
         self._nodeset_t(["--list", "-s", "pdu"], None, b"", 1,
                         b'No list upcall defined for group source "pdu"\n')
+
+
+class CLINodesetGroupResolverIllegalCharsTest(CLINodesetTestBase):
+    """Unit test class for testing a group source with illegal characters"""
+
+    WARNING = (b'Warning: ignoring group names with illegal characters '
+               b'from source "local": "bad&name"\n')
+
+    def setUp(self):
+        self.f = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-10]
+            list: echo good1 'bad&name' good2
+            """).encode())
+        # unlike GroupResolverConfig(), this helper sets illegal_chars
+        set_std_group_resolver_config(self.f.name)
+
+    def tearDown(self):
+        set_std_group_resolver(None)
+        self.f = None  # used to release temp file
+
+    def test_list(self):
+        """test nodeset --list with illegal group characters"""
+        self._nodeset_t(["--list"], None, b"@good1\n@good2\n", 0, self.WARNING)
+
+    def test_list_all(self):
+        """test nodeset --list-all with illegal group characters"""
+        self._nodeset_t(["-LL"], None,
+                        b"@good1 example[1-10]\n@good2 example[1-10]\n", 0,
+                        self.WARNING)
+
+    def test_regroup(self):
+        """test nodeset --regroup with illegal group characters"""
+        self._nodeset_t(["-r", "example[1-10]"], None, b"@good1\n", 0,
+                        self.WARNING)
+
+    def test_wildcard(self):
+        """test nodeset @* with illegal group characters"""
+        self._nodeset_t(["-f", "@*"], None, b"example[1-10]\n", 0,
+                        self.WARNING)
+
+    def test_index(self):
+        """test nodeset --index with illegal group characters"""
+        self._nodeset_t(["--index", "example5", "@*"], None, b"4\n", 0,
+                        self.WARNING)
+
+    def test_completion(self):
+        """test nodeset --completion with illegal group characters"""
+        # --completion implies --quiet
+        self._nodeset_t(["--completion"], None,
+                        b"@local:\n@good1\n@good2\n", 0, re.compile(rb'^$'))
+
+    def test_list_many(self):
+        """test nodeset --list with many illegal group names"""
+        f = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-10]
+            list: echo good 'b&1' 'b&2' 'b&3' 'b&4' 'b&5' 'b&6'
+            """).encode())
+        set_std_group_resolver_config(f.name)
+        self._nodeset_t(["--list"], None, b"@good\n", 0,
+                        b'Warning: ignoring group names with illegal '
+                        b'characters from source "local": "b&1", "b&2", '
+                        b'"b&3", "b&4", "b&5", ...\n')
+
+    def test_quiet(self):
+        """test nodeset -q with illegal group characters"""
+        self._nodeset_t(["--list", "-q"], None, b"@good1\n@good2\n", 0,
+                        re.compile(rb'^$'))
+        self._nodeset_t(["-f", "-q", "@*"], None, b"example[1-10]\n", 0,
+                        re.compile(rb'^$'))
 
 
 class CLINodesetGroupResolverConfigErrorTest(CLINodesetTestBase):
