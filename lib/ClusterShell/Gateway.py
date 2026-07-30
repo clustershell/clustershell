@@ -326,13 +326,15 @@ def gateway_main():
     logdir = os.path.expanduser(os.environ.get('CLUSTERSHELL_GW_LOG_DIR',
                                                '/tmp'))
     loglevel = os.environ.get('CLUSTERSHELL_GW_LOG_LEVEL', 'INFO')
+    log_level = getattr(logging, loglevel.upper(), logging.INFO)
+    log_fmt = '%(asctime)s %(name)s %(levelname)s %(message)s'
+
     try:
-        log_level = getattr(logging, loglevel.upper(), logging.INFO)
-        log_fmt = '%(asctime)s %(name)s %(levelname)s %(message)s'
         logging.basicConfig(level=log_level, format=log_fmt,
                             filename=os.path.join(logdir, "%s.gw.log" % host))
     except (IOError, OSError):
-        pass  # logging failure is not fatal
+        # log file not writable: fall back to stderr, relayed to the root node
+        logging.basicConfig(level=log_level, format=log_fmt)
 
     logger = logging.getLogger(__name__)
     sys.excepthook = gateway_excepthook
