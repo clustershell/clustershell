@@ -313,6 +313,8 @@ variable::
 .. note:: It is highly recommended to have the same Python interpreter
    installed on all gateways and the root node.
 
+.. _clush-tree-debug:
+
 Debugging Tree mode
 """""""""""""""""""
 
