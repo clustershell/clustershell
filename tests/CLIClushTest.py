@@ -17,6 +17,7 @@ from textwrap import dedent
 import threading
 import time
 import unittest
+import warnings
 
 from subprocess import Popen, PIPE
 
@@ -967,3 +968,37 @@ class CLIClushTest_E_Topology(unittest.TestCase):
         # GH#560: to detect set!=NodeSet for gwtargets
         self._clush_t(["--topology", self.topofile.name,
                        "-w", "remote-node", "-b", "-v", "sleep 1; echo ok"], None, b"", 0, b"")
+
+
+class CLIClushTest_F_IllegalChars(unittest.TestCase):
+    """Unit test class for testing clush with illegal group characters"""
+
+    def setUp(self):
+        self.gconff = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo n[1-2]
+            list: echo good 'bad&name'
+            """).encode())
+        set_std_group_resolver_config(self.gconff.name)
+
+    def tearDown(self):
+        set_std_group_resolver(None)
+        self.gconff = None
+
+    def _clush_t(self, args, stdin, expected_stdout, expected_rc=0,
+                 expected_stderr=None):
+        CLI_main(self, main, ['clush'] + args, stdin, expected_stdout,
+                 expected_rc, expected_stderr)
+
+    def test_400_wildcard(self):
+        """test clush -w @* with illegal group characters"""
+        with warnings.catch_warnings():
+            # keep stderr free of the multi-threaded fork() warning (py3.12+)
+            warnings.simplefilter("ignore", DeprecationWarning)
+            self._clush_t(["-R", "exec", "-w", "@*", "-bL", "echo ok"], None,
+                          b"n[1-2]: ok\n", 0,
+                          b'Warning: ignoring group names with illegal '
+                          b'characters from source "local": "bad&name"\n')

@@ -62,6 +62,9 @@ except NameError:
 
 LOGGER = logging.getLogger(__name__)
 
+# cap on recorded ignored group names, per group source
+_IGN_GRP_MAX = 100
+
 
 class GroupSourceError(Exception):
     """Base GroupSource error exception"""
@@ -82,7 +85,8 @@ class GroupResolverSourceError(GroupResolverError):
     """Raised when upcall is not available"""
 
 class GroupResolverIllegalCharError(GroupResolverError):
-    """Raised when an illegal group character is encountered"""
+    """Raised when an illegal group character is encountered (no longer
+    raised by ClusterShell as of version 1.11, kept for compatibility)"""
 
 class GroupResolverConfigError(GroupResolverError):
     """Raised when a configuration error is encountered"""
@@ -110,6 +114,7 @@ class GroupSource(object):
         self.groups = groups or {} # we avoid the use of {} as default argument
         self.allgroups = allgroups
         self.has_reverse = False
+        self._illegal_ignored = {}  # ignored group names {name: chars}
 
     def resolv_map(self, group):
         """Get nodes from group `group`"""
@@ -146,6 +151,7 @@ class FileGroupSource(GroupSource):
         self.name = name
         self.loader = loader
         self.has_reverse = False
+        self._illegal_ignored = {}
 
     @property
     def groups(self):
@@ -203,12 +209,14 @@ class UpcallGroupSource(GroupSource):
 
     def clear_cache(self):
         """
-        Remove all previously cached upcall results whatever their lifetime is.
+        Remove all previously cached upcall results whatever their lifetime
+        is, along with any recorded ignored group names.
         """
         self._cache = {
             'map': {},
             'reverse': {}
         }
+        self._illegal_ignored = {}
 
     def _upcall_read(self, cmdtpl, args=dict()):
         """
@@ -436,8 +444,10 @@ class GroupResolver(object):
     A GroupResolver object might be initialized with a default
     GroupSource object, that is later used when group resolution is
     requested with no source information. As of version 1.7, a set of
-    illegal group characters may also be provided for sanity check
-    (raising GroupResolverIllegalCharError when found).
+    illegal group characters may also be provided for sanity check. As of
+    version 1.11, group names containing illegal characters are ignored,
+    recorded (see ignored_groups()) and logged as a warning (previous
+    versions raised GroupResolverIllegalCharError).
     """
 
     def __init__(self, default_source=None, illegal_chars=None):
@@ -530,9 +540,16 @@ class GroupResolver(object):
 
         for line in grpiter:
             for grpstr in line.strip().split():
-                if self.illegal_chars.intersection(grpstr):
-                    errmsg = ' '.join(self.illegal_chars.intersection(grpstr))
-                    raise GroupResolverIllegalCharError(errmsg)
+                badchars = self.illegal_chars.intersection(grpstr)
+                if badchars:
+                    # record and warn only once per group name and source
+                    ignored = source._illegal_ignored
+                    if grpstr not in ignored and len(ignored) < _IGN_GRP_MAX:
+                        ignored[grpstr] = ' '.join(sorted(badchars))
+                        LOGGER.warning('ignoring group "%s" from source "%s": '
+                                       'illegal character(s) "%s"', grpstr,
+                                       source.name, ignored[grpstr])
+                    continue
                 result.append(grpstr)
         return result
 
@@ -585,6 +602,17 @@ class GroupResolver(object):
         """
         source = self._source(namespace)
         return self._list_groups(source, 'reverse', node)
+
+    def ignored_groups(self):
+        """
+        Get group names ignored due to illegal characters, as a dict
+        {source name: {group name: illegal characters}}, at most 100
+        recorded per source. UpcallGroupSource.clear_cache() clears the
+        record.
+        """
+        return dict((name, dict(src._illegal_ignored))
+                    for name, src in self._sources.items()
+                    if src._illegal_ignored)
 
 
 class GroupResolverConfig(GroupResolver):

@@ -58,7 +58,7 @@ from ClusterShell.CLI.Display import VERB_QUIET, VERB_STD, VERB_VERB, VERB_DEBUG
 from ClusterShell.CLI.OptionParser import OptionParser
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.Utils import bufnodeset_cmpkey, human_bi_bytes_unit, \
-    parse_fold_axis
+    ignored_group_warnings, parse_fold_axis
 
 from ClusterShell.Event import EventHandler
 from ClusterShell.MsgTree import MsgTree
@@ -978,6 +978,10 @@ def main():
 
     # Do we have an exclude list? (-x ...)
     nodeset_base.difference_update(nodeset_exclude)
+
+    for msg in ignored_group_warnings(std_group_resolver()):
+        display.vprint_err(VERB_STD, msg)
+
     if len(nodeset_base) < 1:
         parser.error('No node to run on.')
 

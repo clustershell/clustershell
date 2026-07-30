@@ -145,6 +145,13 @@ is not doable. But if the call returns zero, for instance, for a non-existing
 group, the user will not receive any error when trying to resolve such an
 unknown group.  The desired behavior is up to the system administrator.
 
+Group names must not contain any of the following characters: ``@,!&^*``.
+Since version 1.11, a group name returned by a group source that contains such
+a character is ignored (previous versions reported a fatal error). The command
+line tools print a warning about ignored group names on standard error, unless
+``-q`` is used; applications may retrieve them with
+``GroupResolver.ignored_groups()``.
+
 
 RESOURCE USAGE
 ==============

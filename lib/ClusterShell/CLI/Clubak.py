@@ -33,12 +33,14 @@ from ClusterShell.Defaults import DEFAULTS
 from ClusterShell.MsgTree import MsgTree, MODE_DEFER, MODE_TRACE
 from ClusterShell.NodeSet import NodeSet, NodeSetParseError
 from ClusterShell.NodeSet import set_std_group_resolver_config
+from ClusterShell.NodeSet import std_group_resolver
 
-from ClusterShell.CLI.Display import Display, THREE_CHOICES
+from ClusterShell.CLI.Display import Display, THREE_CHOICES, VERB_STD
 from ClusterShell.CLI.Display import sys_stdin
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.OptionParser import OptionParser
-from ClusterShell.CLI.Utils import nodeset_cmpkey, parse_fold_axis
+from ClusterShell.CLI.Utils import ignored_group_warnings, nodeset_cmpkey, \
+                                   parse_fold_axis
 
 
 def display_tree(tree, disp, out):
@@ -177,6 +179,9 @@ def clubak():
               file=sys.stderr)
     display(tree, disp, disp.gather or disp.regroup, \
             options.trace_mode, enable_nodeset_key is not False)
+
+    for msg in ignored_group_warnings(std_group_resolver()):
+        disp.vprint_err(VERB_STD, msg)
 
 def main():
     """main script function"""
