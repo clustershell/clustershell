@@ -339,6 +339,19 @@ class RangeSetNDTest(unittest.TestCase):
         rn2 = RangeSetND([["10", "10"], ["9", "12-15"], ["10-12", "11-15"], ["11", "14"]])
         self.assertRaises(KeyError, rn1.difference_update, rn2, strict=True)
 
+        # subtracting scattered elements from a box must generate a linear
+        # number of disjoint vectors, not an exponential overlapping split
+        rn1 = RangeSetND([["0-9", "0-9", "0-9"]])
+        pts = [(0, 0, 0), (1, 2, 3), (2, 4, 6), (3, 7, 0), (4, 5, 6),
+               (7, 8, 9), (8, 1, 5), (9, 9, 9)]
+        rn2 = RangeSetND(pts)
+        rn1.difference_update(rn2)
+        self.assertTrue(len(rn1._veclist) <= 2 * len(pts) + 1)
+        self.assertEqual(len(rn1), 1000 - len(pts))
+        for pt in pts:
+            self.assertFalse(RangeSetND([pt]).issubset(rn1))
+        self.assertTrue(RangeSetND([(5, 5, 5)]).issubset(rn1))
+
         if sys.version_info >= (2, 5, 0):
             rn1 = RangeSetND([["10", "10-13"], ["10", "9-12"]])
             rn2 = RangeSetND([["10", "10"]])
