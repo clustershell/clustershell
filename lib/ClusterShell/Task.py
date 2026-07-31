@@ -796,6 +796,7 @@ class Task(object):
         assert self.thread == threading.current_thread()
         try:
             try:
+                self._quit = False
                 self._reset()
                 self._run(self.timeout)
             except EngineTimeoutException:

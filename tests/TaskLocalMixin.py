@@ -560,6 +560,22 @@ class TaskLocalMixin(object):
         task.abort()
         self.assertEqual(task, task_self())
 
+    def testTaskResumeAfterAbortSelf(self):
+        task = task_self()
+
+        worker = task.shell("/bin/echo before abort")
+        task.run()
+        self.assertEqual(worker.read(), b"before abort")
+
+        task.abort()
+        self.assertEqual(task, task_self())
+
+        # a task reused after abort() is not flagged as quitting anymore
+        worker = task.shell("/bin/echo after abort")
+        task.run()
+        self.assertEqual(worker.read(), b"after abort")
+        self.assertFalse(task._quit)
+
     def testTaskAbortHandler(self):
 
         class AbortOnReadTestHandler(EventHandler):
