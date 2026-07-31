@@ -1463,16 +1463,22 @@ class RangeSetND(object):
                 while len(procvx1) > 0: # refine diff for each resulting vector
                     rgproc1 = procvx1.pop(0)
                     tmpvx = []
+                    # carved axes are narrowed to the intersection so that
+                    # generated vectors are pairwise disjoint
+                    carve = list(rgproc1)
                     for pos, (rg1, rg2) in enumerate(zip(rgproc1, rgvec2)):
-                        if rg1 == rg2 or rg1 < rg2: # issubset
+                        if rg1.issubset(rg2):
                             pass
-                        elif rg1 & rg2:             # intersect
-                            tmpvec = list(rgproc1)
-                            tmpvec[pos] = rg1.difference(rg2)
-                            tmpvx.append(tmpvec)
-                        else:                       # disjoint
-                            tmpvx = [ rgproc1 ]     # reset previous work
-                            break
+                        else:
+                            inter = rg1 & rg2
+                            if inter:               # intersect
+                                tmpvec = list(carve)
+                                tmpvec[pos] = rg1.difference(rg2)
+                                tmpvx.append(tmpvec)
+                                carve[pos] = inter
+                            else:                   # disjoint
+                                tmpvx = [ rgproc1 ] # reset previous work
+                                break
                     if tmpvx:
                         nextvx1 += tmpvx
                 if nextvx1:
