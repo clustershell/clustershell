@@ -393,6 +393,26 @@ class TaskLocalMixin(object):
         task.resume()
         self.assertEqual(worker.read(), b"foobar\ndeadbeaf")
 
+    def testLocalCRLF(self):
+        task = task_self()
+        worker = task.shell("printf 'foo\\r\\nbar\\r\\n'")
+        task.resume()
+        self.assertEqual(worker.read(), b"foo\nbar")
+
+    def testLocalCarriageReturn(self):
+        # bare CR is data (eg. progress bars), not a line break
+        task = task_self()
+        worker = task.shell("printf 'one\\rtwo\\rdone\\nlast\\n'")
+        task.resume()
+        self.assertEqual(worker.read(), b"one\rtwo\rdone\nlast")
+
+    def testLocalCarriageReturnNoEOL(self):
+        # CR-only stream: kept whole, trailing CR is not a CRLF
+        task = task_self()
+        worker = task.shell("printf 'foo\\rbar\\r'")
+        task.resume()
+        self.assertEqual(worker.read(), b"foo\rbar\r")
+
     def testLocalWorkerWritesBcExample(self):
         # Other test: write a math statement to a bc process and check
         # for the result.

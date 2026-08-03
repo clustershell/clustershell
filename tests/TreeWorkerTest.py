@@ -526,6 +526,23 @@ class TreeWorkerTest(TreeWorkerTestBase):
         self.assertEqual(teh.ev_close_cnt, 1)
         self.assertEqual(teh.last_read, b'Lorem Ipsum')
 
+    def test_tree_run_event_cr(self):
+        """test tree run with bare CR in output"""
+        # bare CR is data (eg. progress bars), not a line break
+        teh = TEventHandler()
+        self.task.run("printf 'one\\rtwo\\rdone\\nlast\\n'",
+                      nodes=NODE_DISTANT, handler=teh)
+        self.assertEqual(teh.ev_read_cnt, 2)
+        self.assertEqual(self.task.node_buffer(NODE_DISTANT),
+                         b'one\rtwo\rdone\nlast')
+
+    def test_tree_run_event_empty_line(self):
+        """test tree run with an empty output line"""
+        teh = TEventHandler()
+        self.task.run('echo', nodes=NODE_DISTANT, handler=teh)
+        self.assertEqual(teh.ev_read_cnt, 1)
+        self.assertEqual(teh.last_read, b'')
+
     def test_tree_run_event_multiple(self):
         """test multiple tree runs with EventHandler (1.8+)"""
         # Test for GH#566

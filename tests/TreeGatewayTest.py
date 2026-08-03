@@ -548,6 +548,42 @@ class MetaWorkerStub(object):
         self.msglines.append((node, msg, sname, gateway))
 
 
+class TreeHeadChannelOutputTest(unittest.TestCase):
+    """test head-side (initiator) routed output messages (no gateway needed)"""
+
+    def setUp(self):
+        self.chan = PropagationChannel(task_self(), 'gw1')
+        self.chan.worker = ChannelWorkerStub()
+        self.mw = MetaWorkerStub()
+        self.chan.workers[id(self.mw)] = self.mw
+        # gateway greeting opens the channel, gateway ACK completes setup
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          ('<channel version="%s">' % __version__).encode())
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          b'<message type="ACK" msgid="0" ack="0"></message>')
+        self.assertTrue(self.chan.setup)
+
+    def _recv_output(self, msg_class, nodes, output):
+        """feed a routed output message and return its msglines"""
+        del self.mw.msglines[:]
+        msg = msg_class(nodes, output, id(self.mw))
+        self.chan.ev_read(self.chan.worker, 'gw1', self.chan.SNAME_READER,
+                          msg.xml())
+        return self.mw.msglines
+
+    def test_head_channel_output_cr(self):
+        """test routed output keeps bare CR as line data"""
+        self.assertEqual(self._recv_output(StdOutMessage, 'n1',
+                                           b'one\rtwo\rdone\nlast'),
+                         [('n1', b'one\rtwo\rdone', 'stdout', 'gw1'),
+                          ('n1', b'last', 'stdout', 'gw1')])
+        # a line-ending CR before the LF join is kept too
+        self.assertEqual(self._recv_output(StdErrMessage, 'n2',
+                                           b'abc\r\nnext'),
+                         [('n2', b'abc\r', 'stderr', 'gw1'),
+                          ('n2', b'next', 'stderr', 'gw1')])
+
+
 class TreeHeadChannelErrorTest(unittest.TestCase):
     """test head-side (initiator) channel errors (no gateway needed)"""
 

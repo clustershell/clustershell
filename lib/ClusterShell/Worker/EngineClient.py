@@ -397,19 +397,14 @@ class EngineClient(EngineBaseTimer):
         rfile = self.streams[sname]
 
         buf = rfile.rbuf + readbuf
-        lines = buf.splitlines(True)
-        rfile.rbuf = bytes()
-        for line in lines:
-            if line.endswith(b'\n'):
-                if line.endswith(b'\r\n'):
-                    yield line[:-2] # trim CRLF
-                else:
-                    # trim LF
-                    yield line[:-1] # trim LF
+        lines = buf.split(b'\n')
+        # keep partial line in buffer
+        rfile.rbuf = lines[-1]
+        for line in lines[:-1]:
+            if line.endswith(b'\r'):
+                yield line[:-1]  # trim CR of CRLF
             else:
-                # keep partial line in buffer
-                rfile.rbuf = line
-                # breaking here
+                yield line
 
     def _write(self, sname, buf):
         """Add some data to be written to the client."""
