@@ -313,8 +313,8 @@ class PropagationChannel(Channel):
 
     def _report_stderr(self, nodeset, buf):
         """report buf as stderr of nodeset, as seen from the gateway"""
-        # trailing newline: splitlines() would drop an empty buf entirely (#249)
-        lines = (buf + b'\n').splitlines()
+        # split on LF only, like EngineClient._readlines()
+        lines = buf.split(b'\n')
 
         for metaworker in self.workers.values():
             for line in lines:
@@ -430,15 +430,15 @@ class PropagationChannel(Channel):
                 nodeset = NodeSet(msg.nodes)
                 # msg.data_decode()'s name is a bit confusing, but returns
                 # pickle-decoded bytes (encoded string) and not string...
-                decoded = msg.data_decode() + b'\n'
-                for line in decoded.splitlines():
+                decoded = msg.data_decode()
+                for line in decoded.split(b'\n'):
                     for node in nodeset:
                         metaworker._on_remote_node_msgline(node, line, 'stdout',
                                                            self.gateway)
             elif msg.type == StdErrMessage.ident:
                 nodeset = NodeSet(msg.nodes)
-                decoded = msg.data_decode() + b'\n'
-                for line in decoded.splitlines():
+                decoded = msg.data_decode()
+                for line in decoded.split(b'\n'):
                     for node in nodeset:
                         metaworker._on_remote_node_msgline(node, line, 'stderr',
                                                            self.gateway)
