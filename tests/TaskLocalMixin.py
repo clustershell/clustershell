@@ -422,6 +422,42 @@ class TaskLocalMixin(object):
         # read result
         self.assertEqual(worker.read(), b"cracoucasse")
 
+    def testLocalWorkerWritesLarge(self):
+        # write far exceeding pipe capacity to get engine-driven partial writes
+        task = task_self()
+        worker = task.shell("cat")
+        data = b''.join(b'%07d padding padding\n' % i for i in range(80000))
+        worker.write(data)
+        worker.set_write_eof()
+        task.resume()
+        self.assertEqual(worker.read(), data[:-1])
+
+    def testLocalWorkerWritesFromEvWritten(self):
+        # queue more data from ev_written while a drain is in progress
+        class ChunkWriter(EventHandler):
+            def __init__(self, chunks):
+                self.chunks = chunks
+                self.nextidx = 1
+                self.eof_sent = False
+
+            def ev_written(self, worker, node, sname, size):
+                # ev_written fires again from within write(): bump index first
+                if self.nextidx < len(self.chunks):
+                    nextidx = self.nextidx
+                    self.nextidx += 1
+                    worker.write(self.chunks[nextidx])
+                elif not self.eof_sent:
+                    self.eof_sent = True
+                    worker.set_write_eof()
+
+        task = task_self()
+        # chunks larger than pipe capacity so eof is set while data is pending
+        chunks = [(b'%063d\n' % i) * 4096 for i in range(8)]
+        worker = task.shell("cat", handler=ChunkWriter(chunks))
+        worker.write(chunks[0])
+        task.resume()
+        self.assertEqual(worker.read(), b''.join(chunks)[:-1])
+
     def testEscape(self):
         task = task_self()
         worker = task.shell(r"export CSTEST=foobar; /bin/echo \$CSTEST | sed 's/\ foo/bar/'")
