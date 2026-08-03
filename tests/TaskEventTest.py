@@ -3,11 +3,13 @@
 
 """Unit test for ClusterShell Task (event-based mode)"""
 
+from inspect import Parameter, Signature
 import unittest
 import warnings
 
 from ClusterShell.Task import *
 from ClusterShell.Event import EventHandler
+from ClusterShell.Worker.Worker import _eh_sigspec_argc
 
 
 class BaseAssertTestHandler(EventHandler):
@@ -169,6 +171,43 @@ class TaskEventTest(unittest.TestCase):
         # warnings: pickup + read + hup + close
         self.run_task_and_catch_warnings(task, 4)
         eh.do_asserts_read_notimeout()
+
+    def test_mixed_event_handlers(self):
+        """test legacy and 1.8+ event handlers in the same task"""
+        task = task_self()
+
+        eh_legacy = LegacyTestHandler()
+        eh = TestHandler()
+        task.shell("echo abcdefghijklmnopqrstuvwxyz", handler=eh_legacy)
+        task.shell("echo abcdefghijklmnopqrstuvwxyz", handler=eh)
+        # warnings: pickup + read + hup + close (legacy handler only)
+        self.run_task_and_catch_warnings(task, 4)
+
+        eh_legacy.do_asserts_read_notimeout()
+        eh.do_asserts_read_notimeout()
+
+    def test_event_handler_instance_attribute(self):
+        """test event handler with ev_read set on the instance"""
+        task = task_self()
+
+        eh = TestHandler()
+        read = []
+        # not a bound method: no self argument
+        eh.ev_read = lambda worker, node, sname, msg: read.append(msg)
+        task.shell("echo abcdefghijklmnopqrstuvwxyz", handler=eh)
+        self.run_task_and_catch_warnings(task)
+
+        self.assertEqual(read, [b"abcdefghijklmnopqrstuvwxyz"])
+
+    def test_eh_sigspec_explicit_signature(self):
+        """test signature check with an explicit __signature__ (eg. wrapt)"""
+        def ev_read(*args, **kwargs):
+            pass
+
+        ev_read.__signature__ = Signature([Parameter(name,
+                                                     Parameter.POSITIONAL_OR_KEYWORD)
+                                           for name in ('self', 'worker')])
+        self.assertEqual(_eh_sigspec_argc(ev_read), 2)
 
     def test_simple_event_handler(self):
         """test simple event handler (1.8+)"""

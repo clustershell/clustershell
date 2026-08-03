@@ -36,6 +36,17 @@ from ClusterShell.NodeSet import NodeSet
 from ClusterShell.Engine.Engine import FANOUT_UNLIMITED, FANOUT_DEFAULT
 
 
+def _eh_sigspec_argc(method):
+    """Helper function to get the argument count of an event handler method."""
+    func = getattr(method, '__func__', method)
+    code = getattr(func, '__code__', None)
+    if code is None or getattr(func, '__signature__', None) is not None:
+        # not a plain function, or it advertises its own signature: ask inspect
+        return len(getfullargspec(method)[0])
+
+    # co_argcount counts self and excludes *args/**kwargs, like getfullargspec
+    return code.co_argcount
+
 def _eh_sigspec_invoke_compat(method, argc_legacy, *args):
     """
     Helper function to invoke an event handler method, with legacy
@@ -43,7 +54,7 @@ def _eh_sigspec_invoke_compat(method, argc_legacy, *args):
     This should be removed when old signatures (< 1.8) aren't supported
     anymore (in 2.x).
     """
-    argc_actual = len(getfullargspec(method)[0])
+    argc_actual = _eh_sigspec_argc(method)
     if argc_actual == argc_legacy:
         # Use legacy signature (1.x) deprecated as of 1.9
         warnings.warn("%s should use new %s() signature" % (method.__self__,
@@ -56,7 +67,7 @@ def _eh_sigspec_invoke_compat(method, argc_legacy, *args):
 
 def _eh_sigspec_ev_read_17(ev_read):
     """Helper function to check whether ev_read has the old 1.7 signature."""
-    if len(getfullargspec(ev_read)[0]) == 2:
+    if _eh_sigspec_argc(ev_read) == 2:
         warnings.warn("%s should use new ev_read() signature" % \
                       ev_read.__self__, DeprecationWarning)
         return True
