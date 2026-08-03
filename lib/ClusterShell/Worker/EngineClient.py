@@ -81,6 +81,7 @@ class EngineClientStream(object):
         self.fd = None
         self.rbuf = bytes()
         self.wbuf = bytes()
+        self.woff = 0
         self.eof = False
         self.evmask = evmask
         self.events = 0
@@ -111,7 +112,8 @@ class EngineClientStream(object):
     def __repr__(self):
         return "<%s at 0x%s (name=%s fd=%s rbuflen=%d wbuflen=%d eof=%d " \
             "evmask=0x%x)>" % (self.__class__.__name__, id(self), self.name,
-            self.fd, len(self.rbuf), len(self.wbuf), self.eof, self.evmask)
+            self.fd, len(self.rbuf), len(self.wbuf) - self.woff, self.eof,
+            self.evmask)
 
     def close(self):
         """Close stream."""
@@ -328,8 +330,14 @@ class EngineClient(EngineBaseTimer):
             if self._engine:
                 self._engine.remove_stream(self, wfile)
         elif len(wfile.wbuf) > 0:
+            woff = wfile.woff
+            if woff:
+                # zero-copy view from drain offset (avoids quadratic re-slice)
+                wbuf = memoryview(wfile.wbuf)[woff:]
+            else:
+                wbuf = wfile.wbuf
             try:
-                wcnt = os.write(wfile.fd, wfile.wbuf)
+                wcnt = os.write(wfile.fd, wbuf)
             except OSError as exc:
                 if exc.errno == errno.EAGAIN:
                     # _handle_write() is not only called by the engine but also
@@ -345,8 +353,12 @@ class EngineClient(EngineBaseTimer):
                     return
                 raise
             if wcnt > 0:
-                # dequeue written buffer
-                wfile.wbuf = wfile.wbuf[wcnt:]
+                # dequeue written bytes
+                if wcnt == len(wbuf):
+                    wfile.wbuf = bytes()
+                    wfile.woff = 0
+                else:
+                    wfile.woff = woff + wcnt
                 # check for possible ending
                 if wfile.eof and not wfile.wbuf:
                     self.worker._on_written(self.key, wcnt, sname)
@@ -414,13 +426,15 @@ class EngineClient(EngineBaseTimer):
             return
 
         wfile = self.streams[sname]
+        if wfile.woff:
+            # compact already-written prefix before appending
+            wfile.wbuf = wfile.wbuf[wfile.woff:]
+            wfile.woff = 0
+
+        wfile.wbuf += buf
         if self._engine and wfile.fd:
-            wfile.wbuf += buf
             # give it a try now (will set writing flag anyhow)
             self._handle_write(sname)
-        else:
-            # bufferize until pipe is ready
-            wfile.wbuf += buf
 
     def _set_write_eof(self, sname):
         """Set EOF on specific writable stream."""
