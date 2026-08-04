@@ -212,6 +212,34 @@ class RangeSetNDTest(unittest.TestCase):
                       ["0", "3", "5"], ["0", "1", "4"], ["0", "2", "4"],
                       ["2", "1", "4"]], folded, 13)
 
+    def test_autostep(self):
+        rn1 = RangeSetND([["0-10/2", "1-3"]], autostep=2)
+        rn2 = RangeSetND([["20-30/2", "1-3"]], autostep=2)
+        # autostep is preserved by copy()
+        self.assertEqual(rn1.copy().autostep, 2)
+        self.assertEqual(str(rn1.copy()), "0-10/2; 1-3\n")
+        # autostep is preserved by binary operations
+        for rnres in (rn1 | rn2, rn1.union(rn2), rn1 - rn2, rn1 & rn2,
+                      rn1 ^ rn2):
+            self.assertEqual(rnres.autostep, 2)
+        rnu = rn1 | rn2
+        self.assertEqual(str(rnu), "0-10/2,20-30/2; 1-3\n")
+        # multivariate results keep autostep too (axes are rebuilt on fold)
+        rnm = rn1 | RangeSetND([["20-30/2", "5-7"]], autostep=2)
+        self.assertEqual(str(rnm), "0-10/2; 1-3\n20-30/2; 5-7\n")
+        # str() is a fixed point: container and axes agree on autostep
+        self.assertEqual(str(RangeSetND([["0-10/2,20-30/2", "1-3"]],
+                                        autostep=2)), str(rnu))
+        # left operand's autostep wins
+        rn3 = RangeSetND([["40-50", "1-3"]])
+        self.assertEqual((rn1 | rn3).autostep, 2)
+        self.assertEqual((rn3 | rn1).autostep, None)
+        # intersection_update() also keeps axis autostep
+        rni = RangeSetND([["0-10/2", "1-3"]], autostep=2)
+        rni.intersection_update(RangeSetND([["0-10/2", "1-3"]]))
+        self.assertEqual(rni.autostep, 2)
+        self.assertEqual(str(rni), "0-10/2; 1-3\n")
+
     def test_union(self):
         rn1 = RangeSetND([["10-100", "1-3"], ["1100-1300", "2-3"]])
         self.assertEqual(str(rn1), "1100-1300; 2-3\n10-100; 1-3\n")
