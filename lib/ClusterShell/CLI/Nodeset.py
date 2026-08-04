@@ -48,7 +48,7 @@ def process_stdin(xsetop, xsetcls, autostep):
     tmpset = xsetcls(autostep=autostep)
     for line in sys.stdin:  # read lines of text stream (not bytes)
         # Support multi-lines and multi-nodesets per line
-        line = line[0:line.find('#')].strip()
+        line = line.split('#', 1)[0].strip()
         for elem in line.split():
             # Do explicit object creation for RangeSet
             tmpset.update(xsetcls(elem, autostep=autostep))

@@ -336,6 +336,10 @@ class CLINodesetTest(CLINodesetTestBase):
         """test nodeset - (stdin)"""
         self._nodeset_t(["-f", "-"], "foo\n", b"foo\n")
         self._nodeset_t(["-f", "-"], "foo1 foo2 foo3\n", b"foo[1-3]\n")
+        self._nodeset_t(["-f", "-"], "foo5", b"foo5\n")
+        self._nodeset_t(["-f", "-"], "foo[1-2]", b"foo[1-2]\n")
+        self._nodeset_t(["-f", "-"], "# comment\nfoo\n", b"foo\n")
+        self._nodeset_t(["-f", "-"], "foo1 foo2 # comment\n", b"foo[1-2]\n")
         self._nodeset_t(["--autostep=2", "-f"], "foo0 foo2 foo4 foo6\n", b"foo[0-6/2]\n")
         self._nodeset_t(["--autostep=auto", "-f"], "foo0 foo2 foo4 foo6\n", b"foo[0-6/2]\n")
         self._nodeset_t(["--autostep=100%", "-f"], "foo0 foo2 foo4 foo6\n", b"foo[0-6/2]\n")
