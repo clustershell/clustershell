@@ -21,7 +21,7 @@ specific buffer and how to get gathered buffers::
     print(task.node_buffer("green37").decode())
 
     for buf, nodes in task.iter_buffers():
-        print(nodes, buf.message().decode())
+        print(nodes, buf.text())
 
     if task.max_retcode() != 0:
         print("An error occurred (max rc = %s)" % task.max_retcode())
