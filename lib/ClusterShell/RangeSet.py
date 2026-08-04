@@ -999,6 +999,8 @@ class RangeSetND(object):
     def copy(self):
         """Return a new, mutable shallow copy of a RangeSetND."""
         cpy = self.__class__()
+        cpy._autostep = self._autostep
+
         # Shallow "to the extent possible" says the copy module, so here that
         # means calling copy() on each sub-RangeSet to keep mutability.
         cpy._veclist = [[rg.copy() for rg in rgvec] for rgvec in self._veclist]
@@ -1528,7 +1530,7 @@ class RangeSetND(object):
         if other is self:
             return
 
-        tmp_rnd = RangeSetND()
+        tmp_rnd = RangeSetND(autostep=self.autostep)
 
         empty_rset = RangeSet()
 
