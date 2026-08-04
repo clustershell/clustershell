@@ -926,7 +926,9 @@ def main():
         try:
             fnodeset = NodeSet()
             with open(opt_hostfile) as hostfile:
-                for line in hostfile.read().splitlines():
+                for line in hostfile:
+                    # Support multi-nodesets per line and '#' comments
+                    line = line.split('#', 1)[0].strip()
                     fnodeset.updaten(nodes for nodes in line.split())
             display.vprint_err(VERB_DEBUG,
                                "Using nodeset %s from hostfile %s"

@@ -153,7 +153,7 @@ Selecting target nodes:
                       run command on a group of nodes
   -X GROUP            exclude nodes from this group
   --hostfile=FILE, --machinefile=FILE
-                      path to a file containing a list of single hosts, node sets or node groups, separated by spaces and lines (may be specified multiple times, one per file)
+                      path to a file containing a list of single hosts, node sets or node groups, separated by spaces and lines; text from a ``#`` to the end of a line is ignored, as are empty lines (may be specified multiple times, one per file)
   --topology=FILE     topology configuration file to use for tree mode
   --pick=N            pick N node(s) at random in nodeset
 

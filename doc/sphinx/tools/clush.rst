@@ -104,7 +104,8 @@ Host files
 
 The option ``--hostfile`` (or ``--machinefile``) may be used to specify a
 path to a file containing a list of single hosts, node sets or node groups,
-separated by spaces and lines.  It may be specified multiple times (one per
+separated by spaces and lines.  Text from a ``#`` to the end of a line is
+ignored, as are empty lines.  It may be specified multiple times (one per
 file).
 
 For example::
