@@ -483,6 +483,10 @@ class CLIClushTest_A(unittest.TestCase):
         f2 = make_temp_file(HOSTNAME.encode())
         self._clush_t(["--hostfile", f.name, "--hostfile", f2.name,
                        "echo", "ok"], None, self.output_ok)
+        f3 = make_temp_file(b"# comment\ncs[01-02] # inline comment\n\ncs03\n")
+        self._clush_t(["--worker=exec", "--hostfile", f3.name, "-b", "echo",
+                       "ok"], None,
+                      b'---------------\ncs[01-03] (3)\n---------------\nok\n')
         self.assertRaises(OSError, self._clush_t,
                           ["--hostfile", "/I/do/NOT/exist", "echo", "ok"],
                           None, 1)

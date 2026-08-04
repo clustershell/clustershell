@@ -87,7 +87,8 @@ OPTIONS
 For a short explanation of these options, see ``-h, --help``.
 
 If a single hyphen-minus (-) is given as a nodeset, it will be read from
-standard input.
+standard input. Text from a ``#`` to the end of a line is ignored, as are
+empty lines.
 
 EXTENDED PATTERNS
 =================

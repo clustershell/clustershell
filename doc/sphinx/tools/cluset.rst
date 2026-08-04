@@ -97,7 +97,8 @@ The following example illustrates the three ways to feed *cluset*::
 
 
 Furthermore, *cluset*'s standard input reader is able to process multiple
-lines and multiple node sets or groups per line. The following example shows a
+lines and multiple node sets or groups per line. Text from a ``#`` to the end
+of a line is ignored, as are empty lines. The following example shows a
 simple use case::
 
     $ mount -t nfs | cut -d':' -f1
