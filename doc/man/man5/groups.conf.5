@@ -176,6 +176,13 @@ shell commands:
 \fI$SOURCE\fP is replaced by current source name
 .UNINDENT
 .sp
+These variables are also exported as environment variables to the executed
+command, taking precedence over any variables of the same name from the
+calling environment. Shell parameter expansions that are not replaced by the
+library, like \fI${GROUP:\-default}\fP, are then expanded by the shell using the
+same values. The context\-dependent \fI$GROUP\fP and \fI$NODE\fP variables are exported
+with an empty value when they do not apply to the upcall.
+.sp
 Each external command might return a non\-zero return code when the operation
 is not doable. But if the call returns zero, for instance, for a non\-existing
 group, the user will not receive any error when trying to resolve such an
@@ -196,7 +203,7 @@ confdir: /etc/clustershell/groups.conf.d $CFGDIR/groups.conf.d
 autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
 
 [local]
-map: sed \-n \(aqs/^$GROUP:\e(.*\e)/\e1/p\(aq /etc/clustershell/groups
+map: sed \-n \(dqs/^$GROUP:\e(.*\e)/\e1/p\(dq /etc/clustershell/groups
 list: sed \-n \(aqs/^\e([0\-9A\-Za\-z_\-]*\e):.*/\e1/p\(aq /etc/clustershell/groups
 
 [slurm]

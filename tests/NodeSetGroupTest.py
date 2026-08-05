@@ -1007,6 +1007,38 @@ class NodeSetGroupTest(unittest.TestCase):
         self.assertEqual(str(NodeSet("@%s" % tmpgroup, resolver=res)),
                          "example[1-100]")
 
+    def testConfigUpcallEnv(self):
+        """test upcall variables exported in the command environment"""
+        f = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo "n-${GROUP:-all}"
+            all: echo "a-${SOURCE:-none}${GROUP:-}"
+            list: basename "${CFGDIR:-/none}"
+            reverse: echo "g-${NODE:-none}"
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        # ${VAR:-default} is not replaced by the library: the shell expands
+        # it from the exported environment variables
+        self.assertEqual(str(NodeSet("@foo", resolver=res)), "n-foo")
+        # empty group name: the shell uses the default value
+        self.assertEqual(res.group_nodes(''), ["n-all"])
+        self.assertEqual(res.all_nodes(), ["a-local"])
+        tmpgroup = os.path.basename(os.path.dirname(f.name))
+        self.assertEqual(res.grouplist(), [tmpgroup])
+        self.assertEqual(res.node_groups("node1"), ["g-node1"])
+        # exported variables take precedence over the caller's environment,
+        # and are exported empty to upcalls they do not apply to
+        os.environ['GROUP'] = 'callerenv'
+        try:
+            res = GroupResolverConfig(f.name)
+            self.assertEqual(str(NodeSet("@bar", resolver=res)), "n-bar")
+            self.assertEqual(res.all_nodes(), ["a-local"])
+        finally:
+            del os.environ['GROUP']
+
     def test_fromall_grouplist(self):
         """test NodeSet.fromall() without all upcall"""
         # Group Source that has no all upcall and that can handle special char
