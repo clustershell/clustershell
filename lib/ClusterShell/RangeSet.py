@@ -1053,10 +1053,13 @@ class RangeSetND(object):
     def iter_padding(self):
         """Iterate through individual items as tuples with padding info.
         As of v1.9, this method returns the largest padding value of each
-        items, as mixed length padding is allowed."""
+        items, as mixed length padding is allowed. If you do not need
+        padding info per item, please use the faster method pads()
+        instead."""
         for vec in self._veclist:
+            pads = [rg.padding for rg in vec]  # rg.padding walks the whole set
             for ivec in product(*vec):
-                yield ivec, [rg.padding for rg in vec]
+                yield ivec, list(pads)
 
     @precond_fold()
     def _get_veclist(self):
