@@ -541,6 +541,19 @@ class RangeSetNDTest(unittest.TestCase):
         self.assertEqual(len(rn1), 29)
         self.assertEqual(rn1.pads(), (2, 4)) # pads() returns max padding length by axis
 
+    def test_iter_padding(self):
+        rn0 = RangeSetND()
+        self.assertEqual([], list(rn0.iter_padding()))
+        rn1 = RangeSetND([['01-02', '003'], ['1-2', '4-5']])
+        items = list(rn1.iter_padding())
+        self.assertEqual([(('1', '4'), [None, None]), (('1', '5'), [None, None]),
+                          (('2', '4'), [None, None]), (('2', '5'), [None, None]),
+                          (('01', '003'), [2, 3]), (('02', '003'), [2, 3])],
+                         items)
+        # each item has its own padding list
+        self.assertIsNot(items[0][1], items[1][1])
+        self.assertIsNot(items[4][1], items[5][1])
+
     def test_mutability_1(self):
         rs0 = RangeSet("2-5")
         rs1 = RangeSet("0-1")
