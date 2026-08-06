@@ -393,6 +393,9 @@ class Engine(object):
         # fanout cache used to speed up client launch when fanout changed
         self._prev_fanout = 0    # fanout_diff != 0 the first time
 
+        # number of delayable clients not yet registered
+        self._nunreg = 0
+
         # Current loop iteration counter. It is the number of performed engine
         # loops in order to keep track of client registration epoch, so we can
         # safely process FDs by chunk and re-use FDs (see Engine._fd2client).
@@ -464,6 +467,7 @@ class Engine(object):
         if client.delayable:
             # add to regular client set
             self._clients.add(client)
+            self._nunreg += 1
         else:
             # add to port set (non-delayable)
             self._ports.add(client)
@@ -490,6 +494,8 @@ class Engine(object):
         self._debug("REMOVE %s" % client)
         if client.delayable:
             self._clients.remove(client)
+            if not client.registered:
+                self._nunreg -= 1
         else:
             self._ports.remove(client)
         self._remove(client, abort, did_timeout)
@@ -531,6 +537,8 @@ class Engine(object):
         for clients in all_clients:
             while len(clients) > 0:
                 client = clients.pop()
+                if client.delayable and not client.registered:
+                    self._nunreg -= 1
                 self._remove(client, True, did_timeout)
 
     def register(self, client):
@@ -550,6 +558,9 @@ class Engine(object):
 
         if client.delayable:
             self._update_reg_stats(client, 1)
+            # client._start() may have removed it from the set already
+            if client in self._clients:
+                self._nunreg -= 1
 
         # set interest event bits...
         for streams, ievent in ((client.streams.active_readers, E_READ),
@@ -581,8 +592,8 @@ class Engine(object):
 
     def unregister(self, client):
         """Unregister a client"""
-        # sanity check
         assert client.registered
+        assert client not in self._clients
         self._debug("UNREG %s (%s)" % (client.__class__.__name__, \
                 client.streams))
 
@@ -696,6 +707,9 @@ class Engine(object):
         fanout_diff = self.info['fanout'] - self._prev_fanout
         if fanout_diff:
             self._prev_fanout = self.info['fanout']
+        elif not self._nunreg:
+            # no pending client to start, avoid scanning the client set
+            return
 
         for client in self._clients:
             if not client.registered and self._can_register(client):
