@@ -41,3 +41,16 @@ To sign off multiple commits at once:
 ```
 git rebase HEAD~N --signoff   # sign off the last N commits
 ```
+
+## Performance changes
+
+Measure performance changes with the benchmark suite in `benchmarks/` (see
+[benchmarks/README.md](benchmarks/README.md)), for example on a quiet
+machine:
+
+```
+cd benchmarks
+asv continuous -f 1.05 master HEAD
+```
+
+and include the measured gain in the commit message.
