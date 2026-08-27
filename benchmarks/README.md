@@ -62,3 +62,11 @@ Prebuilt benchmark state is defined at module level rather than in `setup()`
 hooks: with a `setup()` hook, the pinned `asv_runner` (see `asv.conf.json`)
 disables timeit batching and re-runs setup before every sample, which drowns
 microsecond benchmarks in per-call overhead.
+
+## Dashboard and CI
+
+A curated dashboard (`dashboard/`, assembled by `build_dashboard.py` from the
+asv results) is published together with the standard ASV site by the
+`benchmarks.yml` workflow, which benchmarks selected releases and master,
+accumulates results in the `gh-pages` branch (`performance-results/`) and
+publishes to `performance/` (dashboard) and `performance/asv/` (ASV site).

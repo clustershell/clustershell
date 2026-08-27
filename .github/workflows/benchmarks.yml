@@ -1,0 +1,133 @@
+name: ClusterShell performance
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 5 * * 1'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clustershell-performance-pages
+  cancel-in-progress: false
+
+jobs:
+  benchmark-and-publish:
+    if: github.repository == 'clustershell/clustershell'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out source and full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Set up benchmark Python
+        uses: actions/setup-python@v5.2.0
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: benchmarks/requirements.txt
+
+      - name: Detect the Pages branch
+        id: pages-branch
+        shell: bash
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages \
+              >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check out the existing Pages site
+        if: steps.pages-branch.outputs.exists == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: _pages
+          fetch-depth: 1
+
+      - name: Prepare the first Pages site
+        if: steps.pages-branch.outputs.exists != 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: _pages
+          fetch-depth: 1
+
+      - name: Initialize the Pages branch
+        if: steps.pages-branch.outputs.exists != 'true'
+        run: git -C _pages switch --orphan gh-pages
+
+      - name: Install benchmark tooling
+        run: python -m pip install -r benchmarks/requirements.txt
+
+      - name: Ensure benchmark revisions are available
+        run: |
+          set -euxo pipefail
+          git show-ref --verify --quiet refs/heads/master || \
+              git branch master origin/master
+
+      - name: Restore previously published results
+        run: |
+          set -euxo pipefail
+          mkdir -p benchmarks/.asv/results
+          if [[ -d _pages/performance-results ]]; then
+              rsync -a _pages/performance-results/ benchmarks/.asv/results/
+          fi
+
+      - name: Check benchmark discovery
+        run: asv check -v
+        working-directory: benchmarks
+
+      - name: Configure the benchmark machine
+        run: asv machine --yes --machine github-actions
+        working-directory: benchmarks
+
+      - name: Benchmark selected releases and master
+        working-directory: benchmarks
+        run: |
+          set -euxo pipefail
+          for revision in v1.8 v1.8.1 v1.8.2 v1.8.3 v1.8.4 \
+                  v1.9.3 v1.10 v1.10.1 master; do
+              asv run --no-pull --skip-existing-successful \
+                  --machine github-actions "${revision}^!" || test $? -eq 2
+          done
+
+      - name: Generate the ASV site
+        run: asv publish --no-pull
+        working-directory: benchmarks
+
+      - name: Build the dashboard
+        run: |
+          python benchmarks/build_dashboard.py \
+              --results benchmarks/.asv/results \
+              --output benchmarks/.asv/custom-dashboard \
+              --project-root .
+
+      - name: Update only the performance directories
+        run: |
+          set -euxo pipefail
+          mkdir -p _pages/performance _pages/performance-results
+          rsync -a --delete benchmarks/.asv/custom-dashboard/ _pages/performance/
+          mkdir -p _pages/performance/asv
+          rsync -a --delete benchmarks/.asv/html/ _pages/performance/asv/
+          rsync -a --delete benchmarks/.asv/results/ _pages/performance-results/
+          touch _pages/.nojekyll
+
+      - name: Commit and publish the dashboard
+        run: |
+          set -euxo pipefail
+          git -C _pages config user.name 'github-actions[bot]'
+          git -C _pages config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C _pages add .nojekyll performance performance-results
+          if git -C _pages diff --cached --quiet; then
+              echo "No benchmark result changed"
+          else
+              git -C _pages commit -m "benchmarks: update performance results"
+              git -C _pages pull --rebase origin gh-pages
+              git -C _pages push origin HEAD:gh-pages
+          fi
