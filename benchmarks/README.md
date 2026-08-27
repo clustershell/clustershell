@@ -70,3 +70,17 @@ set or bump a `version` attribute on the benchmark class when changing it.
 fanout 64) to cover process spawning, stdin writes and output processing.
 They measure wall-clock time around forked processes, so expect more
 run-to-run noise than from the in-process benchmarks.
+
+## Dashboard and CI
+
+A curated dashboard (`dashboard/`, assembled by `build_dashboard.py` from the
+asv results) is published together with the standard ASV site by the
+`benchmarks.yml` workflow. Every week, it benchmarks every release since
+v1.8 and each master commit merged since the previous run (up to 10),
+accumulates results in the `gh-pages` branch (`performance-results/`) and
+publishes to `performance/` (dashboard) and `performance/asv/` (ASV site),
+where regressions are looked for since the latest release. Releases are
+measured again on every run, with the new master commits on the same
+runner; older master points come from earlier runs, possibly on different
+hardware. The ASV site dates commits by author date, the dashboard by the
+date they landed on master.
