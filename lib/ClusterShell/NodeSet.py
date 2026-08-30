@@ -1421,8 +1421,14 @@ class NodeSet(NodeSetBase):
             msg = "Group source query failed: %s" % exc
             raise NodeSetExternalError(msg)
 
-    def _groups2(self, groupsource=None, autostep=None):
-        """Find node groups this nodeset belongs to. [private]"""
+    def _groups_info(self, groupsource=None, autostep=None):
+        """Find node groups this nodeset belongs to.
+
+        Return a dictionary of the form:
+            group_name => (matching node count, group_nodeset)
+
+        Note: no "@" prefix in group names, unlike groups()
+        """
         if not self._resolver:
             raise NodeSetExternalError("No node group resolver")
         try:
@@ -1487,7 +1493,7 @@ class NodeSet(NodeSetBase):
         Group names are always prefixed with "@". If groupsource is provided,
         they are prefixed with "@groupsource:", unless noprefix is True.
         """
-        groups = self._groups2(groupsource, self._autostep)
+        groups = self._groups_info(groupsource, self._autostep)
         result = {}
         for grp, (_, nsb) in groups.items():
             if groupsource and not noprefix:
@@ -1506,7 +1512,7 @@ class NodeSet(NodeSetBase):
         and return a string that represents this node set (containing these
         potential node groups). When no matching node groups are found, this
         method returns the same result as str()."""
-        groups = self._groups2(groupsource, autostep)
+        groups = self._groups_info(groupsource, autostep)
         if not groups:
             return str(self)
 
