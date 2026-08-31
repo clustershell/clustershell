@@ -63,6 +63,12 @@ hooks: with a `setup()` hook, the pinned `asv_runner` (see `asv.conf.json`)
 disables timeit batching and re-runs setup before every sample, which drowns
 microsecond benchmarks in per-call overhead.
 
+`bench_engine.py` and `bench_output.py` run local commands through
+`ExecWorker` with the Task settings of `clush` (exec worker, separate stderr,
+fanout 64) to cover process spawning, stdin broadcast and output processing.
+They measure wall-clock time around forked processes, so expect more
+run-to-run noise than from the in-process benchmarks.
+
 ## Dashboard and CI
 
 A curated dashboard (`dashboard/`, assembled by `build_dashboard.py` from the

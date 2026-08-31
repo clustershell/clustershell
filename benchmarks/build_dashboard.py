@@ -83,6 +83,10 @@ def benchmark_group(name):
         return "MsgTree"
     if name.startswith("bench_imports."):
         return "Imports"
+    if name.startswith("bench_engine."):
+        return "Engine"
+    if name.startswith("bench_output."):
+        return "Output"
     return "Other"
 
 

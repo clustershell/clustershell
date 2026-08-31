@@ -16,7 +16,7 @@ jobs:
   benchmark-and-publish:
     if: github.repository == 'clustershell/clustershell'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - name: Check out source and full history
         uses: actions/checkout@v4
