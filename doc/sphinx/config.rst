@@ -64,13 +64,17 @@ The following table describes available ``clush`` config file settings.
 |                 | identify a section defining a mode. Duplicate      |
 |                 | modes are not allowed in those files.              |
 |                 | Configuration files that are not readable by the   |
-|                 | current user are ignored. The variable ``$CFGDIR`` |
-|                 | is replaced by the path of the highest priority    |
-|                 | configuration directory found (where *clush.conf*  |
-|                 | resides). The default *confdir* value enables both |
+|                 | current user are ignored. Entries containing the   |
+|                 | variable ``$CFGDIR`` are expanded once for each    |
+|                 | configuration directory of the search path (since  |
+|                 | version 1.11), so a user configuration directory is|
+|                 | scanned even without a user *clush.conf* file.     |
+|                 | Entries without ``$CFGDIR`` are scanned along with |
+|                 | the configuration directory of the file defining   |
+|                 | the option, and each directory is scanned only     |
+|                 | once. The default *confdir* value enables both     |
 |                 | system-wide and any installed user configuration   |
-|                 | (thanks to ``$CFGDIR``). Duplicate directory paths |
-|                 | are ignored.                                       |
+|                 | (thanks to ``$CFGDIR``).                           |
 +-----------------+----------------------------------------------------+
 | connect_timeout | Timeout in seconds to allow a connection to        |
 |                 | establish. This parameter is passed to *ssh(1)*.   |
