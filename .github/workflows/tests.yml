@@ -92,6 +92,11 @@ jobs:
         export CLUSTERSHELL_GW_PYTHON_EXECUTABLE=$(which python)
         coverage run --branch --source=ClusterShell -m unittest discover -v -s tests -p '*Test.py' -t .
         coverage report -m
+    - name: Run python -O test lane (*Test_O.py)
+      id: tests-python-o
+      run: |
+        set -euxo pipefail
+        python -O -m unittest discover -v -s tests -p '*Test_O.py' -t .
     - name: Post to Slack (end)
       if: always()
       continue-on-error: true

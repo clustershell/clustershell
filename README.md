@@ -86,6 +86,11 @@ whole test suite from the source tree root:
 To run a single test module, narrow the discovery pattern, for example
 `-p 'NodeSetTest.py'`.
 
+A few tests validate the library with assert statements stripped and only run
+with python -O, using a separate discovery pattern:
+
+    $ python -O -m unittest discover -v -s tests -p '*Test_O.py' -t .
+
 You have to allow 'ssh localhost' and 'ssh $HOSTNAME' without any warnings for
 "remote" tests to run as expected. $HOSTNAME should not be 127.0.0.1 nor ::1.
 Also some tests use the 'bc' command.
