@@ -140,6 +140,13 @@ shell commands:
 * *$CFGDIR* is replaced by groups.conf highest priority base directory path
 * *$SOURCE* is replaced by current source name
 
+These variables are also exported as environment variables to the executed
+command, taking precedence over any variables of the same name from the
+calling environment. Shell parameter expansions that are not replaced by the
+library, like *${GROUP:-default}*, are then expanded by the shell using the
+same values. The context-dependent *$GROUP* and *$NODE* variables are exported
+with an empty value when they do not apply to the upcall.
+
 Each external command might return a non-zero return code when the operation
 is not doable. But if the call returns zero, for instance, for a non-existing
 group, the user will not receive any error when trying to resolve such an
@@ -175,7 +182,7 @@ Simple configuration file for local groups and Slurm partitions binding.
 | autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
 |
 | [local]
-| map: sed -n 's/^$GROUP:\\(.*\\)/\\1/p' /etc/clustershell/groups
+| map: sed -n "s/^$GROUP:\\(.*\\)/\\1/p" /etc/clustershell/groups
 | list: sed -n 's/^\\([0-9A-Za-z\_-]\*\\):.*/\\1/p' /etc/clustershell/groups
 |
 | [slurm]

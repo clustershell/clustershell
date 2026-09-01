@@ -504,6 +504,14 @@ replaced before executing shell commands:
 * *$SOURCE* is replaced by the current source name (see a usage example just
   below)
 
+These variables are also exported as environment variables to the executed
+command, taking precedence over any variables of the same name from the
+calling environment. Shell parameter expansions that are not replaced by
+the library, like ``${GROUP:-default}``, are then expanded by the shell
+using the same values. The context-dependent ``$GROUP`` and ``$NODE``
+variables are exported with an empty value when they do not apply to the
+upcall.
+
 Upcall commands are executed with their standard input connected to
 ``/dev/null``, so they must not expect any input on stdin.
 
@@ -678,7 +686,7 @@ allocated for jobs belonging to the username::
     map: squeue -h -u $GROUP -o "%N" -t R
     mapall: squeue -h -o "%u:%N" -t R
     list: squeue -h -o "%u" -t R
-    reverse: squeue -h -w $NODE -o "%i"
+    reverse: squeue -h -w $NODE -o "%u"
     cache_time: 60
 
 .. highlight:: console
