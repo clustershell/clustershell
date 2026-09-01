@@ -47,7 +47,8 @@ class MsgTreeElem(object):
     Class representing an element of the MsgTree and its associated
     message. Object of this class are returned by the various MsgTree
     methods like messages() or walk(). The object can then be used as
-    an iterator over the message lines or casted into a bytes buffer.
+    an iterator over the message lines, casted into a bytes buffer or
+    converted to a text string with text().
     """
     def __init__(self, msgline=None, parent=None, trace=False):
         """
@@ -132,6 +133,19 @@ class MsgTreeElem(object):
         return b'\n'.join(self.lines())
 
     __bytes__ = message
+
+    def text(self, encoding='utf-8', errors='replace'):
+        """
+        Get the whole message buffer (from this tree element) as a text
+        string, the text counterpart of message().
+
+        Unlike bytes.decode(), errors defaults to 'replace': undecodable
+        bytes are replaced with U+FFFD, so that decoding and printing
+        never raise. For a lossless alternative, use
+        errors='surrogateescape', knowing that the result may not always
+        be printable.
+        """
+        return self.message().decode(encoding, errors)
 
     def __str__(self):
         """

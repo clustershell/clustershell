@@ -328,3 +328,30 @@ class MsgTreeTest(unittest.TestCase):
             self.assertEqual(bytes(elem), b"message0")
         else:
             self.assertEqual(str(elem), "message0")
+
+    def test_012_text(self):
+        """test MsgTreeElem.text()"""
+        tree = MsgTree()
+        tree.add("item1", b"message0")
+        tree.add("item1", b"r\xc3\xa9sultat")
+        # utf-8 is the default encoding
+        self.assertEqual(tree["item1"].text(), "message0\nr\u00e9sultat")
+
+        # undecodable bytes are replaced with U+FFFD by default
+        tree.add("item2", b"inval\xffid")
+        elem = tree["item2"]
+        self.assertEqual(elem.text(), "inval\ufffdid")
+
+        # errors override: strict raises, surrogateescape round-trips
+        self.assertRaises(UnicodeDecodeError, elem.text, 'utf-8', 'strict')
+        text = elem.text(errors='surrogateescape')
+        self.assertEqual(text.encode('utf-8', 'surrogateescape'),
+                         b"inval\xffid")
+
+        # encoding override
+        tree.add("item3", b"r\xe9sultat")
+        self.assertEqual(tree["item3"].text(encoding='latin-1'),
+                         "r\u00e9sultat")
+
+        # empty element decodes to an empty string
+        self.assertEqual(MsgTreeElem().text(), "")

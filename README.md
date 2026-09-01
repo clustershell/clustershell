@@ -100,7 +100,7 @@ Python code (simple example)
 >>> task.run("/bin/uname -r", nodes="linux[4-6,32-39]")
 <ClusterShell.Worker.Ssh.WorkerSsh object at 0x7f45287db910>
 >>> for buf, key in task.iter_buffers():
-...     print(NodeSet.fromlist(key), buf.message().decode())
+...     print(NodeSet.fromlist(key), buf.text())
 ... 
 linux[32-39] 6.14.9-300.fc42.x86_64
 linux[4-6] 5.14.0-570.12.1.el9_6.x86_64

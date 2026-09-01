@@ -167,7 +167,7 @@ class Defaults(object):
         >>> task = task_self()
         >>> task.run("uname -r", nodes="cs[01-03]")
         <ClusterShell.Worker.Rsh.WorkerRsh object at 0x1f4a410>
-        >>> list((str(msg), nodes) for msg, nodes in task.iter_buffers())
+        >>> list((msg.text(), nodes) for msg, nodes in task.iter_buffers())
         [('3.10.0-229.7.2.el7.x86_64', ['cs02', 'cs01', 'cs03'])]
 
 
