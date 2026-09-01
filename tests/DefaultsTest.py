@@ -12,7 +12,7 @@ import unittest
 
 from .TLib import make_temp_file, make_temp_dir
 
-from ClusterShell.Defaults import Defaults, _task_print_debug
+from ClusterShell.Defaults import Defaults, config_paths, _task_print_debug
 
 from ClusterShell.Task import task_self, task_terminate
 from ClusterShell.Worker.Pdsh import WorkerPdsh
@@ -272,3 +272,33 @@ class Defaults001ConfigTest(unittest.TestCase):
         self.assertEqual(self.defaults.fanout, 256)
         self.assertEqual(self.defaults.grooming_delay, 0.5)
         self.assertEqual(self.defaults.connect_timeout, 12.5)
+
+
+class Defaults002ConfigPathsTest(unittest.TestCase):
+    """Unit test class for config_paths()"""
+
+    def setUp(self):
+        self.cfgdir_save = os.environ.pop('CLUSTERSHELL_CFGDIR', None)
+        self.local = os.path.expanduser('~/.local/etc/clustershell/'
+                                        'test.conf')
+        self.prefix = os.path.join(sys.prefix,
+                                   'etc/clustershell/test.conf')
+        xdg_home = os.environ.get('XDG_CONFIG_HOME',
+                                  os.path.expanduser('~/.config'))
+        self.xdg = os.path.join(xdg_home, 'clustershell/test.conf')
+
+    def tearDown(self):
+        os.environ.pop('CLUSTERSHELL_CFGDIR', None)
+        if self.cfgdir_save is not None:
+            os.environ['CLUSTERSHELL_CFGDIR'] = self.cfgdir_save
+
+    def test_000_system_wide(self):
+        self.assertEqual(config_paths('test.conf'),
+                         ['/etc/clustershell/test.conf', self.local,
+                          self.prefix, self.xdg])
+
+    def test_001_cfgdir(self):
+        os.environ['CLUSTERSHELL_CFGDIR'] = '/site/clustershell'
+        self.assertEqual(config_paths('test.conf'),
+                         [self.local, self.prefix,
+                          '/site/clustershell/test.conf', self.xdg])

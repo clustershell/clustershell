@@ -26,13 +26,14 @@ Locations
 decreasing order of precedence:
 
  1. command-line options
- 2. *$CLUSTERSHELL_CFGDIR/clush.conf* (only used when $CLUSTERSHELL_CFGDIR
-    is defined)
- 3. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*,
+ 2. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*,
     defaults to *$HOME/.config/clustershell/clush.conf*)
+ 3. *$CLUSTERSHELL_CFGDIR/clush.conf* (only used when $CLUSTERSHELL_CFGDIR
+    is defined, in which case it replaces the system-wide configuration file)
  4. Python virtual environment (*{sys.prefix}/etc/clustershell/clush.conf*)
  5. local pip user installation (*$HOME/.local/etc/clustershell/clush.conf*)
- 6. system-wide configuration file (*/etc/clustershell/clush.conf*)
+ 6. system-wide configuration file (*/etc/clustershell/clush.conf*, not read
+    when $CLUSTERSHELL_CFGDIR is defined)
 
 For each parameter, the first obtained value will be used.
 

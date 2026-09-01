@@ -43,17 +43,18 @@ decreasing order of precedence:
 .IP 1. 3
 command\-line options
 .IP 2. 3
-\fI$CLUSTERSHELL_CFGDIR/clush.conf\fP (only used when $CLUSTERSHELL_CFGDIR
-is defined)
-.IP 3. 3
 user configuration file (\fI$XDG_CONFIG_HOME/clustershell/clush.conf\fP,
 defaults to \fI$HOME/.config/clustershell/clush.conf\fP)
+.IP 3. 3
+\fI$CLUSTERSHELL_CFGDIR/clush.conf\fP (only used when $CLUSTERSHELL_CFGDIR
+is defined, in which case it replaces the system\-wide configuration file)
 .IP 4. 3
 Python virtual environment (\fI{sys.prefix}/etc/clustershell/clush.conf\fP)
 .IP 5. 3
 local pip user installation (\fI$HOME/.local/etc/clustershell/clush.conf\fP)
 .IP 6. 3
-system\-wide configuration file (\fI/etc/clustershell/clush.conf\fP)
+system\-wide configuration file (\fI/etc/clustershell/clush.conf\fP, not read
+when $CLUSTERSHELL_CFGDIR is defined)
 .UNINDENT
 .UNINDENT
 .UNINDENT

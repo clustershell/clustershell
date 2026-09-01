@@ -38,17 +38,18 @@ following sources, in decreasing order of precedence:
 .INDENT 3.5
 .INDENT 0.0
 .IP 1. 3
-\fI$CLUSTERSHELL_CFGDIR/groups.conf\fP (only used when $CLUSTERSHELL_CFGDIR
-is defined)
-.IP 2. 3
 user configuration file (\fI$XDG_CONFIG_HOME/clustershell/groups.conf\fP,
 defaults to \fI$HOME/.config/clustershell/groups.conf\fP)
+.IP 2. 3
+\fI$CLUSTERSHELL_CFGDIR/groups.conf\fP (only used when $CLUSTERSHELL_CFGDIR
+is defined, in which case it replaces the system\-wide configuration file)
 .IP 3. 3
 Python virtual environment (\fI{sys.prefix}/etc/clustershell/groups.conf\fP)
 .IP 4. 3
 local pip user installation (\fI$HOME/.local/etc/clustershell/groups.conf\fP)
 .IP 5. 3
-system\-wide configuration file (\fI/etc/clustershell/groups.conf\fP)
+system\-wide configuration file (\fI/etc/clustershell/groups.conf\fP, not read
+when $CLUSTERSHELL_CFGDIR is defined)
 .UNINDENT
 .UNINDENT
 .UNINDENT

@@ -323,14 +323,18 @@ class CLIClushConfigTest(unittest.TestCase):
         """test CLI.Config.ClushConfig (CLUSTERSHELL_CFGDIR global custom config)
         """
 
-        # Save existing environment variable, if it's defined
+        # Save existing environment variables, if defined
         custom_config_save = os.environ.get('CLUSTERSHELL_CFGDIR')
+        xdg_config_home_save = os.environ.get('XDG_CONFIG_HOME')
 
         # Create fake CLUSTERSHELL_CFGDIR
         custom_cfg_dir = make_temp_dir()
+        # Create empty XDG_CONFIG_HOME, as user config takes precedence
+        xdg_dir = make_temp_dir()
 
         try:
             os.environ['CLUSTERSHELL_CFGDIR'] = custom_cfg_dir.name
+            os.environ['XDG_CONFIG_HOME'] = xdg_dir.name
 
             cfgfile = open(os.path.join(custom_cfg_dir.name, 'clush.conf'), 'w')
             cfgfile.write(dedent("""
@@ -368,6 +372,11 @@ class CLIClushConfigTest(unittest.TestCase):
                 os.environ['CLUSTERSHELL_CFGDIR'] = custom_config_save
             else:
                 del os.environ['CLUSTERSHELL_CFGDIR']
+            if xdg_config_home_save:
+                os.environ['XDG_CONFIG_HOME'] = xdg_config_home_save
+            else:
+                del os.environ['XDG_CONFIG_HOME']
+            xdg_dir.cleanup()
             custom_cfg_dir.cleanup()
 
 

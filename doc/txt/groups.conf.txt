@@ -20,13 +20,14 @@ DESCRIPTION
 The ClusterShell library obtains its node groups configuration from the
 following sources, in decreasing order of precedence:
 
- 1. *$CLUSTERSHELL_CFGDIR/groups.conf* (only used when $CLUSTERSHELL_CFGDIR
-    is defined)
- 2. user configuration file (*$XDG_CONFIG_HOME/clustershell/groups.conf*,
+ 1. user configuration file (*$XDG_CONFIG_HOME/clustershell/groups.conf*,
     defaults to *$HOME/.config/clustershell/groups.conf*)
+ 2. *$CLUSTERSHELL_CFGDIR/groups.conf* (only used when $CLUSTERSHELL_CFGDIR
+    is defined, in which case it replaces the system-wide configuration file)
  3. Python virtual environment (*{sys.prefix}/etc/clustershell/groups.conf*)
  4. local pip user installation (*$HOME/.local/etc/clustershell/groups.conf*)
- 5. system-wide configuration file (*/etc/clustershell/groups.conf*)
+ 5. system-wide configuration file (*/etc/clustershell/groups.conf*, not read
+    when $CLUSTERSHELL_CFGDIR is defined)
 
 For each parameter, the first obtained value will be used. If no *groups.conf*
 is found, group support will be disabled.

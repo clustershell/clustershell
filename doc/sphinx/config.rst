@@ -33,11 +33,21 @@ the following files is found, in priority order::
 .. note:: The path using `sys.prefix`_ was added in version 1.9.1 and is
    useful for Python virtual environments.
 
-In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will be used instead. In that case, the following configuration file
-will be tried first for ``clush``::
+If the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined, the following
+configuration file is used instead of ``/etc/clustershell/clush.conf``; it
+takes precedence over the files installed under `sys.prefix`_ and
+``$HOME/.local``, and is only overridden by the per-user configuration file::
 
     $CLUSTERSHELL_CFGDIR/clush.conf
+
+.. note:: ``$CLUSTERSHELL_CFGDIR`` replaces the system-wide configuration
+   directory only: since version 1.11, ``/etc/clustershell`` is not read when
+   it is defined, and the per-user configuration files override it just like
+   they override ``/etc/clustershell``. To run ClusterShell with a fully
+   controlled configuration, for example in tests, also point ``$HOME`` and
+   ``$XDG_CONFIG_HOME`` to a scratch directory so that no user configuration
+   file is found (the configuration directory under `sys.prefix`_ is still
+   read).
 
 Settings
 """"""""
@@ -227,9 +237,13 @@ of the following files is found, in priority order::
 .. note:: The path using `sys.prefix`_ was added in version 1.9.1 and is
    useful for Python virtual environments.
 
-In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will be used instead. In that case, the following configuration file
-will be tried first for *groups.conf*::
+If the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined, it replaces
+``/etc/clustershell`` in the configuration file search path: the following
+configuration file is used instead of ``/etc/clustershell/groups.conf`` (it
+takes precedence over the files installed under `sys.prefix`_ and
+``$HOME/.local``, and is only overridden by the per-user *groups.conf*), and
+the ``$CFGDIR`` entries of *confdir* and *autodir* (see below) are expanded for
+``$CLUSTERSHELL_CFGDIR`` instead of ``/etc/clustershell``::
 
     $CLUSTERSHELL_CFGDIR/groups.conf
 
@@ -904,9 +918,10 @@ one of the following files is found, in priority order::
     {sys.prefix}/etc/clustershell/defaults.conf
     $HOME/.local/etc/clustershell/defaults.conf
 
-In addition, if the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined and
-valid, it will be used instead. In that case, the following configuration file
-will be tried first for ClusterShell defaults::
+If the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined, the following
+configuration file is used instead of ``/etc/clustershell/defaults.conf``; it
+takes precedence over the files installed under `sys.prefix`_ and
+``$HOME/.local``, and is only overridden by the per-user configuration file::
 
     $CLUSTERSHELL_CFGDIR/defaults.conf
 
