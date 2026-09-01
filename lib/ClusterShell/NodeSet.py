@@ -1412,24 +1412,23 @@ class NodeSet(NodeSetBase):
 
     __copy__ = copy # For the copy module
 
-    def _find_groups(self, node, namespace, allgroups):
-        """Find groups of node by namespace."""
-        if allgroups:
-            # find node groups using in-memory allgroups
-            for grp, nodeset in allgroups.items():
-                if node in nodeset:
-                    yield grp
-        else:
-            # find node groups using resolver
-            try:
-                for group in self._resolver.node_groups(node, namespace):
-                    yield group
-            except NodeUtils.GroupSourceQueryFailed as exc:
-                msg = "Group source query failed: %s" % exc
-                raise NodeSetExternalError(msg)
+    def _find_groups(self, node, namespace):
+        """Find groups of node by namespace, using external reverse."""
+        try:
+            for group in self._resolver.node_groups(node, namespace):
+                yield group
+        except NodeUtils.GroupSourceQueryFailed as exc:
+            msg = "Group source query failed: %s" % exc
+            raise NodeSetExternalError(msg)
 
-    def _groups2(self, groupsource=None, autostep=None):
-        """Find node groups this nodeset belongs to. [private]"""
+    def _groups_info(self, groupsource=None, autostep=None):
+        """Find node groups this nodeset belongs to.
+
+        Return a dictionary of the form:
+            group_name => (matching node count, group_nodeset)
+
+        Note: no "@" prefix in group names, unlike groups()
+        """
         if not self._resolver:
             raise NodeSetExternalError("No node group resolver")
         try:
@@ -1454,23 +1453,35 @@ class NodeSet(NodeSetBase):
             try:
                 # use internal reverse: populate allgroups
                 for grp in allgrplist:
-                    nodelist = self._resolver.group_nodes(grp, groupsource)
-                    allgroups[grp] = NodeSet(",".join(nodelist),
-                                             resolver=self._resolver)
+                    allgroups[grp] = self._parser.parse_group(grp, groupsource,
+                                                              autostep)
             except NodeUtils.GroupSourceQueryFailed as exc:
                 # External result inconsistency
                 raise NodeSetExternalError("Unable to map a group " \
                         "previously listed\n\tFailed command: %s" % exc)
 
-        # For each NodeSetBase in self, find its groups.
-        for node in self._iterbase():
-            for grp in self._find_groups(node, groupsource, allgroups):
-                if grp not in groups_info:
-                    nodes = self._parser.parse_group(grp, groupsource, autostep)
-                    groups_info[grp] = (1, nodes)
+        if allgroups:
+            # For each group, count the nodes of self it contains.
+            selflen = len(self)
+            for grp, nodes in allgroups.items():
+                # intersection() copies its left operand: use the smaller one
+                if selflen < len(nodes):
+                    cnt = len(self.intersection(nodes))
                 else:
-                    i, nodes = groups_info[grp]
-                    groups_info[grp] = (i + 1, nodes)
+                    cnt = len(nodes.intersection(self))
+                if cnt > 0:
+                    groups_info[grp] = (cnt, nodes)
+        else:
+            # For each NodeSetBase in self, find its groups.
+            for node in self._iterbase():
+                for grp in self._find_groups(node, groupsource):
+                    if grp not in groups_info:
+                        nodes = self._parser.parse_group(grp, groupsource,
+                                                         autostep)
+                        groups_info[grp] = (1, nodes)
+                    else:
+                        i, nodes = groups_info[grp]
+                        groups_info[grp] = (i + 1, nodes)
         return groups_info
 
     def groups(self, groupsource=None, noprefix=False):
@@ -1482,7 +1493,7 @@ class NodeSet(NodeSetBase):
         Group names are always prefixed with "@". If groupsource is provided,
         they are prefixed with "@groupsource:", unless noprefix is True.
         """
-        groups = self._groups2(groupsource, self._autostep)
+        groups = self._groups_info(groupsource, self._autostep)
         result = {}
         for grp, (_, nsb) in groups.items():
             if groupsource and not noprefix:
@@ -1501,7 +1512,7 @@ class NodeSet(NodeSetBase):
         and return a string that represents this node set (containing these
         potential node groups). When no matching node groups are found, this
         method returns the same result as str()."""
-        groups = self._groups2(groupsource, autostep)
+        groups = self._groups_info(groupsource, autostep)
         if not groups:
             return str(self)
 
