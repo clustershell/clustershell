@@ -28,10 +28,10 @@ the following files is found, in priority order::
     $HOME/.config/clustershell/clush.conf (only if $XDG_CONFIG_HOME is not defined)
     {sys.prefix}/etc/clustershell/clush.conf
     $HOME/.local/etc/clustershell/clush.conf
-    $HOME/.clush.conf (deprecated, for 1.6 compatibility only)
 
 .. note:: The path using `sys.prefix`_ was added in version 1.9.1 and is
-   useful for Python virtual environments.
+   useful for Python virtual environments. The per-user ``$HOME/.clush.conf``
+   file of older versions is no longer read since version 1.9.
 
 If the environment variable ``$CLUSTERSHELL_CFGDIR`` is defined, the following
 configuration file is used instead of ``/etc/clustershell/clush.conf``; it
