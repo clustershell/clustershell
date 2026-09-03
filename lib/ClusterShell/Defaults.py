@@ -34,7 +34,10 @@ except ImportError:
     from ConfigParser import ConfigParser, NoOptionError, NoSectionError
 
 import os
+import shlex
 import sys
+
+from string import Template
 
 
 #
@@ -90,23 +93,42 @@ def _distant_workerclass(defaults):
     return _load_workerclass(defaults.distant_workername)
 
 def config_paths(config_name):
-    """Return default path list for a ClusterShell config file name."""
+    """
+    Return default path list for a ClusterShell config file name, in
+    ascending order of precedence.
+    """
+    # default pip --user config file
+    local = os.path.expanduser('~/.local/etc/clustershell/%s' % config_name)
+    # Python installation prefix (for venv)
+    prefix = os.path.join(sys.prefix, 'etc/clustershell', config_name)
+    # per-user config (XDG Base Directory Specification)
+    xdg = os.path.join(os.environ.get('XDG_CONFIG_HOME',
+                                      os.path.expanduser('~/.config')),
+                       'clustershell', config_name)
 
-    paths = [os.path.join('/etc/clustershell', config_name), # system-wide
-             # default pip --user config file
-             os.path.expanduser('~/.local/etc/clustershell/%s' % config_name),
-             # Python installation prefix (for venv)
-             os.path.join(sys.prefix, 'etc/clustershell', config_name),
-             # per-user config (XDG Base Directory Specification)
-             os.path.join(os.environ.get('XDG_CONFIG_HOME',
-                                         os.path.expanduser('~/.config')),
-                          'clustershell', config_name)]
-
-    # $CLUSTERSHELL_CFGDIR has precedence over any other config paths
+    # $CLUSTERSHELL_CFGDIR replaces /etc/clustershell, above pip installs
     if 'CLUSTERSHELL_CFGDIR' in os.environ:
-        paths.append(os.path.join(os.environ['CLUSTERSHELL_CFGDIR'],
-                                  config_name))
-    return paths
+        cfgdir = os.path.join(os.environ['CLUSTERSHELL_CFGDIR'], config_name)
+        return [local, prefix, cfgdir, xdg]
+
+    system = os.path.join('/etc/clustershell', config_name)
+    return [system, local, prefix, xdg]
+
+def _expand_dirs(dirstr, cfgdir, owner, loaded_dirs):
+    """
+    Yield the directories of a confdir or autodir value with $CFGDIR set to
+    cfgdir, the config directory being scanned, once each thanks to
+    loaded_dirs. Entries without $CFGDIR are yielded only when scanning
+    owner, the config directory of the file defining the option.
+    """
+    for dir_tpl in shlex.split(dirstr):
+        dirpath = Template(dir_tpl).safe_substitute(CFGDIR=cfgdir)
+        if dirpath == dir_tpl and cfgdir != owner:
+            continue
+        dirpath = os.path.normpath(dirpath)
+        if dirpath not in loaded_dirs:
+            loaded_dirs.add(dirpath)
+            yield dirpath
 
 def _converter_integer_tuple(value):
     """ConfigParser converter for tuple of integers"""

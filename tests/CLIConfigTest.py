@@ -323,14 +323,18 @@ class CLIClushConfigTest(unittest.TestCase):
         """test CLI.Config.ClushConfig (CLUSTERSHELL_CFGDIR global custom config)
         """
 
-        # Save existing environment variable, if it's defined
+        # Save existing environment variables, if defined
         custom_config_save = os.environ.get('CLUSTERSHELL_CFGDIR')
+        xdg_config_home_save = os.environ.get('XDG_CONFIG_HOME')
 
         # Create fake CLUSTERSHELL_CFGDIR
         custom_cfg_dir = make_temp_dir()
+        # Create empty XDG_CONFIG_HOME, as user config takes precedence
+        xdg_dir = make_temp_dir()
 
         try:
             os.environ['CLUSTERSHELL_CFGDIR'] = custom_cfg_dir.name
+            os.environ['XDG_CONFIG_HOME'] = xdg_dir.name
 
             cfgfile = open(os.path.join(custom_cfg_dir.name, 'clush.conf'), 'w')
             cfgfile.write(dedent("""
@@ -368,8 +372,82 @@ class CLIClushConfigTest(unittest.TestCase):
                 os.environ['CLUSTERSHELL_CFGDIR'] = custom_config_save
             else:
                 del os.environ['CLUSTERSHELL_CFGDIR']
+            if xdg_config_home_save:
+                os.environ['XDG_CONFIG_HOME'] = xdg_config_home_save
+            else:
+                del os.environ['XDG_CONFIG_HOME']
+            xdg_dir.cleanup()
             custom_cfg_dir.cleanup()
 
+
+    def testClushConfigCFGDIRConfDirDropins(self):
+        """test CLI.Config.ClushConfig (clush.conf.d in all config dirs)"""
+
+        # Save existing environment variables, if defined
+        custom_config_save = os.environ.get('CLUSTERSHELL_CFGDIR')
+        xdg_config_home_save = os.environ.get('XDG_CONFIG_HOME')
+
+        # Create fake CLUSTERSHELL_CFGDIR and XDG_CONFIG_HOME
+        custom_cfg_dir = make_temp_dir()
+        xdg_dir = make_temp_dir()
+
+        site_confdir = os.path.join(custom_cfg_dir.name, 'clush.conf.d')
+        os.mkdir(site_confdir)
+        user_confdir = os.path.join(xdg_dir.name, 'clustershell',
+                                    'clush.conf.d')
+        os.makedirs(user_confdir)
+
+        try:
+            os.environ['CLUSTERSHELL_CFGDIR'] = custom_cfg_dir.name
+            os.environ['XDG_CONFIG_HOME'] = xdg_dir.name
+
+            cfgfile = open(os.path.join(custom_cfg_dir.name, 'clush.conf'),
+                           'w')
+            cfgfile.write(dedent("""
+                [Main]
+                fanout: 42
+                confdir: $CFGDIR/clush.conf.d
+                """))
+            cfgfile.flush()
+            # site drop-in, read even though other config dirs exist
+            sitefile = open(os.path.join(site_confdir, 'site.conf'), 'w')
+            sitefile.write(dedent("""
+                [Main]
+                command_timeout: 77
+                """))
+            sitefile.flush()
+            # user drop-in, read without any user clush.conf
+            userfile = open(os.path.join(user_confdir, 'sudo.conf'), 'w')
+            userfile.write(dedent("""
+                [mode:sudo]
+                password_prompt: yes
+                """))
+            userfile.flush()
+
+            parser = OptionParser("dummy")
+            parser.install_clush_config_options()
+            parser.install_display_options(verbose_options=True)
+            parser.install_connector_options()
+            options, _ = parser.parse_args([])
+            config = ClushConfig(options) # filename=None to use defaults!
+            self.assertEqual(config.fanout, 42)
+            self.assertEqual(config.command_timeout, 77)
+            self.assertIn('sudo', set(config.modes()))
+            userfile.close()
+            sitefile.close()
+            cfgfile.close()
+
+        finally:
+            if custom_config_save:
+                os.environ['CLUSTERSHELL_CFGDIR'] = custom_config_save
+            else:
+                del os.environ['CLUSTERSHELL_CFGDIR']
+            if xdg_config_home_save:
+                os.environ['XDG_CONFIG_HOME'] = xdg_config_home_save
+            else:
+                del os.environ['XDG_CONFIG_HOME']
+            xdg_dir.cleanup()
+            custom_cfg_dir.cleanup()
 
     def testClushConfigUserOverride(self):
         """test CLI.Config.ClushConfig (XDG_CONFIG_HOME user config)"""

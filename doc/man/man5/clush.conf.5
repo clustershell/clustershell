@@ -27,7 +27,7 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-.TH "CLUSH.CONF" 5 "2026-07-16" "1.10.1" "ClusterShell User Manual"
+.TH "CLUSH.CONF" 5 "2026-09-01" "1.10.1" "ClusterShell User Manual"
 .SH NAME
 clush.conf \- Configuration file for clush
 .SH DESCRIPTION
@@ -43,17 +43,18 @@ decreasing order of precedence:
 .IP 1. 3
 command\-line options
 .IP 2. 3
-\fI$CLUSTERSHELL_CFGDIR/clush.conf\fP (only used when $CLUSTERSHELL_CFGDIR
-is defined)
-.IP 3. 3
 user configuration file (\fI$XDG_CONFIG_HOME/clustershell/clush.conf\fP,
 defaults to \fI$HOME/.config/clustershell/clush.conf\fP)
+.IP 3. 3
+\fI$CLUSTERSHELL_CFGDIR/clush.conf\fP (only used when $CLUSTERSHELL_CFGDIR
+is defined, in which case it replaces the system\-wide configuration file)
 .IP 4. 3
 Python virtual environment (\fI{sys.prefix}/etc/clustershell/clush.conf\fP)
 .IP 5. 3
 local pip user installation (\fI$HOME/.local/etc/clustershell/clush.conf\fP)
 .IP 6. 3
-system\-wide configuration file (\fI/etc/clustershell/clush.conf\fP)
+system\-wide configuration file (\fI/etc/clustershell/clush.conf\fP, not read
+when $CLUSTERSHELL_CFGDIR is defined)
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -87,10 +88,14 @@ clush config file settings defined here might be overridden in a run mode.
 Each mode section should have a name prefixed by \(dqmode:\(dq to clearly identify
 a section defining a mode. Duplicate modes are not allowed in those files.
 Configuration files that are not readable by the current user are ignored.
-The variable \fI$CFGDIR\fP is replaced by the path of the highest priority
-configuration directory found (where clush.conf resides). The default confdir
-value enables both system\-wide and any installed user configuration (thanks
-to \fI$CFGDIR\fP). Duplicate directory paths are ignored.
+Entries containing the variable \fI$CFGDIR\fP are expanded once for each
+directory of the configuration file search path (see Locations above), from
+the lowest to the highest priority, so a user configuration directory is
+scanned even when it does not contain a clush.conf file (since version 1.11).
+Entries without \fI$CFGDIR\fP are scanned along with the configuration directory
+of the file defining the option, and each directory is scanned only once. The
+default confdir value enables both system\-wide and any installed user
+configuration (thanks to \fI$CFGDIR\fP).
 .TP
 .B connect_timeout
 Timeout in seconds to allow a connection to establish. This parameter is

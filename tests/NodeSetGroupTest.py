@@ -1090,6 +1090,362 @@ class NodeSetGroupTest(unittest.TestCase):
         self.assertEqual(str(NodeSet("@%s" % tmpgroup, resolver=res)),
                          "example[1-100]")
 
+    def testConfigCFGDIRDropinsWithoutUserConf(self):
+        """test $CFGDIR confdir without groups.conf in that directory"""
+        tdir1 = make_temp_dir()  # system config dir
+        tdir2 = make_temp_dir()  # user config dir, without groups.conf
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: local
+            confdir: $CFGDIR/groups.conf.d
+
+            [local]
+            map: echo example[1-100]
+            list: echo foo
+            """).encode('ascii'), dir=tdir1.name)
+        fs = make_temp_file(dedent("""
+            [usersrc]
+            map: echo usernode[1-10]
+            list: echo bar
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f.name, os.path.join(tdir2.name,
+                                                            "groups.conf")])
+            self.assertEqual(sorted(res.sources()), ["local", "usersrc"])
+            self.assertEqual(str(NodeSet("@usersrc:bar", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            fs.close()
+            f.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigCFGDIRDropinOverride(self):
+        """test $CFGDIR confdir override by higher priority config dir"""
+        tdir1 = make_temp_dir()
+        confdir1 = os.path.join(tdir1.name, "groups.conf.d")
+        os.mkdir(confdir1)
+        tdir2 = make_temp_dir()
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            """).encode('ascii'), dir=tdir1.name)
+        fs1 = make_temp_file(dedent("""
+            [foo]
+            map: echo sysnode[1-10]
+            list: echo sys
+            """).encode('ascii'), suffix=".conf", dir=confdir1)
+        fs2 = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f.name, os.path.join(tdir2.name,
+                                                            "groups.conf")])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["user"])
+            self.assertEqual(str(NodeSet("@user", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            fs2.close()
+            fs1.close()
+            f.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigDropinOverridesMain(self):
+        """test confdir definitions override groups.conf sections"""
+        tdir = make_temp_dir()
+        confdir = os.path.join(tdir.name, "groups.conf.d")
+        os.mkdir(confdir)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+
+            [foo]
+            map: echo mainnode[1-10]
+            list: echo main
+            """).encode('ascii'), dir=tdir.name)
+        fs = make_temp_file(dedent("""
+            [foo]
+            map: echo dropinnode[1-10]
+            list: echo dropin
+            """).encode('ascii'), suffix=".conf", dir=confdir)
+        try:
+            res = GroupResolverConfig(f.name)
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["dropin"])
+            self.assertEqual(str(NodeSet("@dropin", resolver=res)),
+                             "dropinnode[1-10]")
+        finally:
+            fs.close()
+            f.close()
+            tdir.cleanup()
+
+    def testConfigCFGDIRDedup(self):
+        """test $CFGDIR confdir expansion loads each directory only once"""
+        tdir = make_temp_dir()
+        confdir = os.path.join(tdir.name, "groups.conf.d")
+        os.mkdir(confdir)
+        # the literal path and the $CFGDIR expansion resolve to the same dir
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: %s $CFGDIR/groups.conf.d
+            """ % confdir).encode('ascii'), dir=tdir.name)
+        fs = make_temp_file(dedent("""
+            [foo]
+            map: echo example[1-10]
+            list: echo bar
+            """).encode('ascii'), suffix=".conf", dir=confdir)
+        try:
+            # also list the same config dir twice in the search path
+            res = GroupResolverConfig([f.name, f.name])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["bar"])
+        finally:
+            fs.close()
+            f.close()
+            tdir.cleanup()
+
+    def testConfigCFGDIREmptyUserConf(self):
+        """test $CFGDIR confdir with an empty user groups.conf"""
+        tdir1 = make_temp_dir()
+        tdir2 = make_temp_dir()
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: local
+            confdir: $CFGDIR/groups.conf.d
+
+            [local]
+            map: echo example[1-100]
+            list: echo foo
+            """).encode('ascii'), dir=tdir1.name)
+        f2 = make_temp_file(b"", dir=tdir2.name)
+        fs = make_temp_file(dedent("""
+            [usersrc]
+            map: echo usernode[1-10]
+            list: echo bar
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f1.name, f2.name])
+            self.assertEqual(sorted(res.sources()), ["local", "usersrc"])
+            self.assertEqual(str(NodeSet("@usersrc:bar", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            fs.close()
+            f2.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigUserMainOverridesSystemDropin(self):
+        """test user groups.conf section overrides lower priority drop-in"""
+        tdir1 = make_temp_dir()  # system config dir
+        confdir1 = os.path.join(tdir1.name, "groups.conf.d")
+        os.mkdir(confdir1)
+        tdir2 = make_temp_dir()  # user config dir
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            """).encode('ascii'), dir=tdir1.name)
+        fs1 = make_temp_file(dedent("""
+            [foo]
+            map: echo sysnode[1-10]
+            list: echo sys
+            """).encode('ascii'), suffix=".conf", dir=confdir1)
+        f2 = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), dir=tdir2.name)
+        try:
+            res = GroupResolverConfig([f1.name, f2.name])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["user"])
+            self.assertEqual(str(NodeSet("@user", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            f2.close()
+            fs1.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigUserDropinOverridesSystemMain(self):
+        """test user drop-in overrides lower priority groups.conf section"""
+        tdir1 = make_temp_dir()  # system config dir
+        tdir2 = make_temp_dir()  # user config dir, without groups.conf
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+
+            [foo]
+            map: echo sysnode[1-10]
+            list: echo sys
+            """).encode('ascii'), dir=tdir1.name)
+        fs2 = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f1.name, os.path.join(tdir2.name,
+                                                             "groups.conf")])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["user"])
+            self.assertEqual(str(NodeSet("@user", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            fs2.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigCFGDIRSectionOrigin(self):
+        """test upcall $CFGDIR is the directory of the defining groups.conf"""
+        tdir1 = make_temp_dir()
+        tdir2 = make_temp_dir()
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: sys
+
+            [sys]
+            map: echo example[1-10]
+            list: basename $CFGDIR
+            """).encode('ascii'), dir=tdir1.name)
+        f2 = make_temp_file(dedent("""
+            [user]
+            map: echo example[1-10]
+            list: basename $CFGDIR
+            """).encode('ascii'), dir=tdir2.name)
+        try:
+            res = GroupResolverConfig([f1.name, f2.name])
+            self.assertEqual(res.grouplist("sys"),
+                             [os.path.basename(tdir1.name)])
+            self.assertEqual(res.grouplist("user"),
+                             [os.path.basename(tdir2.name)])
+        finally:
+            f2.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def testConfigLiteralConfdirScannedOnce(self):
+        """test confdir entry without $CFGDIR is scanned only once"""
+        tdir0 = make_temp_dir()  # literal confdir
+        tdir1 = make_temp_dir()  # system config dir
+        tdir2 = make_temp_dir()  # user config dir, without groups.conf
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: %s $CFGDIR/groups.conf.d
+            """ % tdir0.name).encode('ascii'), dir=tdir1.name)
+        fs0 = make_temp_file(dedent("""
+            [foo]
+            map: echo litnode[1-10]
+            list: echo literal
+            """).encode('ascii'), suffix=".conf", dir=tdir0.name)
+        fs2 = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f.name, os.path.join(tdir2.name,
+                                                            "groups.conf")])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["user"])
+        finally:
+            fs2.close()
+            fs0.close()
+            f.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+            tdir0.cleanup()
+
+    def testConfigUserLiteralConfdirPriority(self):
+        """test user confdir entry without $CFGDIR gets user priority"""
+        tdir0 = make_temp_dir()  # literal confdir listed by the user
+        tdir1 = make_temp_dir()  # system config dir
+        confdir1 = os.path.join(tdir1.name, "groups.conf.d")
+        os.mkdir(confdir1)
+        tdir2 = make_temp_dir()  # user config dir
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            """).encode('ascii'), dir=tdir1.name)
+        fs1 = make_temp_file(dedent("""
+            [foo]
+            map: echo sysnode[1-10]
+            list: echo sys
+            """).encode('ascii'), suffix=".conf", dir=confdir1)
+        f2 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: %s $CFGDIR/groups.conf.d
+            """ % tdir0.name).encode('ascii'), dir=tdir2.name)
+        fs0 = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), suffix=".conf", dir=tdir0.name)
+        try:
+            res = GroupResolverConfig([f1.name, f2.name])
+            self.assertEqual(res.grouplist(), ["user"])
+        finally:
+            fs0.close()
+            f2.close()
+            fs1.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+            tdir0.cleanup()
+
+    def testConfigConfdirNotADirectoryIgnored(self):
+        """test confdir $CFGDIR expansion to a file in another config dir"""
+        tdir1 = make_temp_dir()  # system config dir
+        confdir1 = os.path.join(tdir1.name, "groups.conf.d")
+        os.mkdir(confdir1)
+        tdir2 = make_temp_dir()  # user config dir with a stray file
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            """).encode('ascii'), dir=tdir1.name)
+        fs1 = make_temp_file(dedent("""
+            [foo]
+            map: echo sysnode[1-10]
+            list: echo sys
+            """).encode('ascii'), suffix=".conf", dir=confdir1)
+        stray = os.path.join(tdir2.name, "groups.conf.d")
+        open(stray, "w").close()
+        try:
+            res = GroupResolverConfig([f1.name, os.path.join(tdir2.name,
+                                                             "groups.conf")])
+            self.assertEqual(res.grouplist(), ["sys"])
+        finally:
+            fs1.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
     def test_fromall_grouplist(self):
         """test NodeSet.fromall() without all upcall"""
         # Group Source that has no all upcall and that can handle special char
@@ -2278,4 +2634,143 @@ class GroupResolverYAMLTest(unittest.TestCase):
         finally:
             yamlfile.close()
             tdir.cleanup()
+
+    def test_yaml_cfgdir_without_user_conf(self):
+        """test $CFGDIR autodir without groups.conf in that directory"""
+        tdir1 = make_temp_dir()  # system config dir
+        tdir2 = make_temp_dir()  # user config dir, without groups.conf
+        autodir2 = os.path.join(tdir2.name, "groups.d")
+        os.mkdir(autodir2)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: local
+            autodir: $CFGDIR/groups.d
+
+            [local]
+            map: echo example[1-100]
+            list: echo foo
+            """).encode('ascii'), dir=tdir1.name)
+        yamlfile = make_temp_file(dedent("""
+            usersrc:
+                bar: usernode[1-10]
+            """).encode('ascii'), suffix=".yaml", dir=autodir2)
+        try:
+            res = GroupResolverConfig([f.name, os.path.join(tdir2.name,
+                                                            "groups.conf")])
+            self.assertEqual(sorted(res.sources()), ["local", "usersrc"])
+            self.assertEqual(str(NodeSet("@usersrc:bar", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            yamlfile.close()
+            f.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def test_yaml_overrides_confdir(self):
+        """test autodir group source overrides confdir definition"""
+        tdir = make_temp_dir()
+        confdir = os.path.join(tdir.name, "groups.conf.d")
+        os.mkdir(confdir)
+        autodir = os.path.join(tdir.name, "groups.d")
+        os.mkdir(autodir)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            autodir: $CFGDIR/groups.d
+            """).encode('ascii'), dir=tdir.name)
+        fs = make_temp_file(dedent("""
+            [foo]
+            map: echo confnode[1-10]
+            list: echo conf
+            """).encode('ascii'), suffix=".conf", dir=confdir)
+        yamlfile = make_temp_file(dedent("""
+            foo:
+                yaml: yamlnode[1-10]
+            """).encode('ascii'), suffix=".yaml", dir=autodir)
+        try:
+            res = GroupResolverConfig(f.name)
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["yaml"])
+            self.assertEqual(str(NodeSet("@yaml", resolver=res)),
+                             "yamlnode[1-10]")
+        finally:
+            yamlfile.close()
+            fs.close()
+            f.close()
+            tdir.cleanup()
+
+    def test_yaml_confdir_interleave(self):
+        """test higher priority confdir source overrides autodir source"""
+        tdir1 = make_temp_dir()  # system config dir
+        autodir1 = os.path.join(tdir1.name, "groups.d")
+        os.mkdir(autodir1)
+        tdir2 = make_temp_dir()  # user config dir, without groups.conf
+        confdir2 = os.path.join(tdir2.name, "groups.conf.d")
+        os.mkdir(confdir2)
+        f = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            confdir: $CFGDIR/groups.conf.d
+            autodir: $CFGDIR/groups.d
+            """).encode('ascii'), dir=tdir1.name)
+        yamlfile = make_temp_file(dedent("""
+            foo:
+                sys: sysnode[1-10]
+            """).encode('ascii'), suffix=".yaml", dir=autodir1)
+        fs = make_temp_file(dedent("""
+            [foo]
+            map: echo usernode[1-10]
+            list: echo user
+            """).encode('ascii'), suffix=".conf", dir=confdir2)
+        try:
+            res = GroupResolverConfig([f.name, os.path.join(tdir2.name,
+                                                            "groups.conf")])
+            self.assertEqual(res.sources(), ["foo"])
+            self.assertEqual(res.grouplist(), ["user"])
+            self.assertEqual(str(NodeSet("@user", resolver=res)),
+                             "usernode[1-10]")
+        finally:
+            fs.close()
+            yamlfile.close()
+            f.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+
+    def test_yaml_literal_autodir_priority(self):
+        """test user autodir entry without $CFGDIR gets user priority"""
+        tdir0 = make_temp_dir()  # literal autodir listed by the user
+        tdir1 = make_temp_dir()  # system config dir
+        autodir1 = os.path.join(tdir1.name, "groups.d")
+        os.mkdir(autodir1)
+        tdir2 = make_temp_dir()  # user config dir
+        f1 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            autodir: $CFGDIR/groups.d
+            """).encode('ascii'), dir=tdir1.name)
+        yaml1 = make_temp_file(dedent("""
+            foo:
+                sys: sysnode[1-10]
+            """).encode('ascii'), suffix=".yaml", dir=autodir1)
+        f2 = make_temp_file(dedent("""
+            [Main]
+            default: foo
+            autodir: %s $CFGDIR/groups.d
+            """ % tdir0.name).encode('ascii'), dir=tdir2.name)
+        yaml0 = make_temp_file(dedent("""
+            foo:
+                user: usernode[1-10]
+            """).encode('ascii'), suffix=".yaml", dir=tdir0.name)
+        try:
+            res = GroupResolverConfig([f1.name, f2.name])
+            self.assertEqual(res.grouplist(), ["user"])
+        finally:
+            yaml0.close()
+            f2.close()
+            yaml1.close()
+            f1.close()
+            tdir2.cleanup()
+            tdir1.cleanup()
+            tdir0.cleanup()
 

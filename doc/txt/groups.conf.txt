@@ -7,7 +7,7 @@ Configuration file for ClusterShell node groups
 -----------------------------------------------
 
 :Author: Stephane Thiell
-:Date:   2026-07-16
+:Date:   2026-09-01
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 :Version: 1.10.1
 :Manual section: 5
@@ -20,20 +20,22 @@ DESCRIPTION
 The ClusterShell library obtains its node groups configuration from the
 following sources, in decreasing order of precedence:
 
- 1. *$CLUSTERSHELL_CFGDIR/groups.conf* (only used when $CLUSTERSHELL_CFGDIR
-    is defined)
- 2. user configuration file (*$XDG_CONFIG_HOME/clustershell/groups.conf*,
+ 1. user configuration file (*$XDG_CONFIG_HOME/clustershell/groups.conf*,
     defaults to *$HOME/.config/clustershell/groups.conf*)
+ 2. *$CLUSTERSHELL_CFGDIR/groups.conf* (only used when $CLUSTERSHELL_CFGDIR
+    is defined, in which case it replaces the system-wide configuration file)
  3. Python virtual environment (*{sys.prefix}/etc/clustershell/groups.conf*)
  4. local pip user installation (*$HOME/.local/etc/clustershell/groups.conf*)
- 5. system-wide configuration file (*/etc/clustershell/groups.conf*)
+ 5. system-wide configuration file (*/etc/clustershell/groups.conf*, not read
+    when $CLUSTERSHELL_CFGDIR is defined)
 
 For each parameter, the first obtained value will be used. If no *groups.conf*
 is found, group support will be disabled.
 
 Additional configuration files are also read from the directories set by the
-confdir option, if present.  See the ``confdir`` option below for further
-details.
+confdir option, if present.  The directories of the files listed above form the
+configuration file search path, whether they actually contain a *groups.conf*
+file or not.  See the ``confdir`` option below for further details.
 
 Configuration files have a format in the style of RFC 822 potentially composed
 of several sections which may be present in any order. There are two types of
@@ -62,26 +64,41 @@ confdir
   **.conf** files which define group sources to use. Each file in these
   directories with the .conf suffix should contain one or more *Group_source*
   sections as documented in [*Group_source*] options below. These will be merged
-  with the group sources defined in */etc/clustershell/groups.conf* to form the
-  complete set of group sources that ClusterShell will use. Duplicate
-  *Group_source* sections are not allowed.  Note: .conf files that are not
-  readable by the current user are ignored (except the one that defines the
-  default group source). The variable *$CFGDIR* is replaced by the path of the
-  highest priority configuration directory found (where groups.conf resides).
-  The default confdir value enables both system-wide and any installed user
-  configuration (thanks to *$CFGDIR*). Duplicate directory paths are ignored.
-  ``groupsdir`` is accepted as an alias for ``confdir`` and takes precedence
-  when both are defined.
+  with the group sources defined in *groups.conf* to form the complete set of
+  group sources that ClusterShell will use. Entries containing the variable
+  *$CFGDIR* are expanded once for each directory of the configuration file
+  search path (see DESCRIPTION above), so a user configuration directory is
+  scanned even when it does not contain a *groups.conf* file (since version
+  1.11). Configuration directories are scanned from the lowest to the highest
+  priority and, for each of them, group sources are loaded from its
+  *groups.conf* sections first, then from its confdir entries and finally from
+  its autodir entries. When the same group source name is defined several
+  times, the definition loaded last is used: a user drop-in file thus overrides
+  a system-wide group source of the same name, and drop-in files override the
+  *groups.conf* sections of the same directory (a *Group_source* section found
+  in several *groups.conf* files belongs to the highest priority one).
+  Duplicate *Group_source* sections within the same directory are not allowed.
+  Entries without *$CFGDIR* are scanned along with the configuration directory
+  of the file defining the option, and each directory is scanned only once, the
+  first time it appears.  Note: .conf files that are not readable by the
+  current user are ignored (except the one that defines the default group
+  source). The default confdir value enables both system-wide and any installed
+  user configuration (thanks to *$CFGDIR*). ``groupsdir`` is accepted as an
+  alias for ``confdir`` and takes precedence when both are defined.
 
 autodir
   Optional list of directories where the ClusterShell library should look for
   **.yaml** files that define in-file group dictionaries. No need to call
   external commands for these files, they are parsed by the ClusterShell library
-  itself.  Multiple group source definitions in the same file are supported. The
-  variable *$CFGDIR* is replaced by the path of the highest priority
-  configuration directory found (where groups.conf resides). The default
-  autodir value enables both system-wide and any installed user configuration
-  (thanks to *$CFGDIR*). Duplicate directory paths are ignored.
+  itself.  Multiple group source definitions in the same file are supported.
+  Entries containing the variable *$CFGDIR* are expanded once for each directory
+  of the configuration file search path, and group sources are loaded in the
+  order described for ``confdir`` above: within a configuration directory,
+  group sources found in autodir take precedence over those found in confdir
+  and over the *groups.conf* sections, while any group source found in a higher
+  priority configuration directory takes precedence over all of them (since
+  version 1.11). The default autodir value enables both system-wide and any
+  installed user configuration (thanks to *$CFGDIR*).
 
 
 [*Group_source*] OPTIONS
@@ -137,7 +154,10 @@ In addition to context-dependent $GROUP and $NODE variables described above, the
 two following variables are always available and also replaced before executing
 shell commands:
 
-* *$CFGDIR* is replaced by groups.conf highest priority base directory path
+* *$CFGDIR* is replaced by the directory of the configuration file the group
+  source is defined in: a ``confdir`` directory for a group source defined in a
+  **.conf** file, or the base directory of the (highest priority) *groups.conf*
+  file defining its section otherwise
 * *$SOURCE* is replaced by current source name
 
 Each external command might return a non-zero return code when the operation
@@ -171,8 +191,8 @@ Simple configuration file for local groups and Slurm partitions binding.
 
 | [Main]
 | default: local
-| confdir: /etc/clustershell/groups.conf.d $CFGDIR/groups.conf.d
-| autodir: /etc/clustershell/groups.d $CFGDIR/groups.d
+| confdir: $CFGDIR/groups.conf.d
+| autodir: $CFGDIR/groups.d
 |
 | [local]
 | map: sed -n 's/^$GROUP:\\(.*\\)/\\1/p' /etc/clustershell/groups
@@ -202,6 +222,15 @@ FILES
 *$XDG_CONFIG_HOME/clustershell/groups.conf*
   Main user groups.conf configuration file. If $XDG_CONFIG_HOME is not defined,
   *$HOME/.config/clustershell/groups.conf* is used instead.
+
+*$XDG_CONFIG_HOME/clustershell/groups.conf.d/*
+  User directory for additional configuration files. Since version 1.11, it is
+  scanned even when there is no user *groups.conf* file.
+
+*$XDG_CONFIG_HOME/clustershell/groups.d/*
+  User directory for *autodir*, where native group definition files (.yaml
+  files) are found. Since version 1.11, it is scanned even when there is no
+  user *groups.conf* file.
 
 *{sys.prefix}/etc/clustershell/groups.conf*
   Configuration file when ClusterShell is installed in a Python virtual
