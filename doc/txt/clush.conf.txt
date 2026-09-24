@@ -7,7 +7,7 @@ Configuration file for `clush`
 ------------------------------
 
 :Author: Stephane Thiell
-:Date:   2026-07-16
+:Date:   2026-09-01
 :Copyright: GNU Lesser General Public License version 2.1 or later (LGPLv2.1+)
 :Version: 1.10.1
 :Manual section: 5
@@ -26,13 +26,14 @@ Locations
 decreasing order of precedence:
 
  1. command-line options
- 2. *$CLUSTERSHELL_CFGDIR/clush.conf* (only used when $CLUSTERSHELL_CFGDIR
-    is defined)
- 3. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*,
+ 2. user configuration file (*$XDG_CONFIG_HOME/clustershell/clush.conf*,
     defaults to *$HOME/.config/clustershell/clush.conf*)
+ 3. *$CLUSTERSHELL_CFGDIR/clush.conf* (only used when $CLUSTERSHELL_CFGDIR
+    is defined, in which case it replaces the system-wide configuration file)
  4. Python virtual environment (*{sys.prefix}/etc/clustershell/clush.conf*)
  5. local pip user installation (*$HOME/.local/etc/clustershell/clush.conf*)
- 6. system-wide configuration file (*/etc/clustershell/clush.conf*)
+ 6. system-wide configuration file (*/etc/clustershell/clush.conf*, not read
+    when $CLUSTERSHELL_CFGDIR is defined)
 
 For each parameter, the first obtained value will be used.
 
@@ -61,10 +62,14 @@ confdir
   Each mode section should have a name prefixed by "mode:" to clearly identify
   a section defining a mode. Duplicate modes are not allowed in those files.
   Configuration files that are not readable by the current user are ignored.
-  The variable `$CFGDIR` is replaced by the path of the highest priority
-  configuration directory found (where clush.conf resides). The default confdir
-  value enables both system-wide and any installed user configuration (thanks
-  to `$CFGDIR`). Duplicate directory paths are ignored.
+  Entries containing the variable `$CFGDIR` are expanded once for each
+  directory of the configuration file search path (see Locations above), from
+  the lowest to the highest priority, so a user configuration directory is
+  scanned even when it does not contain a clush.conf file (since version 1.11).
+  Entries without `$CFGDIR` are scanned along with the configuration directory
+  of the file defining the option, and each directory is scanned only once. The
+  default confdir value enables both system-wide and any installed user
+  configuration (thanks to `$CFGDIR`).
 connect_timeout
   Timeout in seconds to allow a connection to establish. This parameter is
   passed to ssh. If set to *0*, no timeout occurs.

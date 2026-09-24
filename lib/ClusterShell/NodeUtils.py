@@ -40,7 +40,6 @@ from functools import wraps
 import glob
 import logging
 import os
-import shlex
 import time
 import warnings
 
@@ -58,6 +57,8 @@ try:
     basestring
 except NameError:
     basestring = str
+
+from ClusterShell.Defaults import _expand_dirs
 
 
 LOGGER = logging.getLogger(__name__)
@@ -631,77 +632,109 @@ class GroupResolverConfig(GroupResolver):
 
         self.filenames = filenames
         self.config = None
+        self._origins = {}
 
     def _late_init(self):
         """
-        Initialize object when needed. Only the first accessible config
-        filename is loaded.
+        Initialize object when needed. All accessible config filenames are
+        merged, the last one having the highest priority.
         """
         GroupResolver._late_init(self)
 
         # support single or multiple config filenames
+        if isinstance(self.filenames, basestring):
+            filenames = [self.filenames]
+        else:
+            filenames = list(self.filenames)
+
         self.config = ConfigParser()
-        parsed = self.config.read(self.filenames)
+        parsed = self.config.read(filenames)
 
         # check if at least one parsable config file has been found, otherwise
         # continue with an empty self._sources
         if parsed:
-            # for proper $CFGDIR selection, take last parsed configfile only
-            self._parse_config(os.path.dirname(parsed[-1]))
+            # config dirs of the search path, even those without groups.conf
+            cfgdirs = []
+            for filename in filenames:
+                cfgdir = os.path.dirname(filename)
+                if cfgdir not in cfgdirs:
+                    cfgdirs.append(cfgdir)
 
-    def _parse_config(self, cfg_dirname):
-        """parse config using relative dir cfg_dirname"""
-        # parse Main.confdir
-        try:
-            if self.config.has_option(self.SECTION_MAIN, 'groupsdir'):
-                opt_confdir = 'groupsdir'
-            else:
-                opt_confdir = 'confdir'
+            # sections and dir options belong to the last file defining them
+            section_dirs = {}
+            option_dirs = {}
+            for filename in parsed:
+                filecfg = ConfigParser()
+                filecfg.read(filename)
+                for section in filecfg.sections():
+                    section_dirs[section] = os.path.dirname(filename)
+                for opt in ('groupsdir', 'confdir', 'autodir'):
+                    if filecfg.has_option(self.SECTION_MAIN, opt):
+                        option_dirs[opt] = os.path.dirname(filename)
 
-            # keep track of loaded confdirs
-            loaded_confdirs = set()
+            # sections missed by the re-parse fall back to lowest priority
+            for section in self.config.sections():
+                section_dirs.setdefault(section, cfgdirs[0])
 
-            confdirstr = self.config.get(self.SECTION_MAIN, opt_confdir)
-            for confdir in shlex.split(confdirstr):
-                # substitute $CFGDIR, set to the highest priority clustershell
-                # configuration directory that has been found
-                confdir = Template(confdir).safe_substitute(CFGDIR=cfg_dirname)
-                confdir = os.path.normpath(confdir)
-                if confdir in loaded_confdirs:
-                    continue # load each confdir only once
-                loaded_confdirs.add(confdir)
+            self._parse_config(cfgdirs, section_dirs, option_dirs)
+
+    def _parse_config(self, cfgdirs, section_dirs, option_dirs):
+        """
+        Load group sources from parsed config. Config directories cfgdirs
+        are scanned in ascending priority: for each of them, the groups.conf
+        sections it defines (per section_dirs), then its confdir entries and
+        finally its autodir entries (both owned per option_dirs).
+        """
+        main = self.SECTION_MAIN
+        confdirstr = autodirstr = ''
+        confdir_owner = autodir_owner = cfgdirs[0]
+        if self.config.has_option(main, 'groupsdir'):
+            confdirstr = self.config.get(main, 'groupsdir')
+            confdir_owner = option_dirs.get('groupsdir', cfgdirs[0])
+        elif self.config.has_option(main, 'confdir'):
+            confdirstr = self.config.get(main, 'confdir')
+            confdir_owner = option_dirs.get('confdir', cfgdirs[0])
+        if self.config.has_option(main, 'autodir'):
+            autodirstr = self.config.get(main, 'autodir')
+            autodir_owner = option_dirs.get('autodir', cfgdirs[0])
+
+        loaded_confdirs = set()
+        loaded_autodirs = set()
+        for cfgdir in cfgdirs:
+            # add sources declared directly in groups.conf
+            sections = [section for section in self.config.sections()
+                        if section_dirs.get(section) == cfgdir]
+            self._sources_from_cfg(self.config, cfgdir, sections)
+
+            for confdir in _expand_dirs(confdirstr, cfgdir, confdir_owner,
+                                        loaded_confdirs):
                 if not os.path.isdir(confdir):
-                    if not os.path.exists(confdir):
-                        continue
-                    raise GroupResolverConfigError("Defined confdir %s is not"
-                                                   " a directory" % confdir)
+                    # only the defining config directory is strictly checked
+                    if os.path.exists(confdir):
+                        if cfgdir == confdir_owner:
+                            raise GroupResolverConfigError(
+                                "Defined confdir %s is not a directory"
+                                % confdir)
+                        LOGGER.debug("ignoring confdir %s: not a directory",
+                                     confdir)
+                    continue
                 # add sources declared in groups.conf.d file parts
                 for groupsfn in sorted(glob.glob('%s/*.conf' % confdir)):
                     grpcfg = ConfigParser()
                     grpcfg.read(groupsfn) # ignore files that cannot be read
-                    self._sources_from_cfg(grpcfg, confdir)
-        except (NoSectionError, NoOptionError):
-            pass
+                    self._sources_from_cfg(grpcfg, confdir, grpcfg.sections())
 
-        # parse Main.autodir
-        try:
-            # keep track of loaded autodirs
-            loaded_autodirs = set()
-
-            autodirstr = self.config.get(self.SECTION_MAIN, 'autodir')
-            for autodir in shlex.split(autodirstr):
-                # substitute $CFGDIR, set to the highest priority clustershell
-                # configuration directory that has been found
-                autodir = Template(autodir).safe_substitute(CFGDIR=cfg_dirname)
-                autodir = os.path.normpath(autodir)
-                if autodir in loaded_autodirs:
-                    continue # load each autodir only once
-                loaded_autodirs.add(autodir)
+            for autodir in _expand_dirs(autodirstr, cfgdir, autodir_owner,
+                                        loaded_autodirs):
                 if not os.path.isdir(autodir):
-                    if not os.path.exists(autodir):
-                        continue
-                    raise GroupResolverConfigError("Defined autodir %s is not"
-                                                   " a directory" % autodir)
+                    if os.path.exists(autodir):
+                        if cfgdir == autodir_owner:
+                            raise GroupResolverConfigError(
+                                "Defined autodir %s is not a directory"
+                                % autodir)
+                        LOGGER.debug("ignoring autodir %s: not a directory",
+                                     autodir)
+                    continue
                 # add auto sources declared in groups.d YAML files
                 for autosfn in sorted(glob.glob('%s/*.yaml' % autodir)):
                     try:
@@ -712,15 +745,10 @@ class GroupResolverConfig(GroupResolver):
                             # ignore YAML files that we don't have access to
                             LOGGER.debug(exc)
                             continue
-        except (NoSectionError, NoOptionError):
-            pass
-
-        # add sources declared directly in groups.conf
-        self._sources_from_cfg(self.config, cfg_dirname)
 
         # parse Main.default
         try:
-            def_sourcename = self.config.get('Main', 'default')
+            def_sourcename = self.config.get(main, 'default')
             # warning: default_source_name is a property
             self.default_source_name = def_sourcename
         except (NoSectionError, NoOptionError):
@@ -728,19 +756,37 @@ class GroupResolverConfig(GroupResolver):
         except GroupResolverSourceError:
             if def_sourcename: # allow empty Main.default
                 fmt = 'Default group source not found: "%s"'
-                raise GroupResolverConfigError(fmt % self.config.get('Main',
-                                                                     'default'))
+                raise GroupResolverConfigError(fmt % def_sourcename)
         # pick random default source if not provided by config
         if not self.default_source_name and self._sources:
             self.default_source_name = list(self._sources)[0]
 
-    def _sources_from_cfg(self, cfg, cfgdir):
+    def _add_config_source(self, group_source, origin):
         """
-        Instantiate as many UpcallGroupSources needed from cfg object,
-        cfgdir (CWD for callbacks) and cfg filename.
+        Add a config-defined GroupSource to this resolver, origin being the
+        directory it has been defined in. A group source defined in a
+        previously scanned directory is overridden, but a name collision
+        within the same directory is an error.
+        """
+        srcname = group_source.name
+        prev_origin = self._origins.get(srcname)
+        if prev_origin == origin:
+            raise GroupResolverConfigError("GroupSource '%s': name collision"
+                                           " in %s" % (srcname, origin))
+        if prev_origin is not None:
+            LOGGER.debug("group source '%s' in %s overrides definition in %s",
+                         srcname, origin, prev_origin)
+        self._origins[srcname] = origin
+        self._sources[srcname] = group_source
+
+    def _sources_from_cfg(self, cfg, cfgdir, sections):
+        """
+        Instantiate as many UpcallGroupSources needed from the sections of
+        cfg object, cfgdir being the directory they are defined in ($CFGDIR
+        for upcalls).
         """
         try:
-            for section in cfg.sections():
+            for section in sections:
                 # Support grouped sections: section1,section2,section3
                 for srcname in section.split(','):
                     if srcname != self.SECTION_MAIN:
@@ -769,14 +815,15 @@ class GroupResolverConfig(GroupResolver):
                             ctime = float(cfg.get(section, 'cache_time',
                                                   raw=True))
                         # add new group source
-                        self.add_source(UpcallGroupSource(
+                        self._add_config_source(UpcallGroupSource(
                             srcname, map_upcall, all_upcall, list_upcall,
                             reverse_upcall, cfgdir, ctime,
-                            mapall_upcall=mapall_upcall))
+                            mapall_upcall=mapall_upcall), cfgdir)
         except (NoSectionError, NoOptionError, ValueError) as exc:
             raise GroupResolverConfigError(str(exc))
 
     def _sources_from_yaml(self, filepath):
         """Load source(s) from YAML file."""
+        autodir = os.path.dirname(filepath)
         for source in YAMLGroupLoader(filepath):
-            self.add_source(source)
+            self._add_config_source(source, autodir)
