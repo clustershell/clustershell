@@ -225,8 +225,11 @@ class UpcallGroupSource(GroupSource):
         """
         cmdline = Template(self.upcalls[cmdtpl]).safe_substitute(args)
         self.logger.debug("EXEC '%s'", cmdline)
+        # also export variables so shell expansions like ${GROUP:-x} work
+        env = dict(os.environ, GROUP='', NODE='')
+        env.update((var, str(value)) for var, value in args.items())
         proc = Popen(cmdline, stdin=DEVNULL, stdout=PIPE, shell=True,
-                     cwd=self.cfgdir, universal_newlines=True)
+                     cwd=self.cfgdir, universal_newlines=True, env=env)
         output = proc.communicate()[0].strip()
         self.logger.debug("READ '%s'", output)
         if proc.returncode != 0:
