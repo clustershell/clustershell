@@ -1,0 +1,22 @@
+{
+    "version": 1,
+    "project": "ClusterShell",
+    "project_url": "https://clustershell.readthedocs.io/",
+    "repo": "..",
+    "branches": ["master"],
+    "dvcs": "git",
+    "environment_type": "virtualenv",
+    // --no-deps: a dependency wheel in the build cache would abort the install (multiple wheels)
+    "build_command": [
+        "python -m pip wheel --no-deps -w {build_cache_dir} {build_dir}"
+    ],
+    // pin the timing runner: its measurement semantics changed between releases
+    "matrix": {
+        "pip+asv_runner": ["0.3.1"]
+    },
+    "show_commit_url": "https://github.com/clustershell/clustershell/commit/",
+    "benchmark_dir": "benchmarks",
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html"
+}

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ClusterShell performance across releases and commits">
+  <title>ClusterShell performance</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="https://github.com/clustershell/clustershell">
+        <span class="brand-mark" aria-hidden="true">CS</span>
+        <span><strong>ClusterShell</strong><small>Performance dashboard</small></span>
+      </a>
+      <nav class="tabs" role="tablist" aria-label="Dashboard views">
+        <button class="tab active" type="button" role="tab" aria-selected="true" data-view="benchmarks">Benchmarks</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" data-view="regressions">Regressions</button>
+      </nav>
+      <a class="asv-link" href="asv/">Standard ASV view</a>
+      <span class="freshness" id="freshness">Loading results…</span>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar" aria-label="Benchmark suite">
+        <p class="sidebar-title">Benchmark suite</p>
+        <div id="benchmark-list"></div>
+      </aside>
+
+      <main class="content">
+        <section id="benchmarks-view" aria-labelledby="benchmark-title">
+          <div class="heading-row">
+            <div>
+              <h1 id="benchmark-title">Loading benchmark data…</h1>
+              <p id="benchmark-subtitle">ASV results will appear here.</p>
+            </div>
+            <div class="selectors">
+              <label>Dataset
+                <select id="series-select" aria-label="Benchmark dataset"></select>
+              </label>
+              <span class="environment" id="environment"></span>
+            </div>
+          </div>
+
+          <figure class="chart-frame" id="chart-frame">
+            <svg id="performance-chart" role="img" aria-labelledby="chart-title chart-description">
+              <title id="chart-title">Performance over time</title>
+              <desc id="chart-description">Benchmark duration by release and commit.</desc>
+            </svg>
+            <div class="tooltip" id="chart-tooltip" role="tooltip"></div>
+          </figure>
+
+          <div class="summary-grid">
+            <section class="panel" aria-labelledby="evolution-title">
+              <h2 id="evolution-title">Evolution from first result</h2>
+              <div class="change-value" id="change-value">—</div>
+              <p class="change-note" id="change-note">Waiting for enough measurements.</p>
+            </section>
+            <section class="panel" aria-labelledby="latest-title">
+              <h2 id="latest-title">Latest measurements</h2>
+              <div class="table-scroll">
+                <table>
+                  <thead><tr><th>Revision</th><th>Duration</th><th>Change</th></tr></thead>
+                  <tbody id="latest-results"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
+          <p class="runner-note">Results from an automated runner. Small variations should be treated as indicative.</p>
+        </section>
+
+        <section id="regressions-view" hidden>
+          <h1>Regressions detected</h1>
+          <p>Consecutive measurements that are at least 10% slower.</p>
+          <div class="regression-table panel">
+            <div class="regression-header"><span>Benchmark</span><span>Change</span><span>Changed At</span></div>
+            <div id="regression-list"></div>
+          </div>
+        </section>
+
+        <div class="error-state" id="error-state" hidden>
+          <strong>Performance data is unavailable.</strong>
+          <span>The ASV view remains available from the link above.</span>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script src="dashboard.js"></script>
+</body>
+</html>
