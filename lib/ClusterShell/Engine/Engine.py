@@ -385,6 +385,7 @@ class Engine(object):
         # keep track of the number of registered clients per worker
         # (this does not include ports)
         self._reg_stats = {}
+        self._nreg = 0  # sum of _reg_stats values
 
         # keep track of registered file descriptors in a dict where keys
         # are fileno and values are (EngineClient, EngineClientStream) tuples
@@ -455,6 +456,7 @@ class Engine(object):
             key = client.worker
         self._reg_stats.setdefault(key, 0)
         self._reg_stats[key] += offset
+        self._nreg += offset
 
     def add(self, client):
         """Add a client to engine."""
@@ -538,7 +540,9 @@ class Engine(object):
         Register an engine client. Subclasses that override this method
         should call base class method.
         """
-        assert client in self._clients or client in self._ports
+        if client not in self._clients and client not in self._ports:
+            # removed by client._start() (e.g. aborted from ev_start)
+            return
         assert not client.registered
 
         self._debug("REG %s (%s)(autoclose=%s)" % \
@@ -696,6 +700,9 @@ class Engine(object):
         fanout_diff = self.info['fanout'] - self._prev_fanout
         if fanout_diff:
             self._prev_fanout = self.info['fanout']
+        elif len(self._clients) == self._nreg:
+            # no pending client to start, avoid scanning the client set
+            return
 
         for client in self._clients:
             if not client.registered and self._can_register(client):

@@ -8,6 +8,7 @@ import unittest
 import warnings
 
 from ClusterShell.Task import *
+from ClusterShell.Worker.Worker import StreamWorker
 from ClusterShell.Event import EventHandler
 from ClusterShell.Worker.Worker import _eh_sigspec_argc
 
@@ -453,6 +454,21 @@ class TaskEventTest(unittest.TestCase):
         task = task_self()
         task.shell("cat", handler=self.__class__.TWriteOnStart())
         self.run_task_and_catch_warnings(task)
+
+    def test_abort_on_ev_start(self):
+        """test worker.abort() on ev_start"""
+        class TAbortOnStart(EventHandler):
+            def ev_start(self, worker):
+                worker.abort()
+
+        class TScheduleOnRead(EventHandler):
+            def ev_read(self, worker, node, sname, msg):
+                worker.task.schedule(StreamWorker(handler=TAbortOnStart()))
+
+        task = task_self()
+        task.shell("echo ok", handler=TScheduleOnRead())
+        self.run_task_and_catch_warnings(task)
+        self.assertEqual(task._engine._nreg, 0)
 
     class LegacyAbortOnReadHandler(EventHandler):
         def ev_read(self, worker):
