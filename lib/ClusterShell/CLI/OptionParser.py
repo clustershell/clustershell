@@ -160,6 +160,8 @@ class OptionParser(optparse.OptionParser):
                 dest="progress", help="show progress during command execution")
             optgrp.add_option("-b", "--dshbak", action="store_true",
                 dest="gather", help="gather nodes with same output")
+            optgrp.add_option("--json", action="store_true", dest="json",
+                help="output results as JSON Lines")
         optgrp.add_option("-B", action="store_true", dest="gatherall",
             default=False, help="like -b but including standard error")
         optgrp.add_option("-r", "--regroup", action="store_true",

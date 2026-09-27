@@ -26,6 +26,7 @@ from __future__ import print_function
 
 import difflib
 import io
+import json
 import sys
 import os
 
@@ -83,9 +84,15 @@ class Display(object):
         # diff implies at least -b
         self.gather = options.gatherall or options.gather or options.diff
         self.progress = getattr(options, 'progress', False) # only in clush
+        self.json = getattr(options, 'json', False)  # only in clush
         # check parameter compatibility
         if options.diff and options.line_mode:
             raise ValueError("diff not supported in line_mode")
+        if self.json and (options.line_mode or options.gatherall or
+                          not options.label or self.progress or options.diff or
+                          options.outdir or options.errdir):
+            raise ValueError("--json not supported with -L, -B, -N, -P, "
+                             "--diff, --outdir or --errdir")
         self.line_mode = options.line_mode
         self.label = options.label
         self.regroup = options.regroup
@@ -248,6 +255,19 @@ class Display(object):
         object settings (used by clubak)."""
         return self._display(self.__class__._KeySet(keys), obj)
 
+    def print_json(self, nodes, rc, stdout, stderr):
+        """Display a result as a JSON object on a single line (rc is None on
+        timeout)."""
+        decode = lambda lines: [line.decode(STRING_ENCODING, errors='replace')
+                                for line in lines]
+        obj = {"nodes": nodes, "rc": rc, "timeout": rc is None,
+               "stdout": decode(stdout), "stderr": decode(stderr)}
+        self.out.write(json.dumps(obj) + '\n')
+
+    def print_json_gather(self, nodeset, rc, stdout, stderr):
+        """Display a gathered result as a JSON object on a single line."""
+        self.print_json(self._format_nodeset(nodeset), rc, stdout, stderr)
+
     def _print_content(self, nodeset, content):
         """Display a dshbak-like header block and content."""
         s = bytes(content).decode(STRING_ENCODING, errors='replace')
@@ -304,7 +324,7 @@ class Display(object):
         """Utility method to print a message if verbose level is high
         enough."""
         if self.verbosity >= level:
-            print(message)
+            print(message, file=sys.stderr if self.json else sys.stdout)
 
     def vprint_err(self, level, message):
         """Utility method to print a message on stderr if verbose level
