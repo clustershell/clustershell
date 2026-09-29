@@ -1,25 +1,68 @@
-ClusterShell Python Library and Tools
-=====================================
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="doc/logo/clustershell-logo-color-light.svg">
+    <img alt="ClusterShell" src="doc/logo/clustershell-logo-color.svg" width="520">
+  </picture>
+</p>
 
-[![HPSF Established](https://raw.githubusercontent.com/hpsfoundation/tac/main/badges/HPSF_Project_Badge_Established.png)](https://hpsf.io)
+<p align="center">
+  <strong>Python library and tools for parallel command execution and node set management on HPC clusters</strong>
+</p>
 
-This project adheres to a [Technical Charter](https://clustershell.readthedocs.io/en/latest/CHARTER.html), which defines its governance model, decision-making process, and long-term vision.
+<p align="center">
+  <a href="https://pypi.org/project/ClusterShell/"><img src="https://img.shields.io/pypi/v/ClusterShell" alt="PyPI"></a>
+  <a href="https://github.com/clustershell/clustershell/actions/workflows/tests.yml"><img src="https://github.com/clustershell/clustershell/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <a href="https://clustershell.readthedocs.io/"><img src="https://readthedocs.org/projects/clustershell/badge/?version=latest" alt="Documentation"></a>
+  <a href="COPYING.LGPLv2.1"><img src="https://img.shields.io/pypi/l/ClusterShell" alt="License"></a>
+</p>
+
+<p align="center">
+  <a href="https://clustershell.readthedocs.io/">Documentation</a> ·
+  <a href="https://clustershell.readthedocs.io/en/latest/install.html">Install</a> ·
+  <a href="#quick-look">Quick look</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
 
 ClusterShell is an event-driven open source Python library designed to run
 local or distant commands in parallel on server farms or on large Linux
-clusters. It is an [HPSF Established](https://hpsf.io) project under
-[LF Europe](https://linuxfoundation.eu/) stewardship.
+clusters.
 
 ClusterShell handles typical HPC cluster administration tasks: operating on
 groups of nodes, executing distributed commands with optimized algorithms,
 gathering and merging output, and collecting return codes. It leverages remote
 shell facilities already present on your systems, such as SSH.
 
-ClusterShell's primary goal is to improve the administration of high-
-performance clusters by providing a lightweight but scalable Python API for
-developers. It also provides clush, clubak and cluset/nodeset, convenient
+ClusterShell's primary goal is to improve the administration of
+high-performance clusters by providing a lightweight but scalable Python API
+for developers. It also provides clush, clubak and cluset/nodeset, convenient
 command-line tools that allow traditional shell scripts to benefit from some
 of the library features.
+
+Quick look
+----------
+
+Run a command on eleven nodes and gather identical results with `clush`:
+
+```console
+$ clush -w linux[4-6,32-39] -b uname -r
+---------------
+linux[32-39] (8)
+---------------
+6.14.9-300.fc42.x86_64
+---------------
+linux[4-6] (3)
+---------------
+5.14.0-570.12.1.el9_6.x86_64
+```
+
+Fold, expand and operate on node sets with `cluset` (or `nodeset`):
+
+```console
+$ cluset -f linux[4-6,32-39] -x linux5
+linux[4,6,32-39]
+$ cluset -e linux[4-6]
+linux4 linux5 linux6
+```
 
 Requirements
 ------------
@@ -135,6 +178,17 @@ Core developers/reviewers
 * Stephane Thiell
 * Aurelien Degremont
 * Dominique Martinet
+
+Governance
+----------
+
+ClusterShell is an [HPSF Established](https://hpsf.io) project under
+[LF Europe](https://linuxfoundation.eu/) stewardship. It adheres to a
+[Technical Charter](https://clustershell.readthedocs.io/en/latest/CHARTER.html), which defines
+its governance model, decision-making process, and long-term vision. See also
+[GOVERNANCE.md](GOVERNANCE.md).
+
+[![HPSF Established](https://raw.githubusercontent.com/hpsfoundation/tac/main/badges/HPSF_Project_Badge_Established.png)](https://hpsf.io)
 
 Acknowledgments
 ---------------

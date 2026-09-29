@@ -19,7 +19,6 @@ include doc/man/man5/*.5
 include doc/sphinx/Makefile
 include doc/sphinx/conf.py
 include doc/sphinx/*.rst
-include doc/sphinx/_static/*.png
 include doc/sphinx/_static/*.css
 include doc/sphinx/tools/*.rst
 include doc/sphinx/guide/*.rst

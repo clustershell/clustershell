@@ -16,3 +16,8 @@
 html.writer-html5 .rst-content table.docutils td > p:not(:last-child) {
     margin-bottom: 12px;
 }
+
+/* the SVG logo has no intrinsic width: let it fill the header, not the link */
+.wy-side-nav-search > a {
+    display: block;
+}
