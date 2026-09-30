@@ -106,6 +106,7 @@ class CLICompletionTest(unittest.TestCase):
         # completion came back empty.
         for line in (("clush", "-b", "-"),
                      ("clush", "--diff", "-"),
+                     ("clush", "--json", "-"),
                      ("clush", "-b", "-w", "node01", "-")):
             reply = self._complete("clush", "_clush", *line)
             self.assertIn("--diff ", reply, "%r -> %r" % (line, reply))
@@ -133,7 +134,8 @@ class CLICompletionTest(unittest.TestCase):
         open(cmd, "w").close()
         os.chmod(cmd, 0o755)
         for line in (("clush", "-b", "-w", "node01", "cs-test-cmd-"),
-                     ("clush", "--diff", "-w", "node01", "cs-test-cmd-")):
+                     ("clush", "--diff", "-w", "node01", "cs-test-cmd-"),
+                     ("clush", "--json", "-w", "node01", "cs-test-cmd-")):
             reply = self._complete("clush", "_clush", *line, pathdir=tmpdir)
             self.assertIn("cs-test-cmd-8f3a1", reply, "%r -> %r" % (line, reply))
 

@@ -166,6 +166,7 @@ Output behavior:
   -N                  disable labeling of command output
   -P, --progress      show progress during command execution; if writing is performed to standard input, the live progress indicator will display the global bandwidth of data written to the target nodes
   -b, --dshbak        display gathered results in a dshbak-like way (note: it will only try to aggregate the output of commands with same return codes)
+  --json              output results as JSON Lines on stdout, see JSON OUTPUT below
   -B                  like -b but including standard error
   -r, --regroup       fold nodeset using node groups
   --axis=RANGESET     for nD nodesets, fold the displayed nodeset (e.g. in gathered output headers) along provided axis only. Axes are indexed from 1 to n and can be specified here either using the rangeset syntax, e.g. '1', '1-2', '1,3', or by a single negative number meaning that the index is counted from the end. Because some nodesets may have several different dimensions, axis indices are silently truncated to fall in the allowed range. This is the per-invocation equivalent of the ``fold_axis`` library default.
@@ -203,6 +204,33 @@ Connection options:
 For a short explanation of these options, see ``-h, --help``.
 
 
+JSON OUTPUT
+===========
+
+With ``--json``, ``clush`` writes results on standard output as JSON Lines
+(one JSON object per line) and nothing else; its own messages go to standard
+error. Each object has the following fields:
+
+:nodes: node name, or folded nodeset with ``-b`` (like the ``-b`` header, see
+        ``-r``, ``-G`` and ``--axis``)
+:rc: command return code, or ``null`` if the command timed out
+:timeout: ``true`` if the command timed out, ``false`` otherwise
+:stdout: list of standard output lines
+:stderr: list of standard error lines
+
+By default, one object is written per node, as soon as the command completes
+on this node; nodes whose command timed out are written last, when all
+commands have completed. With ``-b``, nodes with the same return code, standard output
+and standard error are gathered in one object, and objects are written when
+all commands have completed. In copy mode (``-c`` or ``--rcopy``), one object
+is written per node for all sources, with the largest return code, and ``-b``
+is ignored.
+
+Output lines are decoded as UTF-8 and invalid bytes are replaced with U+FFFD.
+``--json`` cannot be combined with ``-L``, ``-B``, ``-N``, ``-P``, ``--diff``,
+``--outdir``, ``--errdir``, or interactive mode.
+
+
 EXIT STATUS
 ===========
 
@@ -212,8 +240,8 @@ the ``-S`` option is specified, the exit status of ``clush`` is the largest
 value of the remote commands return codes.
 
 For failed remote commands whose exit status is non-zero, and unless the
-combination of options ``-qS`` is specified, ``clush`` displays messages
-similar to:
+combination of options ``-qS`` or the option ``--json`` is specified,
+``clush`` displays messages similar to:
 
 :clush\: node[40-42]\: exited with exit code 1:
 
@@ -251,6 +279,9 @@ Display features
 
 :# clush -w dc[1-2]n[1-2] --axis=1 -b uname -r:
     Gather output and fold the displayed nodeset header along axis 1 only, e.g. show ``dc[1-2]n1,dc[1-2]n2`` rather than ``dc[1-2]n[1-2]`` in the header block. See also ``fold_axis`` in the Library Defaults configuration to change it permanently.
+
+:# clush -w node[1-100] -b --json systemctl restart foo | jq -r 'select(.rc != 0).nodes' | cluset -f:
+    Restart a service on node[1-100], write gathered results as JSON Lines and use ``jq`` and ``cluset`` (or ``nodeset``) to display the folded nodeset of nodes where the command failed, e.g. to run another command on them only.
 
 All nodes
 ---------
