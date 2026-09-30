@@ -215,7 +215,7 @@ class TaskTimerTest(unittest.TestCase):
         def ev_read(self, worker, node, sname, msg):
             self.test.assertEqual(self.flags, EV_START)
             self.flags |= EV_READ
-        def ev_written(self, worker):
+        def ev_written(self, worker, node, sname, size):
             self.test.assertTrue(self.flags & EV_START)
             self.flags |= EV_WRITTEN
         def ev_hup(self, worker, node, rc):
@@ -258,7 +258,7 @@ class TaskTimerTest(unittest.TestCase):
         def ev_read(self, worker, node, sname, msg):
             self.flags |= EV_READ
             self.timer.invalidate()
-        def ev_written(self, worker):
+        def ev_written(self, worker, node, sname, size):
             self.test.assertTrue(self.flags & EV_START)
             self.flags |= EV_WRITTEN
         def ev_hup(self, worker, node, rc):
@@ -326,7 +326,7 @@ class TaskTimerTest(unittest.TestCase):
         def ev_read(self, worker, node, sname, msg):
             self.test.assertEqual(self.flags, EV_START)
             self.flags |= EV_READ
-        def ev_written(self, worker):
+        def ev_written(self, worker, node, sname, size):
             self.test.assertTrue(self.flags & EV_START)
             self.flags |= EV_WRITTEN
         def ev_hup(self, worker, node, rc):
