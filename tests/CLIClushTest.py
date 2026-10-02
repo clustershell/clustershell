@@ -829,6 +829,14 @@ class CLIClushTest_A(unittest.TestCase):
             DEFAULTS.fold_axis = fold_axis_save
 
 
+    def test_047_multiline_args(self):
+        """test clush -w/-x with multiline arguments"""
+        self._clush_t(["-R", "exec", "-bL", "-w", "n1\nn2\nn[3-4]", "-x",
+                       "n2\nn4", "echo ok"], None, b"n[1,3]: ok\n", 0, b"")
+        self._clush_t(["-R", "exec", "-bL", "-w", "n1\n\nn2\n", "-w", "n3",
+                       "echo ok"], None, b"n[1-3]: ok\n", 0, b"")
+
+
 class CLIClushTest_B_StdinFailure(unittest.TestCase):
     """Unit test class for testing CLI/Clush.py and stdin failure"""
 
