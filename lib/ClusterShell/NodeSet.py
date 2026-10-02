@@ -855,6 +855,13 @@ class ParsingEngine(object):
 
     BRACKET_OPEN = '['
     BRACKET_CLOSE = ']'
+    GROUP_PREFIX = '@'
+    WILDCARD_ANY = '*'
+    WILDCARD_ONE = '?'
+
+    NOT_SINGLE_CHARS = frozenset(OP_CODES) | \
+                       frozenset((BRACKET_OPEN, BRACKET_CLOSE, GROUP_PREFIX,
+                                  WILDCARD_ANY, WILDCARD_ONE))
 
     def __init__(self, group_resolver, node_wildcard_enable=True):
         """
@@ -893,6 +900,9 @@ class ParsingEngine(object):
 
         Return a NodeSetBase object.
         """
+        if self.NOT_SINGLE_CHARS.isdisjoint(nsstr) and nsstr.strip():
+            return self.parse_string_single(nsstr, autostep)
+
         alln_cache = None  # used to compute 'all nodes' only once
         nodeset = NodeSetBase()
         nsstr = _strip_escape(nsstr)
@@ -900,7 +910,7 @@ class ParsingEngine(object):
         for opc, pat, rgnd in self._scan_string(nsstr, autostep):
             # Parser main debugging:
             #print "OPC %s PAT %s RANGESETS %s" % (opc, pat, rgnd)
-            if self.group_resolver and pat[0] == '@':
+            if self.group_resolver and pat[0] == self.GROUP_PREFIX:
                 ns_group = NodeSetBase()
                 for nodegroup in NodeSetBase(pat, rgnd):
                     # parse/expand nodes group: get group string and namespace
@@ -914,8 +924,8 @@ class ParsingEngine(object):
                 # perform operation
                 getattr(nodeset, opc)(ns_group)
 
-            elif self.group_resolver and self.node_wc and ('*' in pat or
-                                                           '?' in pat):
+            elif self.group_resolver and self.node_wc and \
+                    (self.WILDCARD_ANY in pat or self.WILDCARD_ONE in pat):
                 # We support ranges with wildcard mask by testing all nodes
                 # against each expanded mask (wcmasks).
                 wcmasks = (str(wcn) for wcn in NodeSetBase(pat, rgnd, False))
@@ -979,7 +989,7 @@ class ParsingEngine(object):
 
         Return a tuple (grp_resolved_string, namespace).
         """
-        assert nodegroup[0] == '@'
+        assert nodegroup[0] == self.GROUP_PREFIX
         assert self.group_resolver is not None
         grpstr = group = nodegroup[1:]
         if grpstr.find(':') >= 0:
@@ -987,7 +997,7 @@ class ParsingEngine(object):
             namespace, group = grpstr.split(':', 1)
         if group == '*': # @* or @source:* magic
             reslist = self.all_nodes(namespace)
-        elif group.startswith('@'): # @@source group name list
+        elif group.startswith(self.GROUP_PREFIX):  # @@source group name list
             reslist = self.grouplist(grpstr[1:])
         else:
             reslist = self.group_resolver.group_nodes(group, namespace)
