@@ -606,9 +606,9 @@ class RangeSet(set):
         assert stop - start < 1e9, "range too large"
 
         if pad == 0:
-            set.update(self, ("%d" % i for i in range(start, stop, step)))
+            set.update(self, map(str, range(start, stop, step)))
         else:
-            set.update(self, ("%0*d" % (pad, i) for i in range(start, stop, step)))
+            set.update(self, map(("%%0%dd" % pad).__mod__, range(start, stop, step)))
 
     def copy(self):
         """Return a shallow copy of a RangeSet."""
