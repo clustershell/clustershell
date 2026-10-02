@@ -502,6 +502,11 @@ class RangeSetTest(unittest.TestCase):
         self.assertRaises(ValueError, r3.index, "5", 0, 5)
         self.assertRaises(ValueError, r3.index, "9", 0, -1)
 
+        # mixed padding: index() follows iteration order
+        r4 = RangeSet("99,030-032,0001")
+        for i in range(len(r4)):
+            self.assertEqual(r4.index(r4[i]), i)
+
     def testGetSlice(self):
         """test RangeSet.__getitem__() with slice"""
         r0 = RangeSet("1-12")

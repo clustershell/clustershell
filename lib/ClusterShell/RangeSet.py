@@ -304,7 +304,7 @@ class RangeSet(set):
     @staticmethod
     def _sortkey(elem):
         """Sort key used to order RangeSet elements (mixed padding support):
-        sort by both string length and index."""
+        sort by both string length and index. Keep in sync with _sorted()."""
         if elem.startswith('-'):
             return (-len(elem), int(elem))
         return (len(elem), elem)
@@ -313,7 +313,12 @@ class RangeSet(set):
         """Get sorted list from inner set (cached; callers must not mutate)."""
         if self._sorted_cache is None:
             # For mixed padding support, sort by both string length and index
-            self._sorted_cache = sorted(set.__iter__(self), key=self._sortkey)
+            srt = sorted(set.__iter__(self))
+            if srt and srt[0].startswith('-'):  # negative indexes sort first
+                srt.sort(key=self._sortkey)
+            else:
+                srt.sort(key=len)
+            self._sorted_cache = srt
         return self._sorted_cache
 
     def __iter__(self):
