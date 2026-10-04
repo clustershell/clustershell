@@ -202,6 +202,15 @@ class NodeSetTest(unittest.TestCase):
         self._assertNS("prod-0[1-7/2,9]0", NodeSetParseError)
         self._assertNS("prod-0[1-5/2,7-9]0", NodeSetParseError)
         self._assertNS("prod-00[1-6/2]0", NodeSetParseError) # and not NodeSetParseRangeError
+        # illegal leading or trailing digits with negative ranges
+        self._assertNS("n1[-3]", NodeSetParseError)
+        self._assertNS("n1[-3--1]", NodeSetParseError)
+        self._assertNS("n1[-3-2]", NodeSetParseError)
+        self._assertNS("n1[0-2, -5]", NodeSetParseError)
+        self._assertNS("n[-3]1", NodeSetParseError)
+        self._assertNS("n[-3--2]1", NodeSetParseError)
+        self._assertNS("n[0-2, -5]1", NodeSetParseError)
+        self._assertNS("n[1-2]c1[-3]", NodeSetParseError)
         # nD more
         self._assertNS("[1-30][4-9]", NodeSetParseError)
         self._assertNS("[1-30][4-9]p", NodeSetParseError)
@@ -427,6 +436,11 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(len(nodeset), 4)
 
         # see also NodeSetErrorTest.py for unsupported trailing digits w/ steps
+
+        # negative ranges are supported without leading or trailing digits
+        nodeset = NodeSet("n[-1-1]p1[0-2]")
+        self.assertEqual(str(nodeset), "n[-1-1]p[10-12]")
+        self.assertEqual(len(nodeset), 9)
 
         # /!\ padding mismatch cases: mixed padding allowed since 1.9
         nodeset = NodeSet("prod-1[10-345]") # no padding so no mismatch there: OK

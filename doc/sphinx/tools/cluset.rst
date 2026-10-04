@@ -352,6 +352,9 @@ inside the brackets.
    range set is not compatible with **trailing** digits. For instance, this is
    **not** supported: ``node-00[1-6/2]0``
 
+   Negative ranges are not compatible with **leading** or **trailing** digits
+   either. For instance, this is **not** supported: ``node1[-3-3]``
+
 .. _cluset-arithmetic:
 
 Arithmetic operations
