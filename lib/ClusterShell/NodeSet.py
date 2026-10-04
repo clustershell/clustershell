@@ -1201,6 +1201,11 @@ class ParsingEngine(object):
         outerstrip = outer.rstrip(string.digits)
         outerlen, outerstriplen = len(outer), len(outerstrip)
         if outerstriplen < outerlen:
+            # negative ranges are not compatible with adjacent digits
+            if ',-' in ',' + ''.join(inner.split()):
+                msg = "illegal leading digits before negative range"
+                raise NodeSetParseError(outer, msg)
+
             # get outer bracket leading digits
             outerdigits = outer[outerstriplen:]
             inner = ','.join(
@@ -1222,6 +1227,10 @@ class ParsingEngine(object):
             if '/' in inner:
                 msg = "illegal trailing digits after range with steps"
                 raise NodeSetParseError(outer, msg)
+            if ',-' in ',' + ''.join(inner.split()):
+                msg = "illegal trailing digits after negative range"
+                raise NodeSetParseError(outer, msg)
+
             # get outer bracket trailing digits
             outerdigits = outer[0:outerlen-outerstriplen]
             outlen = len(outerdigits)
