@@ -62,6 +62,25 @@ class NodeSetTest(unittest.TestCase):
         nodeset = NodeSet("   tigrou2 ,    tigrou5,tigrou7 , tigrou[ 9   - 11 ]    ")
         self.assertEqual(str(nodeset), "tigrou[2,5,7,9-11]")
 
+    def testNewlineSeparator(self):
+        """test NodeSet parsing with newline as separator"""
+        nodeset = NodeSet("tigrou2\ntigrou7\n\ntigrou[5,9-11]\n")
+        self.assertEqual(str(nodeset), "tigrou[2,5,7,9-11]")
+        nodeset = NodeSet("tigrou[2-11]!tigrou[3-4]\r\n tigrou1 \r\n")
+        self.assertEqual(str(nodeset), "tigrou[1-2,5-11]")
+        nodeset = NodeSet("tigrou[1-3],\ntigrou5")
+        self.assertEqual(str(nodeset), "tigrou[1-3,5]")
+        # a newline next to an operator or inside brackets is whitespace
+        nodeset = NodeSet("tigrou[1-5]\n!tigrou2\n!tigrou4")
+        self.assertEqual(str(nodeset), "tigrou[1,3,5]")
+        nodeset = NodeSet("tigrou1\n,tigrou[2,\n4]\ntigrou[6-\n7]")
+        self.assertEqual(str(nodeset), "tigrou[1-2,4,6-7]")
+        nodeset = NodeSet("tigrou[1\n2]0\ntigrou[3\n,5]0")
+        self.assertEqual(str(nodeset), "tigrou[10,20,30,50]")
+        # lines are combined by union
+        nodeset = NodeSet("tigrou2\ntigrou[1-3]!tigrou2\ntigrou[4-5]&tigrou5")
+        self.assertEqual(str(nodeset), "tigrou[1-3,5]")
+
     def testWhitespaceInsideNodeName(self):
         """test NodeSet parsing keeping whitespaces inside a node name"""
         nodeset = NodeSet("tigrou 0, tigrou [1],tigrou [2-3]")
