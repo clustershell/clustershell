@@ -58,7 +58,7 @@ from ClusterShell.CLI.Display import VERB_QUIET, VERB_STD, VERB_VERB, VERB_DEBUG
 from ClusterShell.CLI.OptionParser import OptionParser
 from ClusterShell.CLI.Error import GENERIC_ERRORS, handle_generic_error
 from ClusterShell.CLI.Utils import bufnodeset_cmpkey, human_bi_bytes_unit, \
-    ignored_group_warnings, parse_fold_axis
+    ignored_group_warnings, nodeset_cmpkey, parse_fold_axis
 
 from ClusterShell.Event import EventHandler
 from ClusterShell.MsgTree import MsgTree
@@ -389,6 +389,66 @@ class LiveGatherOutputHandler(GatherOutputHandler):
         # Notify main thread to update its prompt
         self.update_prompt(worker)
 
+class JsonOutputHandler(OutputHandler):
+    """JSON Lines output event handler class (clush --json)."""
+
+    def __init__(self, display, nodes, copies=1, gather=False, prog=None):
+        OutputHandler.__init__(self, prog=prog)
+        self._display = display
+        self._copies = self._closes = copies
+        self._gather = gather
+        # stdout lines, stderr lines and return codes of pending nodes
+        self._pending = dict((node, ([], [], [])) for node in nodes)
+        self._gathered = {}
+
+    def ev_read(self, worker, node, sname, msg):
+        result = self._pending.get(node)
+        if result is None:  # not a target (eg. gateway) or already displayed
+            self._display.print_line_error(node, msg)
+        elif sname == worker.SNAME_STDOUT:
+            result[0].append(msg)
+        elif sname == worker.SNAME_STDERR:
+            result[1].append(msg)
+
+    def ev_hup(self, worker, node, rc):
+        self._node_done(node, rc)
+
+    def ev_close(self, worker, timedout):
+        for node in NodeSet._fromlist1(worker.iter_keys_timeout()):
+            self._node_done(node, None)
+        # multiple copy workers may be running (handled by this task's thread)
+        self._closes -= 1
+        if self._closes:
+            return
+        results = [(rc, NodeSet._fromlist1(nodes), stdout, stderr)
+                   for (rc, stdout, stderr), nodes in self._gathered.items()]
+        # order by rc like -b, timed out nodes last
+        results.sort(key=lambda res: (res[0] is None, res[0],
+                                      nodeset_cmpkey(res[1])))
+        for rc, nodeset, stdout, stderr in results:
+            self._display.print_json_gather(nodeset, rc, stdout, stderr)
+
+        # Notify main thread to update its prompt
+        self.update_prompt(worker)
+
+    def _node_done(self, node, rc):
+        """Display or gather a node result (rc is None on timeout) once all
+        copy workers are done with it."""
+        result = self._pending.get(node)
+        if result is None:
+            return
+        stdout, stderr, rcs = result
+        rcs.append(rc)
+        if len(rcs) < self._copies:
+            return
+        del self._pending[node]
+        rc = None if None in rcs else max(rcs)
+        if self._gather:
+            key = (rc, tuple(stdout), tuple(stderr))
+            self._gathered.setdefault(key, []).append(node)
+        else:
+            self._display.print_json(node, rc, stdout, stderr)
+
 class RunTimer(EventHandler):
     """Running progress timer event handler"""
     def __init__(self, task, total, prog=None):
@@ -531,7 +591,7 @@ def ttyloop(task, nodeset, timeout, display, remote, trytree):
         except KeyboardInterrupt as kbe:
             # Caught SIGINT here (main thread) but the signal will also reach
             # subprocesses (that will most likely kill them)
-            if display.gather:
+            if display.gather and not display.json:
                 # Suspend task, so we can safely access its data from here
                 task.suspend()
 
@@ -706,7 +766,9 @@ def run_command(task, cmd, ns, timeout, display, remote, trytree):
     """
     task.set_default("USER_running", True)
 
-    if (display.gather or display.line_mode) and ns is not None:
+    if display.json:
+        handler = JsonOutputHandler(display, ns, gather=display.gather)
+    elif (display.gather or display.line_mode) and ns is not None:
         if display.gather and display.line_mode:
             handler = LiveGatherOutputHandler(display, ns)
         elif not display.gather and display.line_mode:
@@ -750,9 +812,12 @@ def run_copy(task, sources, dests, ns, timeout, preserve_flag, display):
     task.set_default("USER_running", True)
     task.set_default("USER_copies", len(sources))
 
-    copyhandler = CopyOutputHandler(display)
-    if display.verbosity in (VERB_STD, VERB_VERB):
-        copyhandler.runtimer_init(task, len(ns) * len(sources))
+    if display.json:
+        copyhandler = JsonOutputHandler(display, ns, len(sources))
+    else:
+        copyhandler = CopyOutputHandler(display)
+        if display.verbosity in (VERB_STD, VERB_VERB):
+            copyhandler.runtimer_init(task, len(ns) * len(sources))
 
     # Sources check
     for source in sources:
@@ -780,9 +845,12 @@ def run_rcopy(task, sources, dests, ns, timeout, preserve_flag, display):
                                'ERROR: destination "%s" is not a directory' % dest)
             clush_exit(1, task)
 
-    copyhandler = CopyOutputHandler(display, True)
-    if display.verbosity == VERB_STD or display.verbosity == VERB_VERB:
-        copyhandler.runtimer_init(task, len(ns) * len(sources))
+    if display.json:
+        copyhandler = JsonOutputHandler(display, ns, len(sources))
+    else:
+        copyhandler = CopyOutputHandler(display, True)
+        if display.verbosity == VERB_STD or display.verbosity == VERB_VERB:
+            copyhandler.runtimer_init(task, len(ns) * len(sources))
     for source in sources:
         task.rcopy(source, dests.pop(0), ns, handler=copyhandler,
                    timeout=timeout, stderr=True, preserve=preserve_flag)
@@ -992,9 +1060,8 @@ def main():
         # nodesets; and we assume options.pick will remain small-ish
         keep = random.sample(list(nodeset_base), options.pick)
         nodeset_base.intersection_update(','.join(keep))
-        if config.verbosity >= VERB_VERB:
-            msg = "Picked random nodes: %s" % nodeset_base
-            print(Display.COLOR_RESULT_FMT % msg)
+        msg = "Picked random nodes: %s" % nodeset_base
+        display.vprint(VERB_VERB, Display.COLOR_RESULT_FMT % msg)
 
     # Set open files limit.
     set_fdlimit(config.fd_max, display)
@@ -1019,6 +1086,8 @@ def main():
         config._set_main("ssh_options", ssh_options)
     if options.nostdin and interactive:
         parser.error("illegal option `--nostdin' in that case")
+    if options.json and interactive:
+        parser.error("illegal option `--json' in that case")
 
     # Force user_interaction if Clush._f_user_interaction for test purposes
     user_interaction = hasattr(sys.modules[__name__], '_f_user_interaction')
@@ -1048,6 +1117,9 @@ def main():
                                task.default("USER_stdin_worker"))
 
     task.set_info("debug", config.verbosity >= VERB_DEBUG)
+    if display.json:
+        task.set_info("print_debug",
+                      lambda _task, line: display.vprint_err(VERB_QUIET, line))
     task.set_info("fanout", config.fanout)
 
     if options.mode:
@@ -1126,7 +1198,8 @@ def main():
     task.set_default("stderr", not options.gatherall)
 
     # Disable MsgTree buffering if not gathering outputs
-    task.set_default("stdout_msgtree", display.gather or display.line_mode)
+    task.set_default("stdout_msgtree",
+                     not display.json and (display.gather or display.line_mode))
 
     # Always disable stderr MsgTree buffering
     task.set_default("stderr_msgtree", False)
@@ -1173,9 +1246,9 @@ def main():
                                                 op))
     if not task.default("USER_interactive"):
         if display.verbosity >= VERB_DEBUG and task.topology:
-            print(Display.COLOR_RESULT_FMT % '-' * 15)
-            print(Display.COLOR_RESULT_FMT % task.topology, end='')
-            print(Display.COLOR_RESULT_FMT % '-' * 15)
+            sep = Display.COLOR_RESULT_FMT % '-' * 15
+            topo = Display.COLOR_RESULT_FMT % task.topology
+            display.vprint(VERB_DEBUG, sep + '\n' + topo + sep)
         if options.copy:
             run_copy(task, args, dest_paths, nodeset_base, timeout,
                      options.preserve_flag, display)

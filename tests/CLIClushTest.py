@@ -828,6 +828,195 @@ class CLIClushTest_A(unittest.TestCase):
         finally:
             DEFAULTS.fold_axis = fold_axis_save
 
+    def _clush_json_t(self, args, expected_stdout, expected_rc=0,
+                      expected_stderr=re.compile(br"(?s)(?!.*clush: )")):
+        """Run clush --json with the exec worker (by default, check that no
+        exit code or timeout message is displayed)"""
+        self._clush_t(["-R", "exec", "--json"] + args, b"", expected_stdout,
+                      expected_rc, expected_stderr)
+
+    def test_047_json(self):
+        """test clush (--json)"""
+        self._clush_json_t(["-w", "n1", "echo hello"],
+                           b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                           b'"stdout": ["hello"], "stderr": []}\n')
+        cmd = "echo out; echo err >&2; exit 3"
+        out = b'{"nodes": "n1", "rc": 3, "timeout": false, ' \
+              b'"stdout": ["out"], "stderr": ["err"]}\n'
+        self._clush_json_t(["-w", "n1", cmd], out)
+        self._clush_json_t(["-w", "n1", "-S", cmd], out, 3)
+        # empty line, undecodable byte, CRLF, CR and unterminated last line
+        self._clush_json_t(["-w", "n1",
+                            r"echo; printf 'a\377b\ncaf\303\251\r\nc\rd'"],
+                           b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                           b'"stdout": ["", "a\\ufffdb", "caf\\u00e9", '
+                           b'"c\\rd"], "stderr": []}\n')
+        # one object per node, written as soon as the node completes
+        self._clush_json_t(["-w", "n[1-3]", "sleep 0.$((8 - 4 * %n)); echo %h"],
+                           b'{"nodes": "n3", "rc": 0, "timeout": false, '
+                           b'"stdout": ["n3"], "stderr": []}\n'
+                           b'{"nodes": "n2", "rc": 0, "timeout": false, '
+                           b'"stdout": ["n2"], "stderr": []}\n'
+                           b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                           b'"stdout": ["n1"], "stderr": []}\n')
+        # timed out nodes are written last, with lines read so far
+        cmd = "echo start; [ %n -eq 1 ] && sleep 3; echo end"
+        out = b'{"nodes": "n1", "rc": 0, "timeout": false, ' \
+              b'"stdout": ["start", "end"], "stderr": []}\n' \
+              b'{"nodes": "n2", "rc": null, "timeout": true, ' \
+              b'"stdout": ["start"], "stderr": []}\n'
+        self._clush_json_t(["-w", "n[1-2]", "-u", "0.5", cmd], out)
+        self._clush_json_t(["-w", "n[1-2]", "-u", "0.5", "-S", cmd], out, 255)
+
+    def test_048_json_tty(self):
+        """test clush (--json) [tty]"""
+        setattr(ClusterShell.CLI.Clush, '_f_user_interaction', True)
+        try:
+            self.test_047_json()
+        finally:
+            delattr(ClusterShell.CLI.Clush, '_f_user_interaction')
+
+    def test_049_json_pipe_streaming(self):
+        """test clush (--json streaming through a pipe)"""
+        python_exec = basename(sys.executable or 'python')
+        args = ['-R', 'exec', '--json', '-w', 'n[1-2]', 'sleep %n; echo %h']
+        with Popen([python_exec, '-m', 'ClusterShell.CLI.Clush'] + args,
+                   stdout=PIPE, stderr=PIPE,
+                   universal_newlines=True, bufsize=1) as process:
+            timestamps = []
+            t0 = time.monotonic()
+            for _line in process.stdout:
+                timestamps.append(time.monotonic() - t0)
+            process.wait(timeout=10)
+        self.assertEqual(len(timestamps), 2,
+                         "expected 2 lines, got %d" % len(timestamps))
+        # n1 is written ~1s before n2 completes
+        spread = timestamps[-1] - timestamps[0]
+        self.assertGreater(spread, 0.5, "objects written together "
+                           "(spread=%.3fs)" % spread)
+
+    def test_050_json_gather(self):
+        """test clush (--json -b)"""
+        # nodes with same rc, stdout and stderr, ordered like -b
+        cmd = "case %h in n[1-4]|n7) echo ok;; n5) echo;; esac; " \
+              "case %h in n[23]) echo err >&2;; n4) exit 3;; n7) sleep 3;; esac"
+        self._clush_json_t(["-b", "-S", "-u", "0.5", "-w", "n[1-7]", cmd],
+                           b'{"nodes": "n[2-3]", "rc": 0, "timeout": false, '
+                           b'"stdout": ["ok"], "stderr": ["err"]}\n'
+                           b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                           b'"stdout": ["ok"], "stderr": []}\n'
+                           b'{"nodes": "n5", "rc": 0, "timeout": false, '
+                           b'"stdout": [""], "stderr": []}\n'
+                           b'{"nodes": "n6", "rc": 0, "timeout": false, '
+                           b'"stdout": [], "stderr": []}\n'
+                           b'{"nodes": "n4", "rc": 3, "timeout": false, '
+                           b'"stdout": ["ok"], "stderr": []}\n'
+                           b'{"nodes": "n7", "rc": null, "timeout": true, '
+                           b'"stdout": ["ok"], "stderr": []}\n', 255)
+        # nodes are folded like -b headers
+        fold_axis_save = DEFAULTS.fold_axis
+        try:
+            DEFAULTS.fold_axis = ()
+            self._clush_json_t(["-b", "--axis=1", "-w", "foo[1-2]-[1-2]",
+                                "echo test"],
+                               b'{"nodes": "foo[1-2]-1,foo[1-2]-2", "rc": 0, '
+                               b'"timeout": false, "stdout": ["test"], '
+                               b'"stderr": []}\n')
+        finally:
+            DEFAULTS.fold_axis = fold_axis_save
+
+    def test_051_json_gather_tty(self):
+        """test clush (--json -b) [tty]"""
+        setattr(ClusterShell.CLI.Clush, '_f_user_interaction', True)
+        try:
+            self.test_050_json_gather()
+        finally:
+            delattr(ClusterShell.CLI.Clush, '_f_user_interaction')
+
+    def test_052_json_file_copy(self):
+        """test clush (--json file copy)"""
+        tdir = make_temp_dir()
+        try:
+            src1 = os.path.join(tdir.name, "src1")
+            # %h is replaced by the node name: srcn2 is missing
+            src2 = os.path.join(tdir.name, "src%h")
+            for path in (src1, src2, os.path.join(tdir.name, "srcn1")):
+                with open(path, "w") as srcf:
+                    srcf.write("data\n")
+            fifo = os.path.join(tdir.name, "fifo")
+            os.mkfifo(fifo)
+            dest = os.path.join(tdir.name, "dest", "")
+            os.mkdir(dest)
+            # one object per node for all sources
+            self._clush_json_t(["-w", "n1", "-c", src1, src2, "--dest", dest],
+                               b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                               b'"stdout": [], "stderr": []}\n')
+            self.assertTrue(os.path.exists(os.path.join(dest, "srcn1")))
+            rxs = br'\A\{"nodes": "n2", "rc": 1, "timeout": false, ' \
+                  br'"stdout": \[\], "stderr": \["cp: [^"]*srcn2[^"]*"\]\}\n\Z'
+            self._clush_json_t(["-S", "-w", "n2", "-c", src1, src2, "--dest",
+                                dest], re.compile(rxs), 1)
+            # copy from a fifo blocks until timeout; -b is ignored and there
+            # is no copy message nor progress indicator
+            self._clush_json_t(["-S", "-v", "-b", "-w", "n[1-2]", "-u", "1.5",
+                                "-c", src1, fifo, "--dest", dest],
+                               b'{"nodes": "n1", "rc": null, "timeout": true, '
+                               b'"stdout": [], "stderr": []}\n'
+                               b'{"nodes": "n2", "rc": null, "timeout": true, '
+                               b'"stdout": [], "stderr": []}\n', 255,
+                               re.compile(br"(?s)(?!.*(clush: | -> ))"))
+        finally:
+            tdir.cleanup()
+
+    def test_053_json_file_copy_tty(self):
+        """test clush (--json file copy) [tty]"""
+        setattr(ClusterShell.CLI.Clush, '_f_user_interaction', True)
+        try:
+            self.test_052_json_file_copy()
+        finally:
+            delattr(ClusterShell.CLI.Clush, '_f_user_interaction')
+
+    def test_054_json_verbosity(self):
+        """test clush (--json only writes JSON on stdout)"""
+        out = b'{"nodes": "n1", "rc": 0, "timeout": false, ' \
+              b'"stdout": ["ok"], "stderr": []}\n'
+        for opts in (["-q"], ["-v"], ["-v", "-b"]):
+            self._clush_json_t(opts + ["-w", "n1", "echo ok"], out)
+        for opts in (["-d"], ["-d", "-b"]):
+            self._clush_json_t(opts + ["-w", "n1", "echo ok"], out, 0,
+                               re.compile(br"(?s).*EXECCLIENT: echo ok\n"
+                                          br".*n1: b'ok'\n"))
+        self._clush_json_t(["-v", "--pick=1", "-w", "n[1-2]", "echo ok"],
+                           re.compile(br'\A\{"nodes": "n[12]", "rc": 0, '
+                                      br'[^\n]*\}\n\Z'), 0,
+                           re.compile(br"(?s).*Picked random nodes: n[12]"))
+
+    def test_055_json_errors(self):
+        """test clush (--json incompatible options)"""
+        err = b"option mismatch (--json not supported with -L, -B, -N, -P, " \
+              b"--diff, --outdir or --errdir)\n"
+        for opt in ("-L", "-B", "-N", "-P", "--diff", "--outdir=.",
+                    "--errdir=."):
+            self._clush_json_t([opt, "-w", "n1", "echo ok"], b"", 2, err)
+        # interactive mode: no command and stdin is a foreground terminal
+        class TTYStdinMock(object):
+            def isatty(self):
+                return True
+            def fileno(self):
+                return 0
+        stdin_save, tcgetpgrp_save = sys.stdin, os.tcgetpgrp
+        sys.stdin = TTYStdinMock()
+        os.tcgetpgrp = lambda fd: os.getpgrp()
+        try:
+            self._clush_t(["-R", "exec", "--json", "-w", "n1"], None, b"", 2,
+                          b"illegal option `--json' in that case\n")
+        finally:
+            sys.stdin, os.tcgetpgrp = stdin_save, tcgetpgrp_save
+        # no command but stdin is not a terminal: not interactive
+        self._clush_json_t(["-w", "n1"],
+                           b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                           b'"stdout": [], "stderr": []}\n')
+
 
 class CLIClushTest_B_StdinFailure(unittest.TestCase):
     """Unit test class for testing CLI/Clush.py and stdin failure"""
@@ -855,6 +1044,14 @@ class CLIClushTest_B_StdinFailure(unittest.TestCase):
         """test clush with broken stdin"""
         self._clush_t(["-w", HOSTNAME, "-v", "sleep 1"], None,
                       b"stdin: [Errno 22] Invalid argument\n", 0, b"")
+
+    def test_101_broken_stdin_json(self):
+        """test clush --json with broken stdin"""
+        self._clush_t(["-R", "exec", "-w", "n1", "-v", "--json", "sleep 1"],
+                      None,
+                      b'{"nodes": "n1", "rc": 0, "timeout": false, '
+                      b'"stdout": [], "stderr": []}\n', 0,
+                      re.compile(br"(?s).*stdin: \[Errno 22\] Invalid argument\n"))
 
 
 class CLIClushTest_C_GroupsConf(unittest.TestCase):
@@ -900,6 +1097,14 @@ class CLIClushTest_C_GroupsConf(unittest.TestCase):
         self._clush_t(["--groupsconf", self.custf.name, "-R", "exec", "-w",
                        "@foo", "-bL", "echo ok"], None,
                       b"custom[7-42]: ok\n", 0, b"")
+
+    def test_201_json_regroup(self):
+        """test clush --json -b -r"""
+        self._clush_t(["-R", "exec", "-w", "example[1-101]", "--json", "-b",
+                       "-r", "echo ok"], None,
+                      b'{"nodes": "@bar,example101", "rc": 0, '
+                      b'"timeout": false, "stdout": ["ok"], "stderr": []}\n',
+                      0, b"")
 
 
 class CLIClushTest_D_StdinFIFO(unittest.TestCase):
@@ -973,6 +1178,24 @@ class CLIClushTest_E_Topology(unittest.TestCase):
         self._clush_t(["--topology", self.topofile.name,
                        "-w", "remote-node", "-b", "-v", "sleep 1; echo ok"], None, b"", 0, b"")
 
+    @unittest.skipIf(HOSTNAME == 'localhost', "does not work with hostname set to 'localhost'")
+    def test_302_topology_json_gateway_error(self):
+        """test clush --topology --json (gateway error)"""
+        topofile = make_temp_file(dedent("""
+                        [routes]
+                        %s: gw.invalid
+                        gw.invalid: remote-node""" % HOSTNAME).encode())
+        # run in a subprocess as clush exits from its excepthook
+        python_exec = basename(sys.executable or 'python')
+        args = ['--topology', topofile.name, '-w', 'remote-node', '--json',
+                'echo ok']
+        with Popen([python_exec, '-m', 'ClusterShell.CLI.Clush'] + args,
+                   stdin=PIPE, stdout=PIPE, stderr=PIPE) as process:
+            stdout, stderr = process.communicate(timeout=30)
+        self.assertEqual(process.returncode, 1)
+        self.assertEqual(stdout, b"")
+        # gateway error is not lost (not a target node)
+        self.assertIn(b"gw.invalid: ssh: ", stderr)
 
 class CLIClushTest_F_IllegalChars(unittest.TestCase):
     """Unit test class for testing clush with illegal group characters"""

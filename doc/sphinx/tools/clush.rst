@@ -470,6 +470,54 @@ For example, to save all logs from *journalctl(1)* in a local directory
 
     $ clush -w node[40-42] --outdir=/tmp/run1/stdout/ journalctl >/dev/null
 
+.. _clush-json:
+
+JSON output
+"""""""""""
+
+To process results with other tools like *jq(1)*, use the ``--json`` option:
+*clush* then writes results on standard output as `JSON Lines`_ (one JSON
+object per line) and nothing else; its own messages go to standard error. Each
+object has the following fields:
+
+* ``nodes``: node name, or folded nodeset with ``-b``
+* ``rc``: command return code, or ``null`` if the command timed out
+* ``timeout``: ``true`` if the command timed out, ``false`` otherwise
+* ``stdout`` and ``stderr``: lists of output lines
+
+By default, *clush* writes one object per node, as soon as the command
+completes on this node (nodes whose command timed out are written last, when
+all commands have completed)::
+
+    $ clush -w node[40-42] --json uname -r
+    {"nodes": "node41", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node40", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node42", "rc": 0, "timeout": false, "stdout": ["5.14.0-427.el9.x86_64"], "stderr": []}
+
+With ``-b``, nodes with the same return code, standard output and standard
+error are gathered in one object, written when all commands have completed.
+The ``nodes`` field is then folded like the ``-b`` header (see ``-r``, ``-G``
+and :ref:`--axis <clush-axis>`)::
+
+    $ clush -w node[40-42] -b --json uname -r
+    {"nodes": "node[40-41]", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node42", "rc": 0, "timeout": false, "stdout": ["5.14.0-427.el9.x86_64"], "stderr": []}
+
+For example, to run another command only on the nodes where the first one
+failed::
+
+    $ failed=$(clush -w node[1-100] -b --json systemctl restart foo | jq -r 'select(.rc != 0).nodes' | cluset -f)
+    $ clush -w "$failed" journalctl -u foo -n 20
+
+In copy mode (``-c`` or ``--rcopy``), *clush* writes one object per node for
+all sources, with the largest return code, and ``-b`` is ignored.
+
+Output lines are decoded as UTF-8 and invalid bytes are replaced with U+FFFD.
+The exit status of *clush* is not modified (see ``-S``), but the "exited with
+exit code" and "command timeout" messages are not displayed. ``--json`` cannot
+be combined with ``-L``, ``-B``, ``-N``, ``-P``, ``--diff``, ``--outdir``,
+``--errdir``, or interactive mode.
+
 Standard input bindings
 """""""""""""""""""""""
 
@@ -825,6 +873,8 @@ specifying the case-sensitive full Python module name of a worker module.
 .. _ticket: https://github.com/clustershell/clustershell/issues/new
 
 .. _this paper: https://www.kernel.org/doc/ols/2012/ols2012-thiell.pdf
+
+.. _JSON Lines: https://jsonlines.org/
 
 .. _sshpass: http://sshpass.sourceforge.net/
 .. _sudo: https://www.sudo.ws/

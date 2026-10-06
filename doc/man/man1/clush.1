@@ -237,6 +237,9 @@ show progress during command execution; if writing is performed to standard inpu
 .B  \-b\fP,\fB  \-\-dshbak
 display gathered results in a dshbak\-like way (note: it will only try to aggregate the output of commands with same return codes)
 .TP
+.B  \-\-json
+output results as JSON Lines on stdout, see JSON OUTPUT below
+.TP
 .B  \-B
 like \-b but including standard error
 .TP
@@ -310,6 +313,41 @@ whether to enable remote execution: in tree mode, \(aqyes\(aq forces connections
 .UNINDENT
 .sp
 For a short explanation of these options, see \fB\-h, \-\-help\fP\&.
+.SH JSON OUTPUT
+.sp
+With \fB\-\-json\fP, \fBclush\fP writes results on standard output as JSON Lines
+(one JSON object per line) and nothing else; its own messages go to standard
+error. Each object has the following fields:
+.INDENT 0.0
+.TP
+.B nodes
+node name, or folded nodeset with \fB\-b\fP (like the \fB\-b\fP header, see
+\fB\-r\fP, \fB\-G\fP and \fB\-\-axis\fP)
+.TP
+.B rc
+command return code, or \fBnull\fP if the command timed out
+.TP
+.B timeout
+\fBtrue\fP if the command timed out, \fBfalse\fP otherwise
+.TP
+.B stdout
+list of standard output lines
+.TP
+.B stderr
+list of standard error lines
+.UNINDENT
+.sp
+By default, one object is written per node, as soon as the command completes
+on this node; nodes whose command timed out are written last, when all
+commands have completed. With \fB\-b\fP, nodes with the same return code, standard output
+and standard error are gathered in one object, and objects are written when
+all commands have completed. In copy mode (\fB\-c\fP or \fB\-\-rcopy\fP), one object
+is written per node for all sources, with the largest return code, and \fB\-b\fP
+is ignored.
+.sp
+Output lines are decoded as UTF\-8 and invalid bytes are replaced with U+FFFD.
+\fB\-\-json\fP cannot be combined with \fB\-L\fP, \fB\-B\fP, \fB\-N\fP, \fB\-P\fP, \fB\-\-diff\fP,
+\fB\-\-outdir\fP, \fB\-\-errdir\fP, or interactive mode.
 .SH EXIT STATUS
 .sp
 By default, an exit status of zero indicates success of the \fBclush\fP command
@@ -318,8 +356,8 @@ the \fB\-S\fP option is specified, the exit status of \fBclush\fP is the largest
 value of the remote commands return codes.
 .sp
 For failed remote commands whose exit status is non\-zero, and unless the
-combination of options \fB\-qS\fP is specified, \fBclush\fP displays messages
-similar to:
+combination of options \fB\-qS\fP or the option \fB\-\-json\fP is specified,
+\fBclush\fP displays messages similar to:
 .INDENT 0.0
 .TP
 .B clush: node[40\-42]: exited with exit code 1
@@ -355,6 +393,9 @@ Run this Linux command to get BIOS version on nodes[3\-5,62] and show version di
 .TP
 .B # clush \-w dc[1\-2]n[1\-2] \-\-axis=1 \-b uname \-r
 Gather output and fold the displayed nodeset header along axis 1 only, e.g. show \fBdc[1\-2]n1,dc[1\-2]n2\fP rather than \fBdc[1\-2]n[1\-2]\fP in the header block. See also \fBfold_axis\fP in the Library Defaults configuration to change it permanently.
+.TP
+.B # clush \-w node[1\-100] \-b \-\-json systemctl restart foo | jq \-r \(aqselect(.rc != 0).nodes\(aq | cluset \-f
+Restart a service on node[1\-100], write gathered results as JSON Lines and use \fBjq\fP and \fBcluset\fP (or \fBnodeset\fP) to display the folded nodeset of nodes where the command failed, e.g. to run another command on them only.
 .UNINDENT
 .SS All nodes
 .INDENT 0.0
