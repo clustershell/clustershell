@@ -856,6 +856,9 @@ class ParsingEngine(object):
     BRACKET_OPEN = '['
     BRACKET_CLOSE = ']'
 
+    # operator, bracket, group, wildcard or newline: not a single node name
+    NOT_SINGLE_CHARS = frozenset(''.join(OP_CODES.keys()) + '[]@*?\n')
+
     def __init__(self, group_resolver, node_wildcard_enable=True):
         """
         Initialize Parsing Engine.
@@ -893,6 +896,9 @@ class ParsingEngine(object):
 
         Return a NodeSetBase object.
         """
+        if self.NOT_SINGLE_CHARS.isdisjoint(nsstr) and nsstr.strip():
+            return self.parse_string_single(nsstr, autostep)
+
         alln_cache = None  # used to compute 'all nodes' only once
         nodeset = NodeSetBase()
         nsstr = _strip_escape(nsstr)
