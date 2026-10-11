@@ -1090,6 +1090,27 @@ class NodeSetGroupTest(unittest.TestCase):
         self.assertEqual(str(NodeSet("@%s" % tmpgroup, resolver=res)),
                          "example[1-100]")
 
+    def testConfigCFGDIRBareFilename(self):
+        """test $CFGDIR with a config file name without directory"""
+        tdir = make_temp_dir()
+        f = make_temp_file(dedent("""
+            [Main]
+            default: local
+
+            [local]
+            map: echo example[1-100]
+            list: basename $CFGDIR
+            """).encode('ascii'), dir=tdir.name)
+        curdir = os.getcwd()
+        try:
+            os.chdir(tdir.name)
+            res = GroupResolverConfig(os.path.basename(f.name))
+            self.assertEqual(res.grouplist(), [os.path.basename(tdir.name)])
+        finally:
+            os.chdir(curdir)
+            f.close()
+            tdir.cleanup()
+
     def testConfigCFGDIRDropinsWithoutUserConf(self):
         """test $CFGDIR confdir without groups.conf in that directory"""
         tdir1 = make_temp_dir()  # system config dir
