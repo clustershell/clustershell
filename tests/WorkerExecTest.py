@@ -53,6 +53,17 @@ class ExecTest(unittest.TestCase):
         self.assertEqual(task_self().max_retcode(), None)
         self.assertEqual(task_self().num_timeout(), 2)
 
+    @unittest.skipIf(HOSTNAME == 'localhost', "does not work with hostname set to 'localhost'")
+    def test_timeout_hosts_placeholder(self):
+        """test ExecWorker with a timeout and %hosts (one command for all nodes)"""
+        nodes = "localhost,%s" % HOSTNAME
+        self.execw(nodes=nodes, handler=None, command="echo %hosts; sleep 1",
+                   timeout=0.2)
+        self.assertEqual(task_self().max_retcode(), None)
+        self.assertEqual(task_self().num_timeout(), 2)
+        self.assertEqual(set(task_self().iter_keys_timeout()),
+                         set(['localhost', HOSTNAME]))
+
     def test_node_placeholder(self):
         """test ExecWorker with several nodes and %h (host)"""
         nodes = "localhost,%s" % HOSTNAME
