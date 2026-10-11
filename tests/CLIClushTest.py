@@ -828,6 +828,17 @@ class CLIClushTest_A(unittest.TestCase):
         finally:
             DEFAULTS.fold_axis = fold_axis_save
 
+    def test_059_verbose_color(self):
+        """test clush -v messages (--color=never)"""
+        self._clush_t(["--color=never", "-R", "exec", "-w", "n[1-2]",
+                       "--pick=1", "-v", "echo ok"], None,
+                      re.compile(br"^n[12]: ok\n$"), 0,
+                      re.compile(br"Picked random nodes: n[12]\n"))
+        self._clush_t(["--color=never", "-R", "exec", "-w", "n1",
+                       "--grooming=0.5", "-v", "echo ok"], None,
+                      b"n1: ok\n", 0,
+                      re.compile(br"(?s)(.*\n)?Grooming delay: 0\.500000\n"))
+
 
 class CLIClushTest_B_StdinFailure(unittest.TestCase):
     """Unit test class for testing CLI/Clush.py and stdin failure"""
@@ -972,6 +983,14 @@ class CLIClushTest_E_Topology(unittest.TestCase):
         # GH#560: to detect set!=NodeSet for gwtargets
         self._clush_t(["--topology", self.topofile.name,
                        "-w", "remote-node", "-b", "-v", "sleep 1; echo ok"], None, b"", 0, b"")
+
+    @unittest.skipIf(HOSTNAME == 'localhost', "does not work with hostname set to 'localhost'")
+    def test_303_topology_debug(self):
+        """test clush --topology -d (--color=never)"""
+        rxs = "\n-{15}\n%s\n`- localhost\n   `- remote-node\n-{15}\n"
+        self._clush_t(["--color=never", "--topology", self.topofile.name, "-d",
+                       "-w", HOSTNAME, "echo ok"], None,
+                      re.compile((rxs % HOSTNAME).encode()))
 
 
 class CLIClushTest_F_IllegalChars(unittest.TestCase):
