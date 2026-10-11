@@ -992,9 +992,7 @@ def main():
         # nodesets; and we assume options.pick will remain small-ish
         keep = random.sample(list(nodeset_base), options.pick)
         nodeset_base.intersection_update(','.join(keep))
-        if config.verbosity >= VERB_VERB:
-            msg = "Picked random nodes: %s" % nodeset_base
-            print(Display.COLOR_RESULT_FMT % msg)
+        display.vprint_err(VERB_VERB, "Picked random nodes: %s" % nodeset_base)
 
     # Set open files limit.
     set_fdlimit(config.fd_max, display)
@@ -1092,10 +1090,8 @@ def main():
             print("clush: %s" % msg, file=sys.stderr)
 
     if options.grooming_delay:
-        if config.verbosity >= VERB_VERB:
-            msg = Display.COLOR_RESULT_FMT % ("Grooming delay: %f" %
-                                              options.grooming_delay)
-            print(msg, file=sys.stderr)
+        display.vprint_err(VERB_VERB,
+                           "Grooming delay: %f" % options.grooming_delay)
         task.set_info("grooming_delay", options.grooming_delay)
     elif options.rcopy:
         # By default, --rcopy should inhibit grooming
@@ -1173,9 +1169,8 @@ def main():
                                                 op))
     if not task.default("USER_interactive"):
         if display.verbosity >= VERB_DEBUG and task.topology:
-            print(Display.COLOR_RESULT_FMT % '-' * 15)
-            print(Display.COLOR_RESULT_FMT % task.topology, end='')
-            print(Display.COLOR_RESULT_FMT % '-' * 15)
+            topo = "%s\n%s%s" % (Display.SEP, task.topology, Display.SEP)
+            display.vprint(VERB_DEBUG, topo)
         if options.copy:
             run_copy(task, args, dest_paths, nodeset_base, timeout,
                      options.preserve_flag, display)
