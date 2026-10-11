@@ -143,6 +143,40 @@ class ExecTest(unittest.TestCase):
             ref1.close()
             srcdir.cleanup()
 
+    def test_rcopy(self):
+        """test reverse copying with an ExecWorker"""
+        src = make_temp_file(b"data")
+        with make_temp_dir() as dstdir:
+            self.execw(nodes='n[1-2]', handler=None, source=src.name,
+                       dest=dstdir, reverse=True)
+            self.assertEqual(task_self().max_retcode(), 0)
+            for node in ('n1', 'n2'):
+                dstname = "%s.%s" % (os.path.basename(src.name), node)
+                with open(os.path.join(dstdir, dstname), 'rb') as dst:
+                    self.assertEqual(dst.read(), b"data")
+
+    def test_rcopy_directory(self):
+        """test reverse copying directory with an ExecWorker"""
+        srcdir = make_temp_dir()
+        ref1 = make_temp_file(b"data1", dir=srcdir.name)
+        try:
+            with make_temp_dir() as dstdir:
+                self.execw(nodes='localhost', handler=None, source=srcdir.name,
+                           dest=dstdir, reverse=True)
+                self.assertEqual(task_self().max_retcode(), 0)
+                dstname = "%s.localhost" % os.path.basename(srcdir.name)
+                pathdstsrcdir = os.path.join(dstdir, dstname)
+                pathdst1 = os.path.join(pathdstsrcdir,
+                                        os.path.basename(ref1.name))
+                self.assertTrue(os.path.isdir(pathdstsrcdir))
+                with open(pathdst1, 'rb') as dst1:
+                    self.assertEqual(dst1.read(), b"data1")
+            self.assertEqual(os.listdir(srcdir.name),
+                             [os.path.basename(ref1.name)])
+        finally:
+            ref1.close()
+            srcdir.cleanup()
+
     def test_rcopy_wrong_directory(self):
         """test ExecWorker reverse copying with wrong directory"""
         with make_temp_dir() as dstbasedirname:
