@@ -237,6 +237,9 @@ class CopyClient(ExecClient):
         """
         source = _replace_cmd(self.source, self.key, self.rank)
         dest = _replace_cmd(self.dest, self.key, self.rank)
+        if self.reverse:
+            dest = os.path.join(dest, "%s.%s" % (os.path.basename(source),
+                                                 self.key))
 
         cmd_l = [ "cp" ]
 
@@ -246,12 +249,8 @@ class CopyClient(ExecClient):
         if self.preserve:
             cmd_l.append("-p")
 
-        if self.reverse:
-            cmd_l.append(dest)
-            cmd_l.append(source)
-        else:
-            cmd_l.append(source)
-            cmd_l.append(dest)
+        cmd_l.append(source)
+        cmd_l.append(dest)
 
         return (cmd_l, None)
 
