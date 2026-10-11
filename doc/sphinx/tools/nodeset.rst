@@ -925,6 +925,12 @@ does ``-f``)::
     $ nodeset -r node40 node42
     node[40,42]
 
+.. warning:: With ``-G`` (``--groupbase``), group names are displayed without
+   their source prefix (``@bigmem`` instead of ``@slurm:bigmem``). This is fine
+   for display, but a group name without prefix resolves in the default group
+   source: read back without the same ``-s`` option, it may match no nodes, or
+   other nodes. The same applies to ``-G`` with *clush* and *clubak*.
+
 Indexed node groups
 """""""""""""""""""
 
