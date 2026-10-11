@@ -646,6 +646,7 @@ class GroupResolverConfig(GroupResolver):
             filenames = [self.filenames]
         else:
             filenames = list(self.filenames)
+        filenames = [os.path.abspath(fn) for fn in filenames]
 
         self.config = ConfigParser()
         parsed = self.config.read(filenames)
