@@ -885,6 +885,26 @@ class ParsingEngine(object):
 
         raise TypeError("Unsupported NodeSet input %s" % type(nsobj))
 
+    def _split_lines(self, nsstr):
+        """Split a multi-line string into node set strings.
+
+        Outside brackets, a newline separates node sets, or is whitespace
+        next to , ! & ^. Inside brackets, it is a comma, or whitespace next
+        to - , / [ ].
+        """
+        parts = []
+        depth = 0
+        for line in nsstr.split('\n'):
+            line = line.strip()
+            if not line:
+                continue
+            ops = '-,/[]' if depth > 0 else ',!&^'
+            if parts and line[0] not in ops and parts[-1][-1] not in ops:
+                parts.append(',' if depth > 0 else '\n')
+            parts.append(line)
+            depth += line.count('[') - line.count(']')
+        return ''.join(parts).split('\n')
+
     def parse_string(self, nsstr, autostep, namespace=None):
         """Parse provided string in optional namespace.
 
@@ -893,6 +913,16 @@ class ParsingEngine(object):
 
         Return a NodeSetBase object.
         """
+        if '\n' in nsstr:
+            lines = self._split_lines(nsstr)
+            if len(lines) > 1:
+                nodeset = NodeSetBase()
+                for line in lines:
+                    nodeset.update(self.parse_string(line, autostep,
+                                                     namespace))
+                return nodeset
+            nsstr = lines[0]
+
         alln_cache = None  # used to compute 'all nodes' only once
         nodeset = NodeSetBase()
         nsstr = _strip_escape(nsstr)
