@@ -162,11 +162,20 @@ class NodeSetBase(object):
 
     autostep = property(get_autostep, set_autostep)
 
-    def _iter(self):
+    def _iter(self, as_strings=False):
         """Iterator on internal item tuples
-            (pattern, indexes, autostep)."""
+            (pattern, indexes, autostep), or on node names if as_strings."""
         for pat, rset in sorted(self._patterns.items()):
-            if rset:
+            if rset and as_strings:
+                pfx, sep, sfx = pat.partition('%s')
+                if not sep or '%' in pfx or '%' in sfx:
+                    for idx in rset:
+                        yield pat % idx
+                else:
+                    # single %s and no escaped %: concatenation is faster
+                    for idx in rset:
+                        yield pfx + idx + sfx
+            elif rset:
                 autostep = rset.autostep
                 if rset.dim() == 1:
                     assert isinstance(rset, RangeSet)
@@ -175,6 +184,8 @@ class NodeSetBase(object):
                 else:
                     for rvec in rset:
                         yield pat, rvec, autostep
+            elif as_strings:
+                yield pat % ()
             else:
                 yield pat, None, None
 
@@ -193,11 +204,7 @@ class NodeSetBase(object):
     def __iter__(self):
         """Iterator on single nodes as string."""
         # Does not call self._iterbase() + str() for better performance.
-        for pat, ivec, _ in self._iter():
-            if ivec is not None:
-                yield pat % ivec
-            else:
-                yield pat % ()
+        return self._iter(as_strings=True)
 
     # define striter() alias for convenience (to match RangeSet.striter())
     striter = __iter__

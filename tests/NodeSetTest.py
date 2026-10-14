@@ -2022,6 +2022,13 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(len(nsbcpy), 102)
         self.assertEqual(str(nsbcpy), "foo[1-100,200-201]bar")
 
+    def testNodeSetBaseIterBadPattern(self):
+        """test NodeSetBase iteration with a bad pattern"""
+        rset = RangeSet("1-3")
+        self.assertRaises(TypeError, list, NodeSetBase("foo", rset))
+        self.assertRaises(TypeError, list, NodeSetBase("foo%%s", rset))
+        self.assertRaises(TypeError, list, NodeSetBase("foo%s%s", rset))
+
     def test_nd_simple(self):
         ns1 = NodeSet("da3c1")
         ns2 = NodeSet("da3c2")
