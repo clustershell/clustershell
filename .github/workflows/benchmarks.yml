@@ -76,10 +76,11 @@ jobs:
           for revision in $RELEASES; do
               asv run --no-pull --machine github-actions "${revision}^!"
           done
-          # asv run NEW fails when no master commit is new since the last run
+          # asv run fails on an empty range, when master is the latest release
           tip=$(git rev-parse master | cut -c1-8)
           if ! compgen -G ".asv/results/github-actions/${tip}-*.json" >/dev/null; then
-              asv run --no-pull --machine github-actions --steps 10 NEW
+              asv run --no-pull --machine github-actions --skip-existing-commits \
+                  "${RELEASES##* }..master"
           fi
 
       - name: Generate the ASV site

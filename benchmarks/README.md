@@ -76,7 +76,7 @@ run-to-run noise than from the in-process benchmarks.
 A curated dashboard (`dashboard/`, assembled by `build_dashboard.py` from the
 asv results) is published together with the standard ASV site by the
 `benchmarks.yml` workflow. Every week, it benchmarks every release since
-v1.8 and each master commit merged since the previous run (up to 10),
+v1.8 and, once each, every master commit since the latest release,
 accumulates results in the `gh-pages` branch (`performance-results/`) and
 publishes to `performance/` (dashboard) and `performance/asv/` (ASV site),
 where regressions are looked for since the latest release. Releases are
