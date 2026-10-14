@@ -1,0 +1,7 @@
+{
+    "cpu": "github-hosted",
+    "machine": "github-actions",
+    "os": "ubuntu-24.04",
+    "ram": "16GB",
+    "version": 1
+}
