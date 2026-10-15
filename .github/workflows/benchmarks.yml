@@ -16,7 +16,7 @@ jobs:
   benchmark-and-publish:
     if: github.repository == 'clustershell/clustershell'
     runs-on: ubuntu-24.04
-    timeout-minutes: 120
+    timeout-minutes: 240
     steps:
       - name: Check out source and full history
         uses: actions/checkout@v4
@@ -51,14 +51,6 @@ jobs:
               grep -E '^v[0-9]+(\.[0-9]+)+$' | sort -V | sed -n '/^v1\.8$/,$p')
           echo "RELEASES=$(echo $releases)" >> "$GITHUB_ENV"
 
-      - name: Restore previously published results
-        run: |
-          set -euxo pipefail
-          mkdir -p benchmarks/.asv/results
-          if [[ -d _pages/performance-results ]]; then
-              rsync -a _pages/performance-results/ benchmarks/.asv/results/
-          fi
-
       - name: Check benchmark discovery
         run: asv check -v
         working-directory: benchmarks
@@ -69,7 +61,7 @@ jobs:
               --arch x86_64 --cpu github-hosted --num_cpu 4 --ram 16GB
         working-directory: benchmarks
 
-      - name: Benchmark releases and new master commits
+      - name: Benchmark releases and master commits
         working-directory: benchmarks
         run: |
           set -euxo pipefail
@@ -77,10 +69,8 @@ jobs:
               asv run --no-pull --machine github-actions "${revision}^!"
           done
           # asv run fails on an empty range, when master is the latest release
-          tip=$(git rev-parse master | cut -c1-8)
-          if ! compgen -G ".asv/results/github-actions/${tip}-*.json" >/dev/null; then
-              asv run --no-pull --machine github-actions --skip-existing-commits \
-                  "${RELEASES##* }..master"
+          if [[ -n $(git rev-list "${RELEASES##* }..master") ]]; then
+              asv run --no-pull --machine github-actions "${RELEASES##* }..master"
           fi
 
       - name: Generate the ASV site
