@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-14T13:43:13.236000+00:00",
+  "generatedAt": "2026-10-15T00:31:30.065000+00:00",
   "machines": [
     {
       "id": "8a7dfa9a9d5a",
@@ -34,7 +34,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 1.2569898739999985
+              "value": 1.5790530679999968
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -44,7 +44,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 1.1909563404999943
+              "value": 1.173493135000001
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -54,7 +54,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 1.0261187650000068
+              "value": 1.6409161075000043
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -64,7 +64,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 1.200250498999992
+              "value": 1.5401731160000054
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -74,7 +74,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 1.4469316304999893
+              "value": 1.424400716999969
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -84,7 +84,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 1.1866002294999873
+              "value": 1.597893379999988
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -94,7 +94,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 1.3015284545000156
+              "value": 1.4046847924999497
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -104,7 +104,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 1.48330452350001
+              "value": 1.6323730644999728
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -114,7 +114,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 1.4685588440000288
+              "value": 1.4353109745000552
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -124,7 +124,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 1.0715525514999626
+              "value": 1.3742997774999708
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -134,7 +134,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 1.5860502415000042
+              "value": 1.5334055835000981
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -500,7 +500,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.10448046100000141
+              "value": 0.13518450300000495
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -510,7 +510,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.10233324450000225
+              "value": 0.14109289449999096
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -520,7 +520,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.10180778049999617
+              "value": 0.13716401050000115
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -530,7 +530,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.10817652800000133
+              "value": 0.13229751949998558
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -540,7 +540,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.10029303449999816
+              "value": 0.1379547505000005
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -550,7 +550,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.10148452650000195
+              "value": 0.13876669850000667
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -560,7 +560,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.10645242849994929
+              "value": 0.13309881899994025
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -570,7 +570,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.11188389149998557
+              "value": 0.13054244699998208
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -580,7 +580,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.10490644649996739
+              "value": 0.13247346800005744
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -590,7 +590,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.1147626480000099
+              "value": 0.12869871949999379
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -600,7 +600,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.11583970099991348
+              "value": 0.13162237699998514
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -966,7 +966,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.012213166000002218
+              "value": 0.017892692000003763
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -976,7 +976,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.012608802000016794
+              "value": 0.0181477610000087
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -986,7 +986,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.012690540000008355
+              "value": 0.017714774500021235
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -996,7 +996,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.012340381500024478
+              "value": 0.01742305550001788
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -1006,7 +1006,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.012151444000011224
+              "value": 0.017915880999993306
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -1016,7 +1016,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.012559048500008885
+              "value": 0.017647438499977852
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -1026,7 +1026,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.013477241499998627
+              "value": 0.017708244000004925
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -1036,7 +1036,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.013383196999996017
+              "value": 0.017434903499975007
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -1046,7 +1046,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.012891490000072281
+              "value": 0.017417761499984863
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -1056,7 +1056,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.014274027499993736
+              "value": 0.01756331249998766
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -1066,7 +1066,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.013862432999985685
+              "value": 0.017441161999954602
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -1432,7 +1432,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.03565667100000525
+              "value": 0.04886103200000136
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -1442,7 +1442,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.03502190499999358
+              "value": 0.05040253000001371
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -1452,7 +1452,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.03579758249998122
+              "value": 0.04899960049999663
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -1462,7 +1462,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.03555751449999889
+              "value": 0.048777499500005206
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -1472,7 +1472,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.03500644250001983
+              "value": 0.04897953799999755
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -1482,7 +1482,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.03557642900000246
+              "value": 0.05024356300000932
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -1492,7 +1492,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.03786615549995531
+              "value": 0.05097840350003935
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -1502,7 +1502,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.03840658199993641
+              "value": 0.04881462800000236
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -1512,7 +1512,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.03857006400005503
+              "value": 0.048660646500024995
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -1522,7 +1522,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.04150691150005059
+              "value": 0.048744233999968856
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -1532,7 +1532,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.0416576970000051
+              "value": 0.0494756814999846
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -1898,7 +1898,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0011741837222219134
+              "value": 0.0017832560833337396
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -1908,7 +1908,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0011758032777796266
+              "value": 0.0017971172500021262
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -1918,7 +1918,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0012824960625010817
+              "value": 0.0017981063333323277
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -1928,7 +1928,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0011670145555531992
+              "value": 0.001847519666673255
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -1938,7 +1938,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.001215202333330328
+              "value": 0.0018206133333270222
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -1948,7 +1948,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.0011895049444490269
+              "value": 0.0017947705833307737
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -1958,7 +1958,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.0012761987777720504
+              "value": 0.0017868678333362216
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -1968,7 +1968,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.0012044751666672306
+              "value": 0.001825515166653228
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -1978,7 +1978,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0012085918888892087
+              "value": 0.0018017073333282951
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -1988,7 +1988,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.0012276862777740563
+              "value": 0.0017853566666682734
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -1998,7 +1998,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.0012534723333348869
+              "value": 0.0017949735833250695
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -2364,7 +2364,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0052904389999994805
+              "value": 0.007309424250001584
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -2374,7 +2374,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.005292341250004995
+              "value": 0.007309089750002329
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -2384,7 +2384,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.005495500499996808
+              "value": 0.007465502000002289
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -2394,7 +2394,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.005358434499996179
+              "value": 0.007286492749997819
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -2404,7 +2404,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.005397607750012412
+              "value": 0.007413333749994422
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -2414,7 +2414,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.005369534750002458
+              "value": 0.007661303749998183
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -2424,7 +2424,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.005657363749989486
+              "value": 0.007402934499992853
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -2434,7 +2434,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.005842109250011163
+              "value": 0.007271358749960655
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -2444,7 +2444,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.005430751500000497
+              "value": 0.007350872000017716
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -2454,7 +2454,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.0055979235000052086
+              "value": 0.007227048250001644
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -2464,7 +2464,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.005633289749994219
+              "value": 0.007379004250026355
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -2830,7 +2830,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 1.0657280773145822e-05
+              "value": 1.776818471337739e-05
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -2840,7 +2840,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 1.0582449101800712e-05
+              "value": 1.862152010049206e-05
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -2850,7 +2850,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 1.0921860430943392e-05
+              "value": 1.7730465189886518e-05
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -2860,7 +2860,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 1.0465242408940637e-05
+              "value": 1.863366269166405e-05
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -2870,7 +2870,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 1.0463637313444167e-05
+              "value": 1.7731472602796602e-05
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -2880,7 +2880,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 1.0579631031230682e-05
+              "value": 1.776695180723845e-05
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -2890,7 +2890,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 1.102183450707316e-05
+              "value": 1.841335690515415e-05
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -2900,7 +2900,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 1.0807157437567747e-05
+              "value": 1.7021515748004412e-05
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -2910,7 +2910,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 1.0998948678844698e-05
+              "value": 1.7716727580462897e-05
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -2920,7 +2920,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 1.1227801348522125e-05
+              "value": 1.8810656143356686e-05
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -2930,7 +2930,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 1.1173811866140237e-05
+              "value": 1.7703800618279243e-05
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -3296,7 +3296,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 4.928119167431598e-06
+              "value": 7.4760266853911185e-06
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -3306,7 +3306,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 4.797076765370339e-06
+              "value": 7.163944091486119e-06
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -3316,7 +3316,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 5.398638403400186e-06
+              "value": 7.4609336158255146e-06
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -3326,7 +3326,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 5.121849117929758e-06
+              "value": 7.3996723433353825e-06
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -3336,7 +3336,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 5.095779869827201e-06
+              "value": 7.3903976744170894e-06
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -3346,7 +3346,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 5.2034645099015236e-06
+              "value": 7.620297468373915e-06
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -3356,7 +3356,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 5.2999526829258995e-06
+              "value": 7.49777861548803e-06
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -3366,7 +3366,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 5.214201676521352e-06
+              "value": 7.4813817869087874e-06
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -3376,7 +3376,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 5.5554800915119114e-06
+              "value": 7.700059805308818e-06
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -3386,7 +3386,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 5.333914166249065e-06
+              "value": 7.611570976791002e-06
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -3396,7 +3396,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 5.477559529654266e-06
+              "value": 7.640339957392286e-06
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -3762,7 +3762,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0008345088750001395
+              "value": 0.0012976028749998036
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -3772,7 +3772,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0008374717692316398
+              "value": 0.001319637312500177
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -3782,7 +3782,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0008683081249998281
+              "value": 0.0013232085625016765
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -3792,7 +3792,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0008420129999994795
+              "value": 0.0013346089999970445
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -3802,7 +3802,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.000843659708332704
+              "value": 0.0013313119374984694
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -3812,7 +3812,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.0037504476666564797
+              "value": 0.005194510499999675
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -3822,7 +3822,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.003913800499987019
+              "value": 0.004395456833321987
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -3832,7 +3832,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.004305958333323663
+              "value": 0.004296889999977793
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -3842,7 +3842,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0048755210000119105
+              "value": 0.004294593333327157
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -3852,7 +3852,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.005807270500004809
+              "value": 0.004318966333319925
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -3862,7 +3862,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.005855616666660049
+              "value": 0.004267115166650607
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -4228,7 +4228,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 6.593560778441428e-05
+              "value": 8.888880327868136e-05
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -4238,7 +4238,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 6.530837951805574e-05
+              "value": 9.353423076923235e-05
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -4248,7 +4248,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 6.82085320512362e-05
+              "value": 8.972061764700166e-05
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -4258,7 +4258,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 6.53856385541936e-05
+              "value": 9.266449586769618e-05
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -4268,7 +4268,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 6.51943895705529e-05
+              "value": 9.197838016540825e-05
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -4278,7 +4278,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.06884806900001195
+              "value": 0.1014566739999907
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -4288,7 +4288,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.08578365600001803
+              "value": 0.1018923209999798
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -4298,7 +4298,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.07775859499992066
+              "value": 0.09793530249999094
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -4308,7 +4308,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.08700974100003123
+              "value": 0.09751544799996736
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -4318,7 +4318,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.08973769299996093
+              "value": 0.09345213850002665
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -4328,7 +4328,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.0865187869999886
+              "value": 0.09518373499997779
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -4694,7 +4694,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.10581022049999689
+              "value": 0.14917848600000383
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -4704,7 +4704,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.09855408049999426
+              "value": 0.14470346250000432
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -4714,7 +4714,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.10880949599999212
+              "value": 0.1511536565
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -4724,7 +4724,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.10685398649999911
+              "value": 0.15079282050001552
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -4734,7 +4734,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.10568618249999417
+              "value": 0.15116455300000098
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -4744,7 +4744,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.10933094449998748
+              "value": 0.1540619379999839
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -4754,7 +4754,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.11205561150003973
+              "value": 0.1509401645000139
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -4764,7 +4764,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.11065943250002874
+              "value": 0.1511849684999902
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -4774,7 +4774,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.11287183799993272
+              "value": 0.1530426045000013
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -4784,7 +4784,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.11265146500005585
+              "value": 0.1517356670000254
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -4794,7 +4794,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.11159043250000877
+              "value": 0.15281997499994304
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -5160,7 +5160,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.21202856500000422
+              "value": 0.3048067815000053
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -5170,7 +5170,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.20919674399999622
+              "value": 0.3010297600000058
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -5180,7 +5180,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.22306666050000956
+              "value": 0.3081717580000145
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -5190,7 +5190,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.22216961249998235
+              "value": 0.3134187910000037
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -5200,7 +5200,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.21561557800001196
+              "value": 0.30955495899996777
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -5210,7 +5210,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.21593621249999728
+              "value": 0.3078989800000045
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -5220,7 +5220,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.2284745045000136
+              "value": 0.3066983794999487
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -5230,7 +5230,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.221746132499959
+              "value": 0.3064311764999843
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -5240,7 +5240,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.22642510550002726
+              "value": 0.3094254409999735
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -5250,7 +5250,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.22720028399999137
+              "value": 0.30410534599997163
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -5260,7 +5260,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.2293194490000019
+              "value": 0.30388322350006547
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -5626,7 +5626,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00044822689999989506
+              "value": 0.0006254951470589945
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -5636,7 +5636,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.00044504095652148805
+              "value": 0.0006105601470589845
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -5646,7 +5646,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.00044780949999997813
+              "value": 0.0006259461176470308
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -5656,7 +5656,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0004617405217399921
+              "value": 0.000600181794117602
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -5666,7 +5666,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.00044986949999881176
+              "value": 0.0006080917058802564
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -5676,7 +5676,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.0486246155000174
+              "value": 0.07502196099997605
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -5686,7 +5686,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.06541341299998749
+              "value": 0.07987815799992859
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -5696,7 +5696,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.07047295600000325
+              "value": 0.07353997599994955
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -5706,7 +5706,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0754736444999935
+              "value": 0.07087952249997898
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -5716,7 +5716,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.09784400949996552
+              "value": 0.07357379400002628
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -5726,7 +5726,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.07720462100002123
+              "value": 0.07276502499996695
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -6092,7 +6092,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.024580902499998558
+              "value": 0.0347533784999996
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -6102,7 +6102,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.025309140500013427
+              "value": 0.0356094534999869
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -6112,7 +6112,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.025284577000007857
+              "value": 0.03509624550000012
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -6122,7 +6122,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.024356046499974582
+              "value": 0.03533411800003705
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -6132,7 +6132,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0246049230000267
+              "value": 0.03506924399997047
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -6142,7 +6142,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.05463717450001582
+              "value": 0.08609798199998409
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -6152,7 +6152,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.07493175799993423
+              "value": 0.08831660649997275
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -6162,7 +6162,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.07086025400002427
+              "value": 0.08807341200002838
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -6172,7 +6172,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0907947144999639
+              "value": 0.08653302349995329
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -6182,7 +6182,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.10148171449998244
+              "value": 0.0864476445000264
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -6192,7 +6192,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.10922503249997817
+              "value": 0.08774788449989046
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -6558,7 +6558,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.006574135499999301
+              "value": 0.009131980999999456
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -6568,7 +6568,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.006632914749999941
+              "value": 0.009336557250001931
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -6578,7 +6578,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.006672944249999091
+              "value": 0.008173751000008167
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -6588,7 +6588,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.006730057750004903
+              "value": 0.00894464475000234
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -6598,7 +6598,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.006730215999994016
+              "value": 0.009111793999991846
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -6608,7 +6608,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.08027071399999386
+              "value": 0.12480351249999444
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -6618,7 +6618,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.11686557349997884
+              "value": 0.12878799450004408
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -6628,7 +6628,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.11767321850004464
+              "value": 0.11885620850000578
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -6638,7 +6638,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.13620058249995282
+              "value": 0.118108085499955
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -6648,7 +6648,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.14239535100000467
+              "value": 0.11695348050005805
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -6658,7 +6658,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.14990015450001692
+              "value": 0.11927379949997885
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -7024,7 +7024,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 3.0685439130420295e-05
+              "value": 4.270998199999098e-05
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -7034,7 +7034,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 2.8774721288505898e-05
+              "value": 4.224011693545041e-05
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -7044,7 +7044,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 3.135473283583085e-05
+              "value": 4.186502941176211e-05
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -7054,7 +7054,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 3.074603658530619e-05
+              "value": 4.301595525287044e-05
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -7064,7 +7064,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 3.05561277173492e-05
+              "value": 4.3993973140473366e-05
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -7074,7 +7074,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 5.499473484841626e-05
+              "value": 7.350595205467745e-05
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -7084,7 +7084,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 6.158918390793724e-05
+              "value": 7.79097153282821e-05
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -7094,7 +7094,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 6.070803370801187e-05
+              "value": 7.822472826095348e-05
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -7104,7 +7104,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 6.134921388883817e-05
+              "value": 7.827875185192304e-05
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -7114,7 +7114,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 6.002370949701606e-05
+              "value": 8.056056060554235e-05
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -7124,7 +7124,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 6.114558146088783e-05
+              "value": 7.797959057966906e-05
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -7490,7 +7490,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00476730933333395
+              "value": 0.006339244500001229
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -7500,7 +7500,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.004880167999999685
+              "value": 0.006805462750001823
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -7510,7 +7510,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.00501189799999698
+              "value": 0.006393175499994186
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -7520,7 +7520,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.004887746666658662
+              "value": 0.006320288750004011
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -7530,7 +7530,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.004721178000001676
+              "value": 0.00633204324999781
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -7540,7 +7540,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.016835817499980976
+              "value": 0.024078591500000357
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -7550,7 +7550,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.019072771499963892
+              "value": 0.023004681999964305
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -7560,7 +7560,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.018660552499966343
+              "value": 0.02303573299997197
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -7570,7 +7570,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.02019121149999137
+              "value": 0.023066867500006083
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -7580,7 +7580,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.02078589299998157
+              "value": 0.022575860999950237
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -7590,7 +7590,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.020761924499993256
+              "value": 0.022857880999936242
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -7956,7 +7956,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 2.2640897938129352e-05
+              "value": 3.271419584571481e-05
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -7966,7 +7966,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 2.0913458007809638e-05
+              "value": 3.1116802052772984e-05
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -7976,7 +7976,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 2.262119246864932e-05
+              "value": 3.2651892424200236e-05
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -7986,7 +7986,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 2.2132805327845237e-05
+              "value": 3.121618428565398e-05
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -7996,7 +7996,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 2.2599690376559216e-05
+              "value": 3.0829504322762776e-05
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -8006,7 +8006,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 2.801335089974282e-05
+              "value": 3.998513703712197e-05
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -8016,7 +8016,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 2.9056939024439258e-05
+              "value": 3.9953668518440585e-05
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -8026,7 +8026,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 2.7673622715360163e-05
+              "value": 4.0610835206012775e-05
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -8036,7 +8036,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 2.8561538043478748e-05
+              "value": 3.996525830261213e-05
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -8046,7 +8046,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 2.8840092642971712e-05
+              "value": 4.016244589537897e-05
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -8056,7 +8056,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 2.8758454301206864e-05
+              "value": 4.058402788143287e-05
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -8422,7 +8422,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0018976733333341636
+              "value": 0.0025477253749990325
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -8432,7 +8432,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0017300955000010276
+              "value": 0.0026329477500013354
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -8442,7 +8442,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0018241290000015433
+              "value": 0.002679360749997528
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -8452,7 +8452,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0018070924166693203
+              "value": 0.002674258249996342
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -8462,7 +8462,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.00179408924999791
+              "value": 0.002581215124997982
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -8472,7 +8472,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.10990900050001073
+              "value": 0.14931883499997411
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -8482,7 +8482,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.12489075549996187
+              "value": 0.17217705000001615
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -8492,7 +8492,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.12513590399998975
+              "value": 0.1676073969999834
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -8502,7 +8502,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.12626454450003166
+              "value": 0.1640541914999858
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -8512,7 +8512,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.12804345000006379
+              "value": 0.1662042880000172
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -8522,7 +8522,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.1308360654999774
+              "value": 0.1640161384999601
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -8888,7 +8888,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0017339894999987373
+              "value": 0.0025830302499993962
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -8898,7 +8898,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.001790568166666636
+              "value": 0.0026114848750005137
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -8908,7 +8908,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0018210244166686116
+              "value": 0.0026128688750013396
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -8918,7 +8918,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0017381594285715046
+              "value": 0.0026123138749980512
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -8928,7 +8928,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.001795742499998217
+              "value": 0.002597309000009318
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -8938,7 +8938,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.05679340249997722
+              "value": 0.09283312200003024
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -8948,7 +8948,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.08176488399999471
+              "value": 0.09227581200008217
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -8958,7 +8958,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.08243507049996879
+              "value": 0.09023979500000223
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -8968,7 +8968,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.09693013300000075
+              "value": 0.08980935199997475
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -8978,7 +8978,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.10881006500000012
+              "value": 0.09502556299997877
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -8988,7 +8988,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.11627294999999549
+              "value": 0.0902066379999269
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -9354,7 +9354,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0009589204090913613
+              "value": 0.0020511966000000825
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -9364,7 +9364,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0009771434545458842
+              "value": 0.0021469922999983737
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -9374,7 +9374,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0009780993181826923
+              "value": 0.002070918600000482
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -9384,7 +9384,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0009543519090920488
+              "value": 0.002177608799996733
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -9394,7 +9394,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0009392664545425139
+              "value": 0.0022040134000008036
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -9404,7 +9404,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.005599439750014312
+              "value": 0.008888323749985716
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -9414,7 +9414,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.006337398250025217
+              "value": 0.007311489499983281
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -9424,7 +9424,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.006583364999983132
+              "value": 0.006945379249998496
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -9434,7 +9434,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.008240041000021847
+              "value": 0.00676966949998814
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -9444,7 +9444,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.00824719899998172
+              "value": 0.006709856500009437
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -9454,7 +9454,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.009203696249983295
+              "value": 0.006709165500012659
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -9820,7 +9820,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00023505898913047372
+              "value": 0.00030726736764709903
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -9830,7 +9830,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.00022766954347854033
+              "value": 0.0003075935735289611
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -9840,7 +9840,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0002342603636365161
+              "value": 0.00030483591666710354
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -9850,7 +9850,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.00022897598912995028
+              "value": 0.0003056282878781007
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -9860,7 +9860,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0002313114239128659
+              "value": 0.00032103627941136006
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -9870,7 +9870,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.18083903049998185
+              "value": 0.24739259950001724
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -9880,7 +9880,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.21080251799997995
+              "value": 0.2485888975000421
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -9890,7 +9890,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.20866781699999137
+              "value": 0.2498650284999826
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -9900,7 +9900,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.22155521150006052
+              "value": 0.24449523450005017
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -9910,7 +9910,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.21819903400006524
+              "value": 0.23905285450001656
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -9920,7 +9920,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.21713390150000578
+              "value": 0.23976920050017725
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -10286,7 +10286,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 7.530572048034966e-06
+              "value": 1.0625516417912618e-05
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -10296,7 +10296,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 7.450511394099839e-06
+              "value": 1.066847960198369e-05
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -10306,7 +10306,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 7.899406028371308e-06
+              "value": 1.0844785350974675e-05
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -10316,7 +10316,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 7.667618483431586e-06
+              "value": 1.08808973974047e-05
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -10326,7 +10326,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 7.736675000013005e-06
+              "value": 1.0943700203276054e-05
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -10336,7 +10336,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 7.312887055842639e-06
+              "value": 1.036545608108705e-05
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -10346,7 +10346,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 7.398176390793283e-06
+              "value": 1.0201551477606946e-05
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -10356,7 +10356,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 7.251613970590508e-06
+              "value": 1.029756195966177e-05
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -10366,7 +10366,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 7.311067920899838e-06
+              "value": 1.0382386057673243e-05
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -10376,7 +10376,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 7.252330597493913e-06
+              "value": 1.0494607737573807e-05
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -10386,7 +10386,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 7.247054739631924e-06
+              "value": 1.0635099799333855e-05
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -10752,7 +10752,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.8547528544999992
+              "value": 1.2456550019999995
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -10762,7 +10762,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.8629688165000147
+              "value": 1.2251818135000008
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -10772,7 +10772,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.8868918040000011
+              "value": 1.2307382799999687
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -10782,7 +10782,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.8829926874999785
+              "value": 1.241797092000013
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -10792,7 +10792,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.8550836609999806
+              "value": 1.2510354985000447
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -10802,7 +10802,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.8624250080000024
+              "value": 1.228693385000014
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -10812,7 +10812,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.9002758249999943
+              "value": 1.2282188419999898
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -10822,7 +10822,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.8695278984999391
+              "value": 1.2273493960000224
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -10832,7 +10832,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.9019463570000426
+              "value": 1.2311927160000096
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -10842,7 +10842,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.8915369559999817
+              "value": 1.22484367200002
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -10852,7 +10852,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.8868803240000034
+              "value": 1.2211140564999141
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -11218,7 +11218,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.10894624400000197
+              "value": 0.151940361500003
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -11228,7 +11228,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.11063601749999918
+              "value": 0.15570836300000224
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -11238,7 +11238,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.1147743504999994
+              "value": 0.15244288449997612
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -11248,7 +11248,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.11002678249997189
+              "value": 0.15292988850001166
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -11258,7 +11258,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.10950425499999028
+              "value": 0.15072339750000197
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -11268,7 +11268,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.110164578000024
+              "value": 0.1512330660000316
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -11278,7 +11278,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.11534781649999104
+              "value": 0.15541491999999835
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -11288,7 +11288,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.11415884799993137
+              "value": 0.15299587049997854
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -11298,7 +11298,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.11375677550000773
+              "value": 0.1500915614999485
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -11308,7 +11308,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.11586639499995499
+              "value": 0.1530390825000154
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -11318,7 +11318,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.1171215894999591
+              "value": 0.15129508799998348
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -11684,7 +11684,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 1.2552264283745507e-07
+              "value": 1.851046847599242e-07
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -11694,7 +11694,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 1.2767043148938219e-07
+              "value": 1.90471864109988e-07
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -11704,7 +11704,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 1.315710974591739e-07
+              "value": 1.8933175674570486e-07
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -11714,7 +11714,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 1.2941281778490577e-07
+              "value": 1.8744017255609193e-07
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -11724,7 +11724,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 1.2784041755578722e-07
+              "value": 1.8929355635038757e-07
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -11734,7 +11734,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 1.3014957260001738e-07
+              "value": 1.9080481264339286e-07
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -11744,7 +11744,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 1.3496071929664793e-07
+              "value": 1.9592143168164106e-07
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -11754,7 +11754,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 1.3062501630106227e-07
+              "value": 1.9083758328428326e-07
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -11764,7 +11764,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 1.3435101558496726e-07
+              "value": 1.927811127504203e-07
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -11774,7 +11774,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 1.305823585884904e-07
+              "value": 1.917468026947298e-07
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -11784,7 +11784,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 1.3333318509632305e-07
+              "value": 1.930190057982139e-07
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -12150,7 +12150,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 1.5942784032038623e-07
+              "value": 2.2809663946947073e-07
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -12160,7 +12160,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 1.5223877182500938e-07
+              "value": 2.2122383151425757e-07
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -12170,7 +12170,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 1.614139363835488e-07
+              "value": 2.2049685217289288e-07
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -12180,7 +12180,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 1.5688197796130985e-07
+              "value": 2.1865183465255339e-07
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -12190,7 +12190,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 1.5738349350879984e-07
+              "value": 2.1669273104270165e-07
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -12200,7 +12200,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 9.743214545468701e-08
+              "value": 1.4766721282656037e-07
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -12210,7 +12210,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 1.0120810040245937e-07
+              "value": 1.485599167713605e-07
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -12220,7 +12220,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 9.784915909098014e-08
+              "value": 1.567916439342047e-07
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -12230,7 +12230,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 9.859277727276672e-08
+              "value": 1.525503819521424e-07
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -12240,7 +12240,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 9.81018772728765e-08
+              "value": 1.5055667088064685e-07
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -12250,7 +12250,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 1.0022845000011412e-07
+              "value": 1.482622652320456e-07
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -12616,7 +12616,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00017563662280713088
+              "value": 0.000348896050000036
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -12626,7 +12626,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.00017622461206887518
+              "value": 0.00036026759999998605
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -12636,7 +12636,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.00019202607547160095
+              "value": 0.00035108233333384453
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -12646,7 +12646,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.00018206395762714023
+              "value": 0.00035880217241363987
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -12656,7 +12656,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0001716693809526763
+              "value": 0.00035593400000007494
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -12666,7 +12666,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.00158311557142302
+              "value": 0.0018379297500009293
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -12676,7 +12676,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.0015535356428618538
+              "value": 0.001773776749994719
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -12686,7 +12686,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.0016061408571528902
+              "value": 0.0017712004166696715
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -12696,7 +12696,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0015642779999974926
+              "value": 0.0017844886666675088
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -12706,7 +12706,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.0015547792857140458
+              "value": 0.001778133416678429
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -12716,7 +12716,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.0015818633571435775
+              "value": 0.0017858428333473362
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -13082,7 +13082,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0008227404230773608
+              "value": 0.0013059079375006277
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -13092,7 +13092,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0008161302692319449
+              "value": 0.0013352830624988599
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -13102,7 +13102,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0008170989615380747
+              "value": 0.0013180235000014306
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -13112,7 +13112,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0008547347307709375
+              "value": 0.0013112992500019516
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -13122,7 +13122,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0008569783333337948
+              "value": 0.0013195193124992954
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -13132,7 +13132,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.00374122333333086
+              "value": 0.004634177499999244
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -13142,7 +13142,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.00466824033334016
+              "value": 0.005781923499985926
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -13152,7 +13152,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.004297830666682026
+              "value": 0.004294282500003041
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -13162,7 +13162,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.00643077350000946
+              "value": 0.004337056000016068
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -13172,7 +13172,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.004703476999983043
+              "value": 0.004286332333322207
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -13182,7 +13182,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.004597740500003056
+              "value": 0.004532543833344485
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -13548,7 +13548,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00017992114843745632
+              "value": 0.00025592639024396026
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -13558,7 +13558,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.00016730968749989472
+              "value": 0.00025575778048768946
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -13568,7 +13568,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.00018355226470580596
+              "value": 0.00025450506097552246
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -13578,7 +13578,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0001774217459013307
+              "value": 0.00025552008333325676
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -13588,7 +13588,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.00020086843103487792
+              "value": 0.0002539195000006813
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -13598,7 +13598,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.02580536950000578
+              "value": 0.03459021099996562
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -13608,7 +13608,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.028505604000002904
+              "value": 0.03653092350003817
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -13618,7 +13618,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.02733587600005194
+              "value": 0.036979099999939535
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -13628,7 +13628,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.02848976450002283
+              "value": 0.03643736250000984
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -13638,7 +13638,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.02827014600001121
+              "value": 0.036536498000032225
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -13648,7 +13648,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.027589417000001504
+              "value": 0.037188641500051745
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -14014,7 +14014,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.019133925499993154
+              "value": 0.02576272849999839
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -14024,7 +14024,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.01854000299999825
+              "value": 0.025987180500010254
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -14034,7 +14034,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0192034215000092
+              "value": 0.02634260899999674
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -14044,7 +14044,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.019163708500002485
+              "value": 0.02550349149998965
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -14054,7 +14054,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.018870239000023048
+              "value": 0.02605028149997679
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -14064,7 +14064,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.030988410999981397
+              "value": 0.042329987499954314
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -14074,7 +14074,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.03279570649999641
+              "value": 0.043642981000004966
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -14084,7 +14084,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.03288478050001231
+              "value": 0.04336388799998758
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -14094,7 +14094,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.034532078499978525
+              "value": 0.04395628200001056
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -14104,7 +14104,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.03450750050001261
+              "value": 0.043685288999995464
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -14114,7 +14114,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.033518289500023
+              "value": 0.04326257749994511
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -14480,7 +14480,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0004201816250001637
+              "value": 0.0005959282058825011
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -14490,7 +14490,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0004506580208332167
+              "value": 0.0006035388235303303
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -14500,7 +14500,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.00046198319565202996
+              "value": 0.0006033230588241502
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -14510,7 +14510,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0004533508695648498
+              "value": 0.0005957655000004787
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -14520,7 +14520,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.000435329999999586
+              "value": 0.0006071164117646704
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -14530,7 +14530,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.045661182000031886
+              "value": 0.07370085649998259
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -14540,7 +14540,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.05093862849997777
+              "value": 0.08104282300001842
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -14550,7 +14550,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.07018458999999666
+              "value": 0.07217174700002715
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -14560,7 +14560,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.08509084650000887
+              "value": 0.07333578699996224
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -14570,7 +14570,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.09112154599995392
+              "value": 0.07306250049998653
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -14580,7 +14580,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.09559894599999552
+              "value": 0.07338550549991396
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -14946,7 +14946,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.00017263715833344407
+              "value": 0.0003619881724136149
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -14956,7 +14956,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.00017579350806466856
+              "value": 0.0003600735862074418
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -14966,7 +14966,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0001788429112905984
+              "value": 0.00036029485714245927
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -14976,7 +14976,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.00018938368367339443
+              "value": 0.00036058971428535154
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -14986,7 +14986,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0001874842272725759
+              "value": 0.00036135721428617477
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -14996,7 +14996,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.0015566210714277012
+              "value": 0.0018029906666707043
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -15006,7 +15006,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.0015634020714279423
+              "value": 0.0018005533333393942
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -15016,7 +15016,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.0015749279285728335
+              "value": 0.0017782659166603783
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -15026,7 +15026,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.0015900148571453038
+              "value": 0.0017789589166739006
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -15036,7 +15036,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.0016118368571450706
+              "value": 0.0017834060000060012
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -15046,7 +15046,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.001616169714282023
+              "value": 0.0018168541666720255
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -15412,7 +15412,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0006991111333330005
+              "value": 0.0009000025416661117
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -15422,7 +15422,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0006860636666668066
+              "value": 0.0009278634583343621
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -15432,7 +15432,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.000728489535713298
+              "value": 0.0009126036363627773
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -15442,7 +15442,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0006951436666668087
+              "value": 0.0009023982916668654
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -15452,7 +15452,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0007110295666677757
+              "value": 0.0009201483333356464
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -15462,7 +15462,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.046204915999993545
+              "value": 0.08454489850001323
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -15472,7 +15472,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.05499454100001344
+              "value": 0.0750288845
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -15482,7 +15482,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.05895001599998295
+              "value": 0.0737110569999686
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -15492,7 +15492,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.08714241999996375
+              "value": 0.07340701550003814
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -15502,7 +15502,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.0865860874999953
+              "value": 0.07515438249998851
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -15512,7 +15512,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.08529383699993787
+              "value": 0.07335513650002667
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -15878,7 +15878,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 2.9694688350574214e-08
+              "value": 4.421963295121619e-08
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -15888,7 +15888,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 2.8331253828595646e-08
+              "value": 4.647411516005253e-08
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -15898,7 +15898,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 2.9179391477669105e-08
+              "value": 4.5885752453053537e-08
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -15908,7 +15908,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 2.9098206114137014e-08
+              "value": 4.679914030328186e-08
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -15918,7 +15918,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 2.831702212560751e-08
+              "value": 4.596799894919532e-08
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -15928,7 +15928,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.054308537999986584
+              "value": 0.08436433349999106
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -15938,7 +15938,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.059349268000005395
+              "value": 0.08388923799998338
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -15948,7 +15948,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.082474374500066
+              "value": 0.08558243500004892
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -15958,7 +15958,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.10376660700001139
+              "value": 0.0861161380000226
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -15968,7 +15968,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.10145398450003995
+              "value": 0.0854071884999712
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -15978,7 +15978,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.08551072149998618
+              "value": 0.08469982949998212
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -16344,7 +16344,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0039045133333341178
+              "value": 0.005686846000003243
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -16354,7 +16354,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.003982607333332075
+              "value": 0.0057045114999993984
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -16364,7 +16364,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.004167279833334684
+              "value": 0.005767342999995151
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -16374,7 +16374,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.004025887666671224
+              "value": 0.005716323999990891
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -16384,7 +16384,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.004151920999997097
+              "value": 0.005849516499992546
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -16394,7 +16394,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.07453144650003196
+              "value": 0.11783869450005113
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -16404,7 +16404,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.1023609595000039
+              "value": 0.12296059850001484
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -16414,7 +16414,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.10707089449999785
+              "value": 0.11121288499998627
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -16424,7 +16424,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.1347635160000209
+              "value": 0.11028469000001451
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -16434,7 +16434,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.11710780299995349
+              "value": 0.10950937749998957
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -16444,7 +16444,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.14024241250001523
+              "value": 0.11128899099992395
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -16810,7 +16810,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0022658824000004072
+              "value": 0.003106082125000853
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -16820,7 +16820,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0022292090999997075
+              "value": 0.0031146673749979925
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -16830,7 +16830,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.002223245399997609
+              "value": 0.0030775076250009192
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -16840,7 +16840,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0022167438000053608
+              "value": 0.00323167862499929
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -16850,7 +16850,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.002216360599999234
+              "value": 0.003118011500006901
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -16860,7 +16860,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.011911278500008393
+              "value": 0.016878372000007857
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -16870,7 +16870,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.012811612999996669
+              "value": 0.016872565000028317
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -16880,7 +16880,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.012156255499974122
+              "value": 0.016341610999973
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -16890,7 +16890,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.013890131499977088
+              "value": 0.017156946999989486
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -16900,7 +16900,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.015578029500034063
+              "value": 0.01650900249995857
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -16910,7 +16910,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.013763326000002962
+              "value": 0.01689409649998197
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -17276,7 +17276,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.015289662499995416
+              "value": 0.021156351000001905
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -17286,7 +17286,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.01567285149999975
+              "value": 0.021754989000015712
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -17296,7 +17296,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.01636404650000145
+              "value": 0.02186168349999207
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -17306,7 +17306,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.016006810000021687
+              "value": 0.020696101499993347
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -17316,7 +17316,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.015879437999984702
+              "value": 0.021382310999996434
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -17326,7 +17326,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.024107044999993832
+              "value": 0.033212928500006456
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -17336,7 +17336,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.026086495500010187
+              "value": 0.03433983400003626
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -17346,7 +17346,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.024519718500016552
+              "value": 0.03423470550001184
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -17356,7 +17356,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.02665681050001467
+              "value": 0.035196754499963845
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -17366,7 +17366,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.026627337000036277
+              "value": 0.03569885000007389
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -17376,7 +17376,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.026283337500046855
+              "value": 0.03445912400002271
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -17742,7 +17742,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0023461378999996897
+              "value": 0.0032526131666656966
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -17752,7 +17752,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0022429636000026675
+              "value": 0.003242945374999806
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -17762,7 +17762,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.002384261000000265
+              "value": 0.0033388535000042907
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -17772,7 +17772,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0022448566000036864
+              "value": 0.003193054000007578
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -17782,7 +17782,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0022445606999951908
+              "value": 0.0032742211249967568
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -17792,7 +17792,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.012308189000009406
+              "value": 0.01691818599999806
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -17802,7 +17802,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.013748085000031551
+              "value": 0.01745126949998621
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -17812,7 +17812,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.013202953499956038
+              "value": 0.01673697199998969
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -17822,7 +17822,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.016445865500031687
+              "value": 0.016585883000004742
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -17832,7 +17832,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.013086132500006897
+              "value": 0.016793553500065173
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -17842,7 +17842,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.012459166000041932
+              "value": 0.016556298999944374
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -18208,7 +18208,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0006054439999999024
+              "value": 0.000803760730768488
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -18218,7 +18218,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0005850243055560453
+              "value": 0.0008108592307689395
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -18228,7 +18228,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0005906898947358741
+              "value": 0.0008090586923084576
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -18238,7 +18238,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0006212912058809733
+              "value": 0.0008159331923095054
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -18248,7 +18248,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0005788683421045741
+              "value": 0.0008028904999985815
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -18258,7 +18258,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.044117651999982854
+              "value": 0.07426478250002333
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -18268,7 +18268,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.05170228299996893
+              "value": 0.07571541400000115
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -18278,7 +18278,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.05799951049999663
+              "value": 0.07357688000007556
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -18288,7 +18288,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.07663122300004943
+              "value": 0.07275014499998633
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -18298,7 +18298,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.08646793649995743
+              "value": 0.07349723150008458
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -18308,7 +18308,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.062072924999995394
+              "value": 0.07393755650002731
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -18674,7 +18674,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0016101814999994904
+              "value": 0.0022634758999998893
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -18684,7 +18684,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.001547461857143162
+              "value": 0.002224603100000877
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -18694,7 +18694,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0016481449999982292
+              "value": 0.002251091700000529
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -18704,7 +18704,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0016062590833314516
+              "value": 0.002257310099997767
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -18714,7 +18714,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.001561793000003523
+              "value": 0.002248647300001494
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -18724,7 +18724,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.11061634199998593
+              "value": 0.14574790549997374
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -18734,7 +18734,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.12225728599997865
+              "value": 0.16206193749997055
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -18744,7 +18744,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.1182724930000063
+              "value": 0.16296892449997813
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -18754,7 +18754,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.12474633850001737
+              "value": 0.16119460500004834
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -18764,7 +18764,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.12418168750002678
+              "value": 0.1815126674999874
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -18774,7 +18774,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.12531741850000344
+              "value": 0.15995023150003362
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -19140,7 +19140,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.017573930499999335
+              "value": 0.026361770499995885
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -19150,7 +19150,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.017094407000001866
+              "value": 0.026197950499991407
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -19160,7 +19160,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.01713638599999001
+              "value": 0.027043762499999957
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -19170,7 +19170,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.017657097500006103
+              "value": 0.026378167000018493
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -19180,7 +19180,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.017288810499991314
+              "value": 0.026637662500007764
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -19190,7 +19190,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.05978862300000287
+              "value": 0.10328306349998684
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -19200,7 +19200,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.09256944350002527
+              "value": 0.09162904699996943
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -19210,7 +19210,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.08471092799999269
+              "value": 0.09065180499999315
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -19220,7 +19220,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.11256215000003067
+              "value": 0.08944227000000637
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -19230,7 +19230,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.09950427000001127
+              "value": 0.09084892200007744
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -19240,7 +19240,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.08279659149997087
+              "value": 0.09580995600003916
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -19606,7 +19606,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.001798947499999315
+              "value": 0.002615787624998589
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -19616,7 +19616,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0017397828333329812
+              "value": 0.0025960558750028895
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -19626,7 +19626,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0018481305000008774
+              "value": 0.0025953541249990053
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -19636,7 +19636,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.0017998047499977097
+              "value": 0.0025962057500024116
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -19646,7 +19646,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0018186658333358232
+              "value": 0.0026194352500041873
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -19656,7 +19656,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.057851524000000154
+              "value": 0.0958359979999841
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -19666,7 +19666,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.07937964199999215
+              "value": 0.09432811549993403
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -19676,7 +19676,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.08375075349999861
+              "value": 0.09334771850001289
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -19686,7 +19686,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.10590927650008553
+              "value": 0.0898517239999137
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -19696,7 +19696,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.10263376649999145
+              "value": 0.09093250999995917
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -19706,7 +19706,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.09560286449999467
+              "value": 0.09172050150004907
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -20072,7 +20072,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.001781032500000871
+              "value": 0.0025980577500011037
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -20082,7 +20082,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0017942205000001839
+              "value": 0.0025786490000037077
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -20092,7 +20092,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0017835405833324103
+              "value": 0.0025908825000087177
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -20102,7 +20102,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.001775335916661902
+              "value": 0.0025689967499999966
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -20112,7 +20112,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0017451364166684395
+              "value": 0.0025901970000035135
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -20122,7 +20122,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.05935356049999996
+              "value": 0.09229767450000281
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -20132,7 +20132,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.07175061249998294
+              "value": 0.09108273200001804
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -20142,7 +20142,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.08261296250003625
+              "value": 0.09026849849993823
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -20152,7 +20152,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.10084635550003895
+              "value": 0.09065088049999304
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -20162,7 +20162,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.09597191000000294
+              "value": 0.09200326299998096
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -20172,7 +20172,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.08470355250000239
+              "value": 0.09377360399992085
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -20538,7 +20538,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.02733461249999891
+              "value": 0.03716905499999967
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -20548,7 +20548,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.02643607249999036
+              "value": 0.0378418280000119
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -20558,7 +20558,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.026473933000005445
+              "value": 0.039359666999999376
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -20568,7 +20568,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.027540005500014786
+              "value": 0.037173838999990494
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -20578,7 +20578,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.02780484649997561
+              "value": 0.037448536999988846
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -20588,7 +20588,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.0888874654999654
+              "value": 0.1410347525000475
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -20598,7 +20598,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.11271360000000641
+              "value": 0.13439209699998855
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -20608,7 +20608,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.11145240199999762
+              "value": 0.13162191349994146
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -20618,7 +20618,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.13760569950005674
+              "value": 0.13275569050000513
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -20628,7 +20628,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.12595680199996195
+              "value": 0.13372692899997674
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -20638,7 +20638,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.11286303899998984
+              "value": 0.13305499800003417
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -21004,7 +21004,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.000975258499998042
+              "value": 0.001540434857141853
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -21014,7 +21014,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0009907386500017878
+              "value": 0.0015491769285712767
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -21024,7 +21024,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0010044150909090438
+              "value": 0.0015743222857155714
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -21034,7 +21034,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.001063887300000488
+              "value": 0.0015350647142895468
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -21044,7 +21044,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0009919718500015053
+              "value": 0.0015580580000005284
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -21054,7 +21054,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.004217158500002446
+              "value": 0.005332478749991765
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -21064,7 +21064,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.00466944566666901
+              "value": 0.00550703716667537
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -21074,7 +21074,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.004612211999983629
+              "value": 0.004913900166646576
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -21084,7 +21084,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.006856014999982563
+              "value": 0.0049455421666569545
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -21094,7 +21094,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.004967663333331984
+              "value": 0.004919062500012691
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -21104,7 +21104,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.005697720249969507
+              "value": 0.004927998166711707
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
@@ -21470,7 +21470,7 @@
                 "v1.8"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7ab742e7a493aa5245b58085dc34d7d07015a391",
-              "value": 0.0010533759999994175
+              "value": 0.0015754229285716648
             },
             {
               "hash": "783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
@@ -21480,7 +21480,7 @@
                 "v1.8.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/783dfa8cfdb8799ad445e120e304151e5cc4fbbb",
-              "value": 0.0010957058499997175
+              "value": 0.00157653121428528
             },
             {
               "hash": "8fb4204218563822568c170b5b8f8d202141248c",
@@ -21490,7 +21490,7 @@
                 "v1.8.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/8fb4204218563822568c170b5b8f8d202141248c",
-              "value": 0.0011146501999988346
+              "value": 0.0016336513333309692
             },
             {
               "hash": "20b47957675982237ca62cc53e438131f6c9329f",
@@ -21500,7 +21500,7 @@
                 "v1.8.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/20b47957675982237ca62cc53e438131f6c9329f",
-              "value": 0.001010979000000134
+              "value": 0.0015437979285723357
             },
             {
               "hash": "c421133ed4baa69e35ff76c476d4097201485344",
@@ -21510,7 +21510,7 @@
                 "v1.8.4"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/c421133ed4baa69e35ff76c476d4097201485344",
-              "value": 0.0009282559999984518
+              "value": 0.0019077625714284555
             },
             {
               "hash": "08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
@@ -21520,7 +21520,7 @@
                 "v1.9"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/08393b6a44165e4a1eb52964d77f6bdab3e5b1b3",
-              "value": 0.006231152250009586
+              "value": 0.008390925499995205
             },
             {
               "hash": "4f6df52d56789dbdd416a824e72a0a393df351fe",
@@ -21530,7 +21530,7 @@
                 "v1.9.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/4f6df52d56789dbdd416a824e72a0a393df351fe",
-              "value": 0.0067642612499980714
+              "value": 0.006585868000001938
             },
             {
               "hash": "e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
@@ -21540,7 +21540,7 @@
                 "v1.9.2"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/e581b9a39d3bd4f2911d918d7fbc15af55c607e8",
-              "value": 0.007347672250006099
+              "value": 0.006493358000000171
             },
             {
               "hash": "5c3dccca6313f964551a7343f9e67c4e4816fb40",
@@ -21550,7 +21550,7 @@
                 "v1.9.3"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/5c3dccca6313f964551a7343f9e67c4e4816fb40",
-              "value": 0.007979046000002654
+              "value": 0.006534501999993836
             },
             {
               "hash": "7bcb5423146d47510d9d75fe240b8c6da7460cdb",
@@ -21560,7 +21560,7 @@
                 "v1.10"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7bcb5423146d47510d9d75fe240b8c6da7460cdb",
-              "value": 0.006901830749995952
+              "value": 0.006479317500009074
             },
             {
               "hash": "7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
@@ -21570,7 +21570,7 @@
                 "v1.10.1"
               ],
               "url": "https://github.com/clustershell/clustershell/commit/7d440c7cce5ca358ff4a59729bc7b26e3e857d3e",
-              "value": 0.006985989750006638
+              "value": 0.007051018999959524
             },
             {
               "hash": "ef8c39b4cd0b536aeb2bf24dffca0858265335b8",
