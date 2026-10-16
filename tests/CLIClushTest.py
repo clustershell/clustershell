@@ -22,6 +22,7 @@ import warnings
 from subprocess import Popen, PIPE
 
 from .TLib import *
+from .TLib import TBytesIO
 import ClusterShell.CLI.Clush
 from ClusterShell.CLI.Clush import main
 from ClusterShell.Defaults import DEFAULTS
@@ -838,6 +839,54 @@ class CLIClushTest_A(unittest.TestCase):
                        "--grooming=0.5", "-v", "echo ok"], None,
                       b"n1: ok\n", 0,
                       re.compile(br"(?s)(.*\n)?Grooming delay: 0\.500000\n"))
+
+    def _clush_interrupt_t(self, args, expected_stdout):
+        """Run clush, interrupt it with SIGINT after 1s and check output"""
+        def raw_input_mock(prompt):
+            time.sleep(60)
+        saved = sys.stdout, sys.stderr, sys.argv, ClusterShell.CLI.Clush.raw_input
+        sys.stdout = out = TBytesIO()
+        sys.stderr = err = TBytesIO()
+        sys.argv = ["clush"] + args
+        ClusterShell.CLI.Clush.raw_input = raw_input_mock
+        timer = threading.Timer(1, os.kill, (os.getpid(), signal.SIGINT))
+        timer.start()
+        try:
+            with warnings.catch_warnings():
+                # keep stderr free of the multi-threaded fork() warning (py3.12+)
+                warnings.simplefilter("ignore", DeprecationWarning)
+                self.assertRaises(KeyboardInterrupt, main)
+        finally:
+            timer.cancel()
+            sys.stdout, sys.stderr, sys.argv, ClusterShell.CLI.Clush.raw_input = saved
+        self.assertEqual(out.getvalue(), expected_stdout)
+        self.assertEqual(err.getvalue(), b"")
+
+    def test_060_interrupt(self):
+        """test clush on keyboard interrupt"""
+        tdir = make_temp_dir()
+        pidfile = os.path.join(tdir.name, "pid")
+        args = ["-R", "exec", "-w", "n[1-2]",
+                "[ %%h = n1 ] || { echo $$ >%s; exec sleep 10; }; echo %%h"
+                % pidfile]
+        try:
+            for opts in ([], ["-L"]):
+                self._clush_interrupt_t(opts + args, b"n1: n1\n")
+                with open(pidfile) as pidf:
+                    pid = int(pidf.read())
+                os.unlink(pidfile)
+                # n2 command has been killed and reaped
+                self.assertRaises(OSError, os.kill, pid, 0)
+        finally:
+            tdir.cleanup()
+
+    def test_061_interrupt_tty(self):
+        """test clush on keyboard interrupt [tty]"""
+        setattr(ClusterShell.CLI.Clush, '_f_user_interaction', True)
+        try:
+            self.test_060_interrupt()
+        finally:
+            delattr(ClusterShell.CLI.Clush, '_f_user_interaction')
 
 
 class CLIClushTest_B_StdinFailure(unittest.TestCase):
