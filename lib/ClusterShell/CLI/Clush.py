@@ -580,6 +580,9 @@ def ttyloop(task, nodeset, timeout, display, remote, trytree):
                     display.vprint_err(verbexit, \
                         "clush: %s: command timeout" % \
                             NodeSet._fromlist1(task.iter_keys_timeout()))
+            else:
+                task.abort()
+                task.join()
             raise kbe
 
         if task.default("USER_running"):
