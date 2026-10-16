@@ -292,7 +292,10 @@ for multiple Tasks, but:
 The library provides two thread-safe methods and a function for basic Task
 interactions: :meth:`.Task.wait`, :meth:`.Task.join` and
 :func:`.Task.task_wait` (function defined at the root of the Task module).
-Please refer to the API documentation.
+Please refer to the API documentation. Note that :meth:`.Task.join` returns as
+soon as the task has stopped running, so if an exception has been raised and
+not caught in an event handler, the task is then torn down concurrently and
+its results are undefined.
 
 Configuring explicit Shell Worker objects
 -----------------------------------------

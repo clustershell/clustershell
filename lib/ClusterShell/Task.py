@@ -1004,7 +1004,15 @@ class Task(object):
     def join(self):
         """
         Suspend execution of the calling thread until the target task
-        terminates, unless the target task has already terminated.
+        becomes joinable, unless the target task is already joinable.
+
+        A task becomes joinable when its event loop suspends, which
+        normally happens when the task has terminated. However, if an
+        exception is raised in an event handler and not caught there, the
+        task is torn down concurrently in its own thread and its results
+        become undefined shortly after this method returns. In that case,
+        you should not rely on the task results anymore: capture whatever
+        you need from the offending handler itself.
         """
         self._join_cond.acquire()
         try:
