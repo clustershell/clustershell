@@ -470,6 +470,88 @@ For example, to save all logs from *journalctl(1)* in a local directory
 
     $ clush -w node[40-42] --outdir=/tmp/run1/stdout/ journalctl >/dev/null
 
+.. _clush-json:
+
+JSON output
+"""""""""""
+
+To process results with other tools like *jq(1)*, use the ``--json`` option:
+*clush* then writes results on standard output as `JSON Lines`_ (one JSON
+object per line) and nothing else; its own messages go to standard error. Each
+object has the following fields:
+
+* ``nodes``: node name, or folded nodeset with ``-b``; it can be given as is
+  to ``-w``, and several values can be joined with commas
+* ``rc``: command return code, or ``null`` if the command timed out; in copy
+  mode, the largest return code of all sources, or ``null`` if any of them
+  timed out
+* ``timeout``: ``true`` if the command timed out (``rc`` is then ``null``),
+  ``false`` otherwise
+* ``stdout``: list of standard output lines
+* ``stderr``: list of standard error lines
+
+By default, *clush* writes one object per node, as soon as the command
+completes on this node (nodes whose command timed out are written last, when
+all commands have completed)::
+
+    $ clush -w node[40-42] --json uname -r
+    {"nodes": "node41", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node40", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node42", "rc": 0, "timeout": false, "stdout": ["5.14.0-427.el9.x86_64"], "stderr": []}
+
+With ``-b``, nodes with the same return code, standard output and standard
+error are gathered in one object, written when all commands have completed.
+The ``nodes`` field is then folded like the ``-b`` header (see ``-r``, ``-G``
+and :ref:`--axis <clush-axis>`)::
+
+    $ clush -w node[40-42] -b --json uname -r
+    {"nodes": "node[40-41]", "rc": 0, "timeout": false, "stdout": ["5.14.0-503.el9.x86_64"], "stderr": []}
+    {"nodes": "node42", "rc": 0, "timeout": false, "stdout": ["5.14.0-427.el9.x86_64"], "stderr": []}
+
+For example, to run another command only on the nodes where the first one
+failed or timed out, join their ``nodes`` values with commas and give the
+result to ``-w``, unless it is empty (the command succeeded on all nodes)::
+
+    $ failed=$(clush -w node[1-100] -b --json systemctl restart foo | jq -rs 'map(select(.rc != 0).nodes) | join(",")')
+    $ if [ -n "$failed" ]; then clush -w "$failed" journalctl -u foo -n 20; fi
+
+As ``rc`` is ``null`` on timeout, the *jq* filter ``select(.rc != 0)`` matches
+nodes where the command failed or timed out; use ``.timeout`` to tell them
+apart.
+
+In copy mode (``-c`` or ``--rcopy``), *clush* writes one object per node for
+all sources, and ``-b`` is ignored.
+
+Output lines are decoded as UTF-8 and invalid bytes are replaced with U+FFFD.
+The exit status of *clush* is not modified (see ``-S``), but the "exited with
+exit code" and "command timeout" messages are not displayed. ``--json`` cannot
+be combined with ``-L``, ``-B``, ``-N``, ``-P``, ``--diff``, ``--outdir``,
+``--errdir``, or interactive mode.
+
+.. highlight:: json
+
+Each object is described by the following JSON Schema. New fields may be
+added in future versions, so scripts must ignore fields they do not know::
+
+    {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "clush --json result",
+      "type": "object",
+      "properties": {
+        "nodes": {"type": "string"},
+        "rc": {"type": ["integer", "null"]},
+        "timeout": {"type": "boolean"},
+        "stdout": {"type": "array", "items": {"type": "string"}},
+        "stderr": {"type": "array", "items": {"type": "string"}}
+      },
+      "required": ["nodes", "rc", "timeout", "stdout", "stderr"]
+    }
+
+For more complex workflows, consider using the ClusterShell Python library
+instead (see :ref:`prog-examples`).
+
+.. highlight:: console
+
 Standard input bindings
 """""""""""""""""""""""
 
@@ -825,6 +907,8 @@ specifying the case-sensitive full Python module name of a worker module.
 .. _ticket: https://github.com/clustershell/clustershell/issues/new
 
 .. _this paper: https://www.kernel.org/doc/ols/2012/ols2012-thiell.pdf
+
+.. _JSON Lines: https://jsonlines.org/
 
 .. _sshpass: http://sshpass.sourceforge.net/
 .. _sudo: https://www.sudo.ws/
