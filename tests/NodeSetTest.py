@@ -2966,3 +2966,72 @@ class NodeSetTest(unittest.TestCase):
         self.assertEqual(len(n1), 13)
         # padding in negative range is not supported
         self._assertNS("n[-001]", NodeSetParseRangeError)
+
+    def test_braces_fold(self):
+        """test NodeSet brace expansion"""
+        self._assertEqual("server[5-9]-{mds,oss}",
+                          "server[5-9]-mds,server[5-9]-oss")
+        self._assertEqual("server[5-9]-{mds1,oss0}",
+                          "server[5-9]-mds1,server[5-9]-oss0")
+        self._assertEqual("server-{mds,oss}[0-3]",
+                          "server-mds[0-3],server-oss[0-3]")
+        self._assertEqual("node[1-3]{,-ib}", "node[1-3],node[1-3]-ib")
+        self._assertEqual("n{1,2}", "n[1-2]")
+        self._assertEqual("n{1,10}", "n[1,10]")
+        self._assertEqual("{a,b}", "a,b")
+        self._assertEqual("n{}", "n")
+        self.assertEqual(len(NodeSet("{}")), 0)
+        # cartesian product
+        nodeset = NodeSet("{a,b}-{1,2}")
+        self.assertEqual(list(nodeset), ["a-1", "a-2", "b-1", "b-2"])
+        self.assertEqual(str(nodeset), "a-[1-2],b-[1-2]")
+        # alternatives are parsed like any other node name
+        self._assertEqual("n{1,2}[3-4]", "n[13-14,23-24]")
+        nodeset = NodeSet("n{01,1}")
+        self.assertEqual(nodeset, NodeSet("n01,n1"))
+        self.assertEqual(str(nodeset), "n[1,01]")
+        self.assertEqual(len(nodeset), 2)
+        # whitespace around alternatives is ignored
+        self._assertEqual("n{1, 2}", "n[1-2]")
+        self._assertEqual("n{ 1 ,2 }", "n[1-2]")
+
+    def test_braces_operators(self):
+        """test NodeSet brace expansion with operators"""
+        self._assertEqual("n[1-5]&n{2,4,9}", "n[2,4]")
+        self._assertEqual("n[1-3]^n{2,2}", "n[1,3]")
+        self._assertEqual("n[1-5]!n{2,4}", "n[1,3,5]")
+        self._assertEqual("n{1,2}!n1", "n2")
+        self._assertEqual("n[1-6] ! n{2,4} , m{1,2} & n[1-9] , m[2-3]",
+                          "m[2-3],n[1,3,5-6]")
+        nodeset = NodeSet("n[1-5]")
+        nodeset.intersection_update("n{2,9}")
+        self.assertEqual(str(nodeset), "n2")
+
+    def test_braces_percent(self):
+        """test NodeSet brace expansion with % character"""
+        self.assertEqual(list(NodeSet("n{%a,b}")), ["n%a", "nb"])
+        self._assertEqual("clust%ser{1,2}", "clust%ser[1-2]")
+
+    def test_braces_errors(self):
+        """test NodeSet brace expansion parse errors"""
+        msg = "missing closing brace"
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{1,2")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "a{b")
+        msg = "illegal closing brace"
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{1,2}}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n}{1,2}")
+        msg = "illegal character in braces"
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{1,[2-3]}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{1,{2,3}}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{1!2}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{a,@b}")
+        self.assertRaisesRegex(NodeSetParseError, msg, NodeSet, "n{a,b*}")
+        self.assertRaises(NodeSetParseError, NodeSet, "{a,b},")
+        self.assertRaises(NodeSetParseError, NodeSet, ",{a,b}")
+        self.assertRaises(NodeSetParseError, NodeSet, "n{1,2}&")
+
+    def test_braces_fromlist(self):
+        """test NodeSet.fromlist() with brace expansion"""
+        nodeset = NodeSet.fromlist(["n{1,2}", "m"])
+        self.assertEqual(str(nodeset), "m,n[1-2]")

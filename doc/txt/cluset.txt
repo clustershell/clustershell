@@ -148,6 +148,46 @@ Group names in expressions
 
     | J[1-3]
 
+BRACE EXPANSION
+===============
+
+Braces list alternatives for a part of a node name: ``{alt1,alt2,...}``
+expands the node set once per alternative and computes the union. Several
+braces in the same node name form a cartesian product. Alternatives are
+literal strings, may be empty, and surrounding whitespace is ignored.
+
+Examples of brace expansion
+  :$ cluset -f 'server[5-9]-{mds,oss}':
+
+  | server[5-9]-mds,server[5-9]-oss
+
+  :$ cluset -f '{lustre,nfs}-{mds,oss}':
+
+  | lustre-mds,lustre-oss,nfs-mds,nfs-oss
+
+  :$ cluset -f 'node[1-3]{,-ib}':
+
+  | node[1-3],node[1-3]-ib
+
+Inside braces, only the comma is special: ranges, node groups, wildcards,
+operators and nested braces are not allowed there. They still work elsewhere
+in the same node set, like in ``@{login,oss}`` or ``{db,www}serv*``.
+Shell-style sequences like ``{1..5}`` are not supported and are taken
+literally: use ranges like ``[1-5]``. Output never contains braces.
+
+With extended patterns, a node set with braces is evaluated as a whole
+operand: the union of its alternatives is computed first, then the operator
+is applied. In the example below, we remove node3 and its -ib name:
+
+  :$ cluset -f 'node[1-4]{,-ib}!node3{,-ib}':
+
+  | node[1-2,4],node[1-2,4]-ib
+
+Always quote node sets with braces, otherwise the shell expands the braces
+first: ``clush -w node[1-3]{,-ib} uptime`` runs ``node[1-3]-ib uptime`` on
+``node[1-3]``, while ``clush -w 'node[1-3]{,-ib}' uptime`` runs ``uptime`` on
+all six nodes.
+
 NODE WILDCARDS
 ==============
 
