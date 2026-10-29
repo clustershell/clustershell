@@ -65,10 +65,12 @@ is specified, \fBclush\fP waits for command completion and then displays
 gathered output results.
 .sp
 The \fB\-w\fP option allows you to specify remote hosts by using ClusterShell
-NodeSet syntax, including the node groups \fB@group\fP special syntax and the
-\fBExtended Patterns\fP syntax to benefit from NodeSet basic arithmetic
-(like \fB@Agroup\e&@Bgroup\fP). See EXTENDED PATTERNS in \fBnodeset\fP(1) and
-also \fBgroups.conf\fP(5) for more information.
+NodeSet syntax, including the node groups \fB@group\fP special syntax, brace
+expansion (like \fBserver[5\-9]\-{mds,oss}\fP) and the \fBExtended Patterns\fP
+syntax to benefit from NodeSet basic arithmetic (like \fB@Agroup\e&@Bgroup\fP).
+Quote node sets with braces, otherwise the shell expands them first. See
+EXTENDED PATTERNS and BRACE EXPANSION in \fBnodeset\fP(1) and also
+\fBgroups.conf\fP(5) for more information.
 .sp
 Unless the option \fB\-\-nostdin\fP (or \fB\-n\fP) is specified, \fBclush\fP detects
 when its standard input is connected to a terminal (as determined by
