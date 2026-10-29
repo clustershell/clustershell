@@ -678,6 +678,17 @@ class CLINodesetTest(CLINodesetTestBase):
         self._nodeset_t(["--index", "da5p1", nd2v], None, b"6\n")
         self._nodeset_t(["--index", "da6p2", nd2v], None, b"9\n")
 
+    def test_029_braces(self):
+        """test nodeset with brace expansion"""
+        self._nodeset_t(["-f", "server[5-9]-{mds,oss}"], None,
+                        b"server[5-9]-mds,server[5-9]-oss\n")
+        self._nodeset_t(["-f"], "node[1-3]{,-ib}\n",
+                        b"node[1-3],node[1-3]-ib\n")
+        self._nodeset_t(["-e", "n{1,2}"], None, b"n1 n2\n")
+        self._nodeset_t(["-c", "node[1-3]{,-ib}"], None, b"6\n")
+        self._nodeset_t(["-f", "n{1"], None, b"", 1,
+                        b"Parse error: missing closing brace: \"n{1\"\n")
+
 
 class CLINodesetGroupResolverTest1(CLINodesetTestBase):
     """Unit test class for testing CLI/Nodeset.py with custom Group Resolver"""

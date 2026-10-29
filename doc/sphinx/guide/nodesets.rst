@@ -185,6 +185,14 @@ accordingly. The following example shows how you can use this feature::
     >>> print(NodeSet("node[10-42],node46!node10"))
     node[11-42,46]
 
+Version 1.11 introduces brace expansion: ``{alt1,alt2,...}`` lists
+alternatives for a part of a node name, for example::
+
+    >>> print(NodeSet("server[5-9]-{mds,oss}"))
+    server[5-9]-mds,server[5-9]-oss
+
+See :ref:`nodeset-braces` for the syntax rules.
+
 
 .. _class-NodeSet-groups:
 

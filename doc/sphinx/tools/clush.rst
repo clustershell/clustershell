@@ -45,11 +45,16 @@ Command line options
 
 The ``-w`` option allows you to specify remote hosts by using ClusterShell
 :class:`.NodeSet` syntax, including the node groups *@group* special syntax
-(cf. :ref:`nodeset-groupsexpr`) and the Extended String Patterns syntax (see
+(cf. :ref:`nodeset-groupsexpr`), :ref:`brace expansion <cluset-braces>` (like
+``server[5-9]-{mds,oss}``) and the Extended String Patterns syntax (see
 :ref:`class-NodeSet-extended-patterns`) to benefit from :class:`.NodeSet`
 basic arithmetic (like ``@Agroup&@Bgroup``). Additionally, the ``-x`` option
 allows you to exclude nodes from remote hosts list (the same NodeSet syntax
 can be used here). Nodes exclusion has priority over nodes addition.
+
+.. warning:: Quote node sets that contain braces, as in
+   ``clush -w 'node[1-3]{,-ib}' uptime``. Unquoted, the shell expands the
+   braces itself and *clush* runs the wrong command.
 
 Using node groups
 """""""""""""""""

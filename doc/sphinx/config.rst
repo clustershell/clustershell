@@ -411,6 +411,9 @@ Here is an example of **/etc/clustershell/groups.d/cluster.yaml**::
 If you wish to define an empty group (with no nodes), you can either use an
 empty string ``''`` or any valid YAML null value (``null`` or ``~``).
 
+Quote node sets like in the example above: a leading ``@`` or ``{`` is
+special in YAML.
+
 .. note::
 
    To select **every node** of a group source, use the ``*`` wildcard, for
@@ -544,7 +547,7 @@ replaced before executing shell commands:
 Upcall commands are executed with their standard input connected to
 ``/dev/null``, so they must not expect any input on stdin.
 
-Group names must not contain any of the following characters: ``@,!&^*``.
+Group names must not contain any of the following characters: ``@,!&^*{}``.
 Since version 1.11, a group name returned by a group source that contains such
 a character is ignored (previous versions reported a fatal error). The command
 line tools print a warning about ignored group names on standard error, unless
