@@ -355,6 +355,62 @@ inside the brackets.
    Negative ranges are not compatible with **leading** or **trailing** digits
    either. For instance, this is **not** supported: ``node1[-3-3]``
 
+.. _cluset-braces:
+
+Brace expansion
+^^^^^^^^^^^^^^^
+
+ClusterShell 1.11 introduces brace expansion: ``{alt1,alt2,...}`` lists
+alternatives for a part of a node name. The node set is expanded once per
+alternative, and the result is the union of all expansions::
+
+    $ cluset -f 'server[5-9]-{mds,oss}'
+    server[5-9]-mds,server[5-9]-oss
+
+Several braces in the same node name form a cartesian product, from left
+to right::
+
+    $ cluset -f '{lustre,nfs}-{mds,oss}'
+    lustre-mds,lustre-oss,nfs-mds,nfs-oss
+
+Alternatives are literal strings. They may be empty, and whitespace around
+them is ignored::
+
+    $ cluset -f 'node[1-3]{,-ib}'
+    node[1-3],node[1-3]-ib
+
+Inside braces, only ``,`` is special: ranges ``[ ]``, node groups ``@``,
+wildcards ``*`` and ``?``, operators ``!``, ``&`` and ``^``, and nested braces
+are not allowed there (parse error). Outside braces, they still work as usual
+in the same node set, like :ref:`node groups <cluset-groups>` in
+``@{login,oss}`` or :ref:`node wildcards <node-wildcards>` in
+``{db,www}serv*``::
+
+    $ cluset -f '@{login,oss}'
+    node[40-45,50-51]
+
+Shell-style sequences like ``{1..5}`` are not supported and are taken
+literally: use a range like ``[1-5]`` for numbers.
+
+With :ref:`extended patterns <cluset-extended-patterns>`, a node set with
+braces is evaluated as a whole operand: the union of its alternatives is
+computed first, then the operator is applied. For example,
+``node[1-9]&node{2,4}`` is ``node[2,4]``. Below, we remove *node3* and its
+*-ib* name::
+
+    $ cluset -f 'node[1-4]{,-ib}!node3{,-ib}'
+    node[1-2,4],node[1-2,4]-ib
+
+The result never contains braces: folding always uses the usual node set
+syntax, as shown above.
+
+.. warning:: Always quote node sets that contain braces on the command line,
+   otherwise the shell performs its own brace expansion first.
+   ``cluset -f node[1-3]{,-ib}`` happens to work, as *cluset* computes the
+   union of its arguments, but ``clush -w node[1-3]{,-ib} uptime`` runs the
+   command ``node[1-3]-ib uptime`` on ``node[1-3]``. Use
+   ``clush -w 'node[1-3]{,-ib}' uptime`` to run ``uptime`` on all six nodes.
+
 .. _cluset-arithmetic:
 
 Arithmetic operations

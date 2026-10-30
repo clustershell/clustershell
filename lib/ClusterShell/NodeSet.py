@@ -70,7 +70,7 @@ except NameError:
 
 # Define default GroupResolver object used by NodeSet
 DEF_GROUPS_CONFIGS = config_paths('groups.conf')
-ILLEGAL_GROUP_CHARS = set("@,!&^*")
+ILLEGAL_GROUP_CHARS = set("@,!&^*{}")
 _DEF_RESOLVER_STD_GROUP = NodeUtils.GroupResolverConfig(DEF_GROUPS_CONFIGS,
                                                         ILLEGAL_GROUP_CHARS)
 # Standard group resolver
@@ -862,13 +862,21 @@ class ParsingEngine(object):
 
     BRACKET_OPEN = '['
     BRACKET_CLOSE = ']'
+    BRACE_OPEN = '{'
+    BRACE_CLOSE = '}'
     GROUP_PREFIX = '@'
     WILDCARD_ANY = '*'
     WILDCARD_ONE = '?'
 
     NOT_SINGLE_CHARS = frozenset(OP_CODES) | \
-                       frozenset((BRACKET_OPEN, BRACKET_CLOSE, GROUP_PREFIX,
-                                  WILDCARD_ANY, WILDCARD_ONE))
+                       frozenset((BRACKET_OPEN, BRACKET_CLOSE, BRACE_OPEN,
+                                  BRACE_CLOSE, GROUP_PREFIX, WILDCARD_ANY,
+                                  WILDCARD_ONE))
+
+    BRACE_ILLEGAL_CHARS = NOT_SINGLE_CHARS - frozenset(',')
+
+    # operators outside of brackets and braces are captured in group 1
+    BRACE_OP_RE = re.compile(r'\[[^\]]*\]|\{[^}]*\}|(%s)' % OP_CODES_PAT)
 
     def __init__(self, group_resolver, node_wildcard_enable=True):
         """
@@ -910,14 +918,24 @@ class ParsingEngine(object):
         if self.NOT_SINGLE_CHARS.isdisjoint(nsstr) and nsstr.strip():
             return self.parse_string_single(nsstr, autostep)
 
+        return self._parse_string(_strip_escape(nsstr), autostep, namespace)
+
+    def _parse_string(self, nsstr, autostep, namespace):
+        """Helper to parse an escaped string in optional namespace."""
         alln_cache = None  # used to compute 'all nodes' only once
         nodeset = NodeSetBase()
-        nsstr = _strip_escape(nsstr)
 
         for opc, pat, rgnd in self._scan_string(nsstr, autostep):
             # Parser main debugging:
             #print "OPC %s PAT %s RANGESETS %s" % (opc, pat, rgnd)
-            if self.group_resolver and pat[0] == self.GROUP_PREFIX:
+            if self.BRACE_OPEN in pat:
+                ns_brace = NodeSetBase()
+                for alt in self._expand_braces(pat):
+                    ns_brace.update(self._parse_string(alt, autostep,
+                                                       namespace))
+                getattr(nodeset, opc)(ns_brace)
+
+            elif self.group_resolver and pat[0] == self.GROUP_PREFIX:
                 ns_group = NodeSetBase()
                 for nodegroup in NodeSetBase(pat, rgnd):
                     # parse/expand nodes group: get group string and namespace
@@ -1054,6 +1072,24 @@ class ParsingEngine(object):
         else:
             return -1, None
 
+    def _expand_braces(self, pat):
+        """Helper to expand all brace alternatives of a pattern string."""
+        pfx, sep, sfx = pat.partition(self.BRACE_OPEN)
+        if self.BRACE_CLOSE in pfx:
+            raise NodeSetParseError(pat, "illegal closing brace")
+        if not sep:
+            return [pat]
+
+        alts, sep, sfx = sfx.partition(self.BRACE_CLOSE)
+        if not sep:
+            raise NodeSetParseError(pat, "missing closing brace")
+        if not self.BRACE_ILLEGAL_CHARS.isdisjoint(alts):
+            raise NodeSetParseError(pat, "illegal character in braces")
+
+        sfxs = self._expand_braces(sfx)
+        return [pfx + alt.strip() + rest for alt in alts.split(',')
+                for rest in sfxs]
+
     def _scan_string_single(self, nsstr, autostep):
         """Single node scan, returns (pat, list of rangesets)"""
         # single node parsing
@@ -1090,6 +1126,7 @@ class ParsingEngine(object):
 
     def _scan_string(self, nsstr, autostep):
         """Parsing engine's string scanner method (iterator)."""
+        braces = self.BRACE_OPEN in nsstr or self.BRACE_CLOSE in nsstr
         next_op_code = ','  # if no operator, default one is to update nodeset
         while nsstr:
             # Ignore whitespace(s) for convenience
@@ -1097,6 +1134,27 @@ class ParsingEngine(object):
 
             rsets = []
             op_code = next_op_code
+
+            if braces:
+                # brace terms are yielded whole and expanded by the caller
+                mobj = next((mobj for mobj in self.BRACE_OP_RE.finditer(nsstr)
+                             if mobj.group(1)), None)
+                term = nsstr[:mobj.start()] if mobj else nsstr
+                if self.BRACE_OPEN in term:
+                    if mobj:
+                        next_op_code = mobj.group(1)
+                        nsstr = nsstr[mobj.end():]
+                        if not nsstr:
+                            msg = "missing nodeset operand with '%s' " \
+                                  "operator" % next_op_code
+                            raise NodeSetParseError(None, msg)
+                    else:
+                        nsstr = None
+                    yield ParsingEngine.OP_CODES[op_code], term.rstrip(), None
+                    continue
+
+                if self.BRACE_CLOSE in term:
+                    raise NodeSetParseError(term, "illegal closing brace")
 
             op_idx, next_op_code = self._next_op(nsstr)
             bracket_idx = nsstr.find(self.BRACKET_OPEN)

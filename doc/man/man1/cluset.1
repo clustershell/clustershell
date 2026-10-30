@@ -258,6 +258,67 @@ J[1\-3]
 .UNINDENT
 .UNINDENT
 .UNINDENT
+.SH BRACE EXPANSION
+.sp
+Braces list alternatives for a part of a node name: \fB{alt1,alt2,...}\fP
+expands the node set once per alternative and computes the union. Several
+braces in the same node name form a cartesian product. Alternatives are
+literal strings, may be empty, and surrounding whitespace is ignored.
+.INDENT 0.0
+.TP
+.B Examples of brace expansion
+.INDENT 7.0
+.TP
+.B $ cluset \-f \(aqserver[5\-9]\-{mds,oss}\(aq
+.UNINDENT
+.nf
+server[5\-9]\-mds,server[5\-9]\-oss
+.fi
+.sp
+.INDENT 7.0
+.TP
+.B $ cluset \-f \(aq{lustre,nfs}\-{mds,oss}\(aq
+.UNINDENT
+.nf
+lustre\-mds,lustre\-oss,nfs\-mds,nfs\-oss
+.fi
+.sp
+.INDENT 7.0
+.TP
+.B $ cluset \-f \(aqnode[1\-3]{,\-ib}\(aq
+.UNINDENT
+.nf
+node[1\-3],node[1\-3]\-ib
+.fi
+.sp
+.UNINDENT
+.sp
+Inside braces, only the comma is special: ranges, node groups, wildcards,
+operators and nested braces are not allowed there. They still work elsewhere
+in the same node set, like in \fB@{login,oss}\fP or \fB{db,www}serv*\fP\&.
+Shell\-style sequences like \fB{1..5}\fP are not supported and are taken
+literally: use ranges like \fB[1\-5]\fP\&. Output never contains braces.
+.sp
+With extended patterns, a node set with braces is evaluated as a whole
+operand: the union of its alternatives is computed first, then the operator
+is applied. In the example below, we remove node3 and its \-ib name:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.TP
+.B $ cluset \-f \(aqnode[1\-4]{,\-ib}!node3{,\-ib}\(aq
+.UNINDENT
+.nf
+node[1\-2,4],node[1\-2,4]\-ib
+.fi
+.sp
+.UNINDENT
+.UNINDENT
+.sp
+Always quote node sets with braces, otherwise the shell expands the braces
+first: \fBclush \-w node[1\-3]{,\-ib} uptime\fP runs \fBnode[1\-3]\-ib uptime\fP on
+\fBnode[1\-3]\fP, while \fBclush \-w \(aqnode[1\-3]{,\-ib}\(aq uptime\fP runs \fBuptime\fP on
+all six nodes.
 .SH NODE WILDCARDS
 .sp
 Any wildcard mask found is matched against all nodes from the group source (see \fBgroups.conf\fP(5) and the \fB\-a/\-\-all\fP option above).

@@ -996,6 +996,19 @@ class NodeSetGroupTest(unittest.TestCase):
         self.assertEqual(len(cml.output), 100)
         self.assertEqual(len(res.ignored_groups()['local']), 100)
 
+    def testConfigIllegalCharsBraces(self):
+        """test group list containing braces"""
+        f = make_temp_file(dedent("""
+            [local]
+            map: echo example[1-10]
+            list: echo good 'bad{x}'
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name, illegal_chars=ILLEGAL_GROUP_CHARS)
+        with self.assertLogs('ClusterShell.NodeUtils', level='WARNING') as cml:
+            self.assertEqual(res.grouplist(), ['good'])
+        self.assertEqual(cml.output,
+                         [_illegal_warning('bad{x}', 'local', '{ }')])
+
     def testConfigMaxRecursionError(self):
         """test groups maximum recursion depth exceeded error"""
         f = make_temp_file(dedent("""
@@ -1637,6 +1650,41 @@ class NodeSetGroupTest(unittest.TestCase):
         """test NodeSet wildcard without resolver"""
         nodeset = NodeSet("foo*", resolver=RESOLVER_NOGROUP)
         self.assertEqual(str(nodeset), "foo*")
+
+    def test_nodeset_braces(self):
+        """test NodeSet brace expansion with groups and wildcards"""
+        test_groups1 = makeTestG1()
+
+        source = UpcallGroupSource(
+                    "simple",
+                    r"sed -n 's/^$GROUP:\(.*\)/\1/p' %s" % test_groups1.name,
+                    r"sed -n 's/^all:\(.*\)/\1/p' %s" % test_groups1.name,
+                    r"sed -n 's/^\([0-9A-Za-z_-]*\):.*/\1/p' %s" % test_groups1.name,
+                    None)
+        res = GroupResolver(source)
+
+        nodeset = NodeSet("@chassis{1,2}", resolver=res)
+        self.assertEqual(nodeset, NodeSet("@chassis1,@chassis2", resolver=res))
+        self.assertEqual(str(nodeset), "montana[32-35]")
+        nodeset = NodeSet("@{chassis1,chassis2}", resolver=res)
+        self.assertEqual(str(nodeset), "montana[32-35]")
+        nodeset = NodeSet("@{oss,mds}", resolver=res)
+        self.assertEqual(nodeset, NodeSet("@io", resolver=res))
+        nodeset = NodeSet("@io&montana{4,6}", resolver=res)
+        self.assertEqual(str(nodeset), "montana[4,6]")
+        # wildcard expansion computes against 'all'
+        nodeset = NodeSet("montana{5,6}*", resolver=res)
+        self.assertEqual(str(nodeset), "montana[5-6,50-69]")
+
+    def test_nodeset_braces_group_map(self):
+        """test NodeSet brace expansion in group map results"""
+        f = make_temp_file(dedent("""
+            [local]
+            map: echo 'node[1-2]-{mds,oss}'
+            """).encode('ascii'))
+        res = GroupResolverConfig(f.name)
+        nodeset = NodeSet("@foo", resolver=res)
+        self.assertEqual(str(nodeset), "node[1-2]-mds,node[1-2]-oss")
 
 
 class NodeSetGroup2GSTest(unittest.TestCase):
