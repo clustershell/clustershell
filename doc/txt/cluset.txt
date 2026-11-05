@@ -113,6 +113,11 @@ Supported character operators
     Care should be taken to escape these characters as needed when the shell
     does not interpret them literally.
 
+    Node sets or patterns may also be given one per line, as in a multi-line
+    shell variable or the output of ``jq`` or ``scontrol show hostnames``:
+    the lines are combined by union, so such a value can be used as is, for
+    example with ``clush -w``.
+
 Examples of use of extended patterns
   :$ cluset -f node[0-7],node[8-10]:
 

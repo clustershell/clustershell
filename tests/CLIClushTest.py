@@ -829,6 +829,13 @@ class CLIClushTest_A(unittest.TestCase):
         finally:
             DEFAULTS.fold_axis = fold_axis_save
 
+    def test_058_multiline_args(self):
+        """test clush -w/-x with multiline arguments"""
+        self._clush_t(["-R", "exec", "-bL", "-w", "n1\nn2\nn[3-4]", "-x",
+                       "n2\nn4", "echo ok"], None, b"n[1,3]: ok\n", 0, b"")
+        self._clush_t(["-R", "exec", "-bL", "-w", "n1\n\nn2\n", "-w", "n3",
+                       "echo ok"], None, b"n[1-3]: ok\n", 0, b"")
+
     def test_059_verbose_color(self):
         """test clush -v messages (--color=never)"""
         self._clush_t(["--color=never", "-R", "exec", "-w", "n[1-2]",
