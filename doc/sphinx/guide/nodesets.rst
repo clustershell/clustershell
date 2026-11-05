@@ -180,7 +180,11 @@ pattern*, adding support for union (with special character *","*), difference
 (with special character *"!"*), intersection (with special character *"&"*)
 and symmetric difference (with special character *"^"*) operations. String
 patterns are read from left to right, by processing any character operators
-accordingly. The following example shows how you can use this feature::
+accordingly. Node sets or patterns may also be given one per line, as in a
+multi-line shell variable or the output of *jq* or ``scontrol show hostnames``:
+the lines are combined by union, so such a value can be used as is, for
+example with ``clush -w``. The following example shows how you can use this
+feature::
 
     >>> print(NodeSet("node[10-42],node46!node10"))
     node[11-42,46]
