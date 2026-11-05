@@ -53,10 +53,12 @@ Non-interactive mode
   gathered output results.
 
   The ``-w`` option allows you to specify remote hosts by using ClusterShell
-  NodeSet syntax, including the node groups ``@group`` special syntax and the
-  ``Extended Patterns`` syntax to benefit from NodeSet basic arithmetic
-  (like ``@Agroup\&@Bgroup``). See EXTENDED PATTERNS in ``nodeset``\(1) and
-  also ``groups.conf``\(5) for more information.
+  NodeSet syntax, including the node groups ``@group`` special syntax, brace
+  expansion (like ``server[5-9]-{mds,oss}``) and the ``Extended Patterns``
+  syntax to benefit from NodeSet basic arithmetic (like ``@Agroup\&@Bgroup``).
+  Quote node sets with braces, otherwise the shell expands them first. See
+  EXTENDED PATTERNS and BRACE EXPANSION in ``nodeset``\(1) and also
+  ``groups.conf``\(5) for more information.
 
   Unless the option ``--nostdin`` (or ``-n``) is specified, ``clush`` detects
   when its standard input is connected to a terminal (as determined by
