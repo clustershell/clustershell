@@ -1,1 +1,1 @@
-{"regressions": [["bench_engine.Engine.time_spawn", "graphs/branch-master/cpu-github-hosted/machine-github-actions/os-ubuntu-24.04/python-3.12/ram-16GB/bench_engine.Engine.time_spawn.json", {}, null, 1.6484434284998315, 1.3254014759999677, [[null, 1152, 1.3254014759999677, 1.6484434284998315]]]]}
+{"regressions": []}
