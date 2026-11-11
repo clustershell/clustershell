@@ -892,12 +892,34 @@ class ParsingEngine(object):
 
         # or is nsobj a string?
         if isinstance(nsobj, basestring):
+            nsstr = str(nsobj)
             try:
-                return self.parse_string(str(nsobj), autostep)
+                if '\n' in nsstr:
+                    nodeset = NodeSetBase()
+                    for line in self._split_lines(nsstr):
+                        nodeset.update(self.parse_string(line, autostep))
+                    return nodeset
+                return self.parse_string(nsstr, autostep)
             except (NodeUtils.GroupSourceQueryFailed, RuntimeError) as exc:
                 raise NodeSetParseError(nsobj, str(exc))
 
         raise TypeError("Unsupported NodeSet input %s" % type(nsobj))
+
+    def _split_lines(self, nsstr):
+        """Iterate over the node set strings of a multi-line string; a
+        newline next to an operator is whitespace."""
+        nsline = ''
+        for line in nsstr.split('\n'):
+            line = line.strip()
+            if not line:
+                continue
+            if nsline and line[0] not in self.OP_CODES and \
+               nsline[-1] not in self.OP_CODES:
+                yield nsline
+                nsline = ''
+            nsline += line
+        if nsline:
+            yield nsline
 
     def parse_string(self, nsstr, autostep, namespace=None):
         """Parse provided string in optional namespace.

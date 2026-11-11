@@ -329,6 +329,27 @@ class TopologyTest(unittest.TestCase):
                 ns_tree.add(nodegroup.nodeset)
             self.assertEqual(str(ns_all), str(ns_tree))
 
+    def testConfigurationContinuationLines(self):
+        """test topology description with INI continuation lines"""
+        with NamedTemporaryFile() as tmpfile:
+            tmpfile.write(b'[routes]\n')
+            tmpfile.write(b'admin: proxy[0-1],\n')
+            tmpfile.write(b'       proxy2\n')
+            tmpfile.write(b'proxy[0-2]: nodes[0-5],\n')
+            tmpfile.write(b'            nodes[6-7],\n')
+            tmpfile.write(b'            nodes[8-10]\n')
+            tmpfile.flush()
+            parser = TopologyParser(tmpfile.name)
+
+            ns_all = NodeSet('admin,proxy[0-2],nodes[0-10]')
+            ns_tree = NodeSet()
+            tree = parser.tree('admin')
+            self.assertEqual(tree.inner_node_count(), 4)
+            self.assertEqual(tree.leaf_node_count(), 11)
+            for nodegroup in tree:
+                ns_tree.add(nodegroup.nodeset)
+            self.assertEqual(str(ns_all), str(ns_tree))
+
     def testConfigurationParserDeepTree(self):
         """test a configuration that generates a deep tree"""
         with NamedTemporaryFile() as tmpfile:
@@ -744,6 +765,23 @@ class TopologyYamlTest(unittest.TestCase):
                           b']\n')
         self.assertEqual(tree.inner_node_count(), 11)
         self.assertEqual(tree.leaf_node_count(), 10)
+
+    def testYamlBlockScalar(self):
+        """test YAML topology with multi-line node sets in block scalars"""
+        tree = self._tree(dedent("""
+            routes:
+              - gateways: admin
+                targets: |
+                  proxy[0-1],
+                  proxy2
+              - gateways: proxy[0-2]
+                targets: |
+                  nodes[0-5],
+                  nodes[6-7],
+                  nodes[8-10]
+            """).encode())
+        self.assertEqual(tree.inner_node_count(), 4)
+        self.assertEqual(tree.leaf_node_count(), 11)
 
     def testYamlInvalidSyntax(self):
         """test YAML topology with invalid YAML syntax"""
