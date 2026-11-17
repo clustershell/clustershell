@@ -11,6 +11,7 @@ import unittest
 
 from .TLib import *
 from ClusterShell.CLI.Nodeset import main
+from ClusterShell.RangeSet import MAX_RANGE_SIZE
 
 from ClusterShell.NodeUtils import GroupResolverConfig
 from ClusterShell.NodeSet import set_std_group_resolver, \
@@ -688,6 +689,19 @@ class CLINodesetTest(CLINodesetTestBase):
         self._nodeset_t(["-c", "node[1-3]{,-ib}"], None, b"6\n")
         self._nodeset_t(["-f", "n{1"], None, b"", 1,
                         b"Parse error: missing closing brace: \"n{1\"\n")
+
+    def test_030_range_too_large(self):
+        """Oversized ranges produce a parse error naming the range."""
+        subrange = "1-%d" % MAX_RANGE_SIZE
+        self._nodeset_t(["-e", "node[%s]" % subrange], None, b"", 1,
+                        ('Parse error: bad range: "range too large : "%s""\n'
+                         % subrange).encode())
+
+    def test_031_range_large_step(self):
+        """Large spans with few generated indexes can be expanded."""
+        self._nodeset_t(["-e", "node[1-%d/%d]" %
+                         (MAX_RANGE_SIZE, MAX_RANGE_SIZE - 1)], None,
+                        ("node1 node%d\n" % MAX_RANGE_SIZE).encode())
 
 
 class CLINodesetGroupResolverTest1(CLINodesetTestBase):

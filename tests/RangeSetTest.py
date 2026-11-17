@@ -12,7 +12,7 @@ import sys
 import unittest
 import warnings
 
-from ClusterShell.RangeSet import RangeSet, RangeSetParseError
+from ClusterShell.RangeSet import RangeSet, RangeSetParseError, MAX_RANGE_SIZE
 
 class RangeSetTest(unittest.TestCase):
 
@@ -970,6 +970,33 @@ class RangeSetTest(unittest.TestCase):
         self.assertEqual(str(r1), "1-30,40-60/10,103")
         # Zero
         self.assertRaises(AssertionError, r1.add_range, 103, 103)
+
+    def testAddRangeTooLarge(self):
+        """Oversized ranges are rejected."""
+        rset = RangeSet("1-3")
+        self.assertRaises(ValueError, rset.add_range, 0, MAX_RANGE_SIZE)
+        self.assertRaises(ValueError, rset.add_range, 0, MAX_RANGE_SIZE + 1, 1, 10)
+        self.assertRaises(ValueError, rset.add_range, -MAX_RANGE_SIZE, 0)
+        self.assertRaises(ValueError, rset.add_range, 0, MAX_RANGE_SIZE * 2, 2)
+        self.assertRaises(ValueError, rset.add_range, 0, MAX_RANGE_SIZE * 2 - 1, 2)
+        self.assertEqual(rset, RangeSet("1-3"))
+
+    def testParseRangeTooLarge(self):
+        """Oversized parsed ranges identify the offending subrange."""
+        subrange = "1-%d" % MAX_RANGE_SIZE
+        with self.assertRaises(RangeSetParseError) as ctx:
+            RangeSet("0," + subrange)
+        self.assertEqual(ctx.exception.part, subrange)
+        self.assertEqual(str(ctx.exception), 'range too large : "%s"' % subrange)
+
+    def testAddRangeLargeStep(self):
+        """Large spans are accepted when their step limits allocation."""
+        rset = RangeSet()
+        rset.add_range(0, MAX_RANGE_SIZE, MAX_RANGE_SIZE)
+        self.assertEqual(rset, RangeSet("0"))
+        rset.add_range(-MAX_RANGE_SIZE, MAX_RANGE_SIZE + 1, MAX_RANGE_SIZE)
+        self.assertEqual(rset, RangeSet("-%d,0,%d" %
+                                       (MAX_RANGE_SIZE, MAX_RANGE_SIZE)))
 
     def testSlices(self):
         """test RangeSet.slices()"""
