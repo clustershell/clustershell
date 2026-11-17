@@ -29,6 +29,16 @@ class CLINodesetTestBase(unittest.TestCase):
 class CLINodesetTest(CLINodesetTestBase):
     """Unit test class for testing CLI/Nodeset.py"""
 
+    def test_range_too_large(self):
+        """Oversized ranges produce a CLI error without allocating entries."""
+        self._nodeset_t(["-e", "node[1-100000000]"], None, b"", 1,
+                        b"ERROR: range too large\n")
+
+    def test_range_large_step(self):
+        """Large spans with few generated indexes can be expanded."""
+        self._nodeset_t(["-e", "node[1-100000000/99999999]"], None,
+                        b"node1 node100000000\n")
+
     def _battery_count(self, args):
         self._nodeset_t(args + ["--count", ""], None, b"0\n")
         self._nodeset_t(args + ["--count", "foo"], None, b"1\n")

@@ -118,6 +118,9 @@ class RangeSet(set):
     :meth:`RangeSet.difference_update`,
     :meth:`RangeSet.symmetric_difference_update` which conform to the Python
     Set API.
+
+    When adding a range, the current set size plus the incoming range length
+    must be less than 100,000,000 indexes; overlapping indexes are counted again.
     """
     _VERSION = 4    # serial version number
 
@@ -608,7 +611,9 @@ class RangeSet(set):
         assert start < stop, "please provide ordered node index ranges"
         assert step > 0
         assert pad >= 0
-        assert stop - start < 1e9, "range too large"
+        incoming = (stop - start + step - 1) // step
+        if len(self) + incoming >= 100000000:
+            raise ValueError("range too large")
 
         if pad == 0:
             set.update(self, map(str, range(start, stop, step)))
