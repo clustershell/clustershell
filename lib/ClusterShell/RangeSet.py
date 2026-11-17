@@ -53,12 +53,16 @@ __all__ = ['RangeSetException',
            'RangeSetPaddingError',
            'RangeSet',
            'RangeSetND',
-           'AUTOSTEP_DISABLED']
+           'AUTOSTEP_DISABLED',
+           'MAX_RANGE_SIZE']
 
 # Special constant used to force turn off autostep feature.
 # Note: +inf is 1E400, but a bug in python 2.4 makes it impossible to be
 # pickled, so we use less. Later, we could consider sys.maxint here.
 AUTOSTEP_DISABLED = 1E100
+
+#: Exclusive upper limit on the number of indexes in a single range.
+MAX_RANGE_SIZE = 100000000
 
 
 class RangeSetException(Exception):
@@ -118,6 +122,8 @@ class RangeSet(set):
     :meth:`RangeSet.difference_update`,
     :meth:`RangeSet.symmetric_difference_update` which conform to the Python
     Set API.
+
+    A single range must contain fewer than 100,000,000 indexes.
     """
     _VERSION = 4    # serial version number
 
@@ -224,7 +230,10 @@ class RangeSet(set):
             if stop > 1e100 or start * begin_sign > stop * end_sign or step < 1:
                 raise RangeSetParseError(subrange, "invalid values in range")
 
-            self.add_range(start * begin_sign, stop * end_sign + 1, step, pad)
+            try:
+                self.add_range(start * begin_sign, stop * end_sign + 1, step, pad)
+            except ValueError as exc:
+                raise RangeSetParseError(subrange, str(exc))
 
     @classmethod
     def fromlist(cls, rnglist, autostep=None):
@@ -603,12 +612,18 @@ class RangeSet(set):
         Add a range (start, stop, step and padding length) to RangeSet.
         Like the Python built-in function *range()*, the last element
         is the largest start + i * step less than stop.
+
+        :raises ValueError: if the range contains :data:`MAX_RANGE_SIZE`
+                            indexes or more.
         """
         self._sorted_cache = None
         assert start < stop, "please provide ordered node index ranges"
         assert step > 0
         assert pad >= 0
-        assert stop - start < 1e9, "range too large"
+
+        if (stop - start >= MAX_RANGE_SIZE and
+                (stop - start + step - 1) // step >= MAX_RANGE_SIZE):
+            raise ValueError("range too large")
 
         if pad == 0:
             set.update(self, map(str, range(start, stop, step)))

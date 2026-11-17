@@ -10,6 +10,7 @@ import pickle
 import sys
 import unittest
 
+from ClusterShell.RangeSet import MAX_RANGE_SIZE
 from ClusterShell.NodeSet import RangeSet, RangeSetND, NodeSet, fold, expand
 from ClusterShell.NodeSet import NodeSetBase, AUTOSTEP_DISABLED, \
                                  NodeSetError, NodeSetParseError, \
@@ -37,6 +38,13 @@ class NodeSetTest(unittest.TestCase):
             nodeset = NodeSet(arg)
             self.assertEqual(str(nodeset), "")
             self.assertEqual(len(nodeset), 0)
+
+    def testRangeTooLarge(self):
+        """Oversized ranges are reported as NodeSet range parse errors."""
+        subrange = "1-%d" % MAX_RANGE_SIZE
+        with self.assertRaises(NodeSetParseRangeError) as ctx:
+            NodeSet("node[%s]" % subrange)
+        self.assertIn('range too large : "%s"' % subrange, str(ctx.exception))
 
     def testUnnumberedNode(self):
         """test NodeSet with unnumbered node"""

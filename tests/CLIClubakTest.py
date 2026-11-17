@@ -10,6 +10,7 @@ import unittest
 from .TLib import *
 from ClusterShell.CLI.Clubak import main
 from ClusterShell.Defaults import DEFAULTS
+from ClusterShell.RangeSet import MAX_RANGE_SIZE
 
 from ClusterShell.NodeSet import set_std_group_resolver, \
                                  set_std_group_resolver_config
@@ -157,6 +158,14 @@ class CLIClubakTest(CLIClubakTestBase):
         self._clubak_t(["-b", "--interpret-keys=never"], b"[]: bar\n", _outfmt("[]"))
         self._clubak_t(["-b", "--interpret-keys=always"], b"[]: bar\n",
                        b'', 1, b"Parse error: bad range: \"empty range\"\n")
+        subrange = "1-%d" % MAX_RANGE_SIZE
+        key = "foo[%s]" % subrange
+        self._clubak_t(["-b", "--interpret-keys=auto"],
+                       (key + ": bar\n").encode(), _outfmt(key))
+        self._clubak_t(["-b", "--interpret-keys=always"],
+                       (key + ": bar\n").encode(), b'', 1,
+                       ('Parse error: bad range: "range too large : "%s""\n'
+                        % subrange).encode())
 
     def test_008_color(self):
         """test clubak (--color)"""
