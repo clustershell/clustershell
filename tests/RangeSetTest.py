@@ -971,6 +971,27 @@ class RangeSetTest(unittest.TestCase):
         # Zero
         self.assertRaises(AssertionError, r1.add_range, 103, 103)
 
+    def testAddRangeTooLarge(self):
+        """Oversized ranges fail before allocation, including under -O."""
+        rset = RangeSet("1-3")
+        self.assertRaises(ValueError, rset.add_range, 0, 100000000)
+        self.assertRaises(ValueError, rset.add_range, 0, 100000001, 1, 10)
+        self.assertRaises(ValueError, rset.add_range, -100000000, 0)
+        self.assertRaises(ValueError, rset.add_range, 0, 200000000, 2)
+        self.assertRaises(ValueError, rset.add_range, 0, 199999999, 2)
+        # Include the three existing indexes in the allocation limit.
+        self.assertRaises(ValueError, rset.add_range, 0, 99999997)
+        self.assertRaises(ValueError, rset.add_range, 0, 199999993, 2)
+        self.assertEqual(rset, RangeSet("1-3"))
+
+    def testAddRangeLargeStep(self):
+        """Large spans are accepted when their step limits allocation."""
+        rset = RangeSet()
+        rset.add_range(0, 100000000, 100000000)
+        self.assertEqual(rset, RangeSet("0"))
+        rset.add_range(-100000000, 100000001, 100000000)
+        self.assertEqual(rset, RangeSet("-100000000,0,100000000"))
+
     def testSlices(self):
         """test RangeSet.slices()"""
         r1 = RangeSet()
